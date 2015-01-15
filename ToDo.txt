@@ -1,0 +1,31 @@
+﻿Core techniques
+================================================================================
+Deferred rendering and lighting
+
+
+Geometry
+================================================================================
+Height-map terrain rendering, user can walk on the terrain.
+Parsing and rendering of an existing model format (OBJ, FBX, Collada, etc.).
+
+
+Texturing and lightning
+================================================================================
+Blend-mapping
+
+
+Projection techniques
+================================================================================
+Shadow volumes
+
+
+Acceleration techniques
+================================================================================
+View frustum culling against a quadtree
+Back-face culling using geometry shader
+
+
+Other techniques
+================================================================================
+Particle system with billboarded particles
+Water-effect
