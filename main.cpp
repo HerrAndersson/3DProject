@@ -24,7 +24,7 @@ ID3D11PixelShader* gPixelShader = nullptr;
 
 void CreateShaders()
 {
-	const char* pixel_shader = R"(
+	/*const char* pixel_shader = R"(
 		struct VS_OUT
 		{
 			float4 Pos : SV_POSITION;
@@ -35,11 +35,11 @@ void CreateShaders()
 		{
 			return float4(input.Color, 1.0f);
 		}
-	)";
+	)";*/
 
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
-	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, nullptr);
+	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
 
 	gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &gVertexShader);
 
@@ -55,9 +55,9 @@ void CreateShaders()
 
 	//create pixel shader
 	ID3DBlob* pPS = nullptr;
-	D3DCompile(pixel_shader, strlen(pixel_shader), NULL, nullptr,
-		NULL, "PS_main", "ps_4_0", 0, NULL, &pPS, nullptr);
+	//D3DCompile(pixel_shader, strlen(pixel_shader), NULL, nullptr, NULL, "PS_main", "ps_4_0", 0, NULL, &pPS, nullptr);
 
+	D3DCompileFromFile(L"PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
 	gDevice->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &gPixelShader);
 	pPS->Release();
 }
