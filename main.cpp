@@ -24,32 +24,6 @@ ID3D11PixelShader* gPixelShader = nullptr;
 
 void CreateShaders()
 {
-	const char* vertex_shader = R"(
-		struct VS_IN
-		{
-			float3 Pos : POSITION;
-			float3 Color : COLOR;
-		};
-
-		struct VS_OUT
-		{
-			float4 Pos : SV_POSITION;
-			float3 Color : COLOR;
-		};
-		//-----------------------------------------------------------------------------------------
-		// VertexShader: VSScene
-		//-----------------------------------------------------------------------------------------
-		VS_OUT VS_main(VS_IN input)
-		{
-			VS_OUT output = (VS_OUT)0;
-
-			output.Pos = float4(input.Pos, 1);
-			output.Color = input.Color;
-
-			return output;
-		}
-	)";
-
 	const char* pixel_shader = R"(
 		struct VS_OUT
 		{
@@ -65,11 +39,12 @@ void CreateShaders()
 
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
-	D3DCompile(vertex_shader, strlen(vertex_shader), NULL, nullptr,
-		NULL, "VS_main", "vs_4_0", 0, NULL, &pVS, nullptr);
+	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, nullptr);
 
 	gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &gVertexShader);
+
 	
+
 	//create input layout (verified using vertex shader)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
