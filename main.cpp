@@ -24,19 +24,6 @@ ID3D11PixelShader* gPixelShader = nullptr;
 
 void CreateShaders()
 {
-	/*const char* pixel_shader = R"(
-		struct VS_OUT
-		{
-			float4 Pos : SV_POSITION;
-			float3 Color : COLOR;
-		};
-	
-		float4 PS_main(VS_OUT input) : SV_Target
-		{
-			return float4(input.Color, 1.0f);
-		}
-	)";*/
-
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
 	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
