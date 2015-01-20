@@ -3,6 +3,9 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+
+#include "Object.h"
+
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 
@@ -22,28 +25,25 @@ ID3D11InputLayout* gVertexLayout = nullptr;
 ID3D11VertexShader* gVertexShader = nullptr;
 ID3D11PixelShader* gPixelShader = nullptr;
 
+Object* teapot = nullptr;
+
 void CreateShaders()
 {
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
 	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
-
 	gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &gVertexShader);
-
-	
 
 	//create input layout (verified using vertex shader)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	gDevice->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &gVertexLayout);
 	pVS->Release();
 
 	//create pixel shader
 	ID3DBlob* pPS = nullptr;
-	//D3DCompile(pixel_shader, strlen(pixel_shader), NULL, nullptr, NULL, "PS_main", "ps_4_0", 0, NULL, &pPS, nullptr);
-
 	D3DCompileFromFile(L"PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
 	gDevice->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &gPixelShader);
 	pPS->Release();
@@ -54,18 +54,18 @@ void CreateTriangleData()
 	struct TriangleVertex
 	{
 		float x, y, z;
-		float r, g, b;
+		float r, g;
 	}
 	triangleVertices[3] =
 	{
 		0.0f, 0.5f, 0.0f,	//v0 pos
-		1.0f, 0.0f, 0.0f,	//v0 color
+		1.0f, 0.0f,	//v0 color
 
 		0.5f, -0.5f, 0.0f,	//v1
-		0.0f, 1.0f, 0.0f,	//v1 color
+		0.0f, 1.0f,	//v1 color
 
 		-0.5f, -0.5f, 0.0f, //v2
-		0.0f, 0.0f, 1.0f	//v2 color
+		0.0f, 0.0f	//v2 color
 	};
 
 	D3D11_BUFFER_DESC bufferDesc;
@@ -111,7 +111,7 @@ void Render()
 	gDeviceContext->IASetInputLayout(gVertexLayout);
 
 
-	gDeviceContext->Draw(3, 0);
+	gDeviceContext->Draw(1000, 0);
 }
 
 int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
@@ -127,7 +127,10 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 		CreateShaders(); //4. Skapa vertex- och pixel-shaders
 
-		CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
+		//CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
+
+		teapot = new Object("teapot.obj", gDevice);
+		gVertexBuffer = teapot->getVertexBuffer();
 
 		ShowWindow(wndHandle, nCmdShow);
 
@@ -157,6 +160,8 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 		gDevice->Release();
 		gDeviceContext->Release();
 		DestroyWindow(wndHandle);
+
+		delete teapot;
 	}
 
 	return (int) msg.wParam;
