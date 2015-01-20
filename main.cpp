@@ -31,7 +31,7 @@ void CreateShaders()
 {
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
-	D3DCompileFromFile(L"VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
+	D3DCompileFromFile(L"assets/shaders/VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
 	gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &gVertexShader);
 
 	//create input layout (verified using vertex shader)
@@ -44,7 +44,7 @@ void CreateShaders()
 
 	//create pixel shader
 	ID3DBlob* pPS = nullptr;
-	D3DCompileFromFile(L"PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
+	D3DCompileFromFile(L"assets/shaders/PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
 	gDevice->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &gPixelShader);
 	pPS->Release();
 }
@@ -129,7 +129,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 		//CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
 
-		teapot = new Object("teapot.obj", gDevice);
+		teapot = new Object("assets/models/teapot.obj", gDevice);
 		gVertexBuffer = teapot->getVertexBuffer();
 
 		ShowWindow(wndHandle, nCmdShow);
