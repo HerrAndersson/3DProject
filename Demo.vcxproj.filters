@@ -37,6 +37,9 @@
     <Object Include="assets\models\teapot.obj">
       <Filter>Resource Files</Filter>
     </Object>
+    <Object Include="assets\models\triangle.obj">
+      <Filter>Resource Files</Filter>
+    </Object>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">

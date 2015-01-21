@@ -103,7 +103,7 @@ void Render()
 	gDeviceContext->GSSetShader(nullptr, nullptr, 0);
 	gDeviceContext->PSSetShader(gPixelShader, nullptr, 0);
 
-	UINT32 vertexSize = sizeof(float) * 6;
+	UINT32 vertexSize = sizeof(Vertex);
 	UINT32 offset = 0;
 	gDeviceContext->IASetVertexBuffers(0, 1, &gVertexBuffer, &vertexSize, &offset);
 
@@ -111,7 +111,7 @@ void Render()
 	gDeviceContext->IASetInputLayout(gVertexLayout);
 
 
-	gDeviceContext->Draw(1000, 0);
+	gDeviceContext->Draw(100, 0);
 }
 
 int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
@@ -129,7 +129,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
 		//CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
 
-		teapot = new Object("assets/models/teapot.obj", gDevice);
+		teapot = new Object("assets/models/triangle.obj", gDevice);
 		gVertexBuffer = teapot->getVertexBuffer();
 
 		ShowWindow(wndHandle, nCmdShow);
