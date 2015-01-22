@@ -130,7 +130,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 		//CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
 
 		teapot = new Object("assets/models/triangle.obj", gDevice);
-		gVertexBuffer = teapot->getVertexBuffer();
+		gVertexBuffer = teapot->GetVertexBuffer();
 
 		ShowWindow(wndHandle, nCmdShow);
 

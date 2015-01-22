@@ -79,10 +79,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectBase.cpp" />
+    <ClCompile Include="Terrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="float3.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="ObjectBase.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>

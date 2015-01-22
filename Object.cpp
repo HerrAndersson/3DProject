@@ -1,7 +1,7 @@
 #include "Object.h"
 
 
-Object::Object(std::string filename, ID3D11Device* device)
+Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 {
 	std::ifstream file(filename);
 
@@ -73,12 +73,3 @@ Object::~Object()
 {
 }
 
-ID3D11Buffer* Object::getVertexBuffer() const
-{
-	return vertexBuffer;
-}
-
-ID3D11ShaderResourceView* Object::getTextureView() const
-{
-	return texture;
-}

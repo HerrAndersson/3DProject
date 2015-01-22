@@ -13,12 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Shaders">
+      <UniqueIdentifier>{e85375da-d009-483a-b168-f2db19dcdc08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Objects">
+      <UniqueIdentifier>{d4e8688f-2c63-4284-a655-26e6cfc6be2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,21 +44,27 @@
     <ClInclude Include="float3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\teapot.obj">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Objects</Filter>
     </Object>
     <Object Include="assets\models\triangle.obj">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Objects</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="assets\shaders\VertexShader.hlsl">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
