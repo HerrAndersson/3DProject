@@ -23,7 +23,7 @@ private:
 public:
 
 	Object(std::string filename, ID3D11Device* device);
-	~Object();
+	virtual ~Object();
 
 };
 

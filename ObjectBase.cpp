@@ -8,11 +8,8 @@ ObjectBase::ObjectBase(ID3D11Device* device)
 
 ObjectBase::~ObjectBase()
 {
-	delete vertexBuffer;
-	vertexBuffer = nullptr;
-
-	delete texture;
-	texture = nullptr;
+	vertexBuffer->Release();
+	texture->Release();
 }
 
 void ObjectBase::Render(ID3D11DeviceContext* deviceContext)
