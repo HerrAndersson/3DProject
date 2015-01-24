@@ -1,7 +1,5 @@
 #include "Object.h"
 
-#include "Vertex.h"
-
 Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 {
 	std::ifstream file(filename);
