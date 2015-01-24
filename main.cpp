@@ -49,36 +49,6 @@ void CreateShaders()
 	pPS->Release();
 }
 
-void CreateTriangleData()
-{
-	struct TriangleVertex
-	{
-		float x, y, z;
-		float r, g;
-	}
-	triangleVertices[3] =
-	{
-		0.0f, 0.5f, 0.0f,	//v0 pos
-		1.0f, 0.0f,	//v0 color
-
-		0.5f, -0.5f, 0.0f,	//v1
-		0.0f, 1.0f,	//v1 color
-
-		-0.5f, -0.5f, 0.0f, //v2
-		0.0f, 0.0f	//v2 color
-	};
-
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(triangleVertices);
-
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = triangleVertices;
-	gDevice->CreateBuffer(&bufferDesc, &data, &gVertexBuffer);
-}
-
 void SetViewport()
 {
 	D3D11_VIEWPORT vp;
@@ -127,8 +97,6 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 		SetViewport(); //3. Sätt viewport
 
 		CreateShaders(); //4. Skapa vertex- och pixel-shaders
-
-		//CreateTriangleData(); //5. Definiera triangelvertiser, 6. Skapa vertex buffer, 7. Skapa input layout
 
 		teapot = new Object("assets/models/triangle.obj", gDevice);
 		gVertexBuffer = teapot->GetVertexBuffer();
