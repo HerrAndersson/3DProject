@@ -1,5 +1,6 @@
 #include "Object.h"
 
+#include "Vertex.h"
 
 Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 {
@@ -11,7 +12,7 @@ Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 		file >> command;
 		if (command == "v")
 		{
-			float3 tempVertex;
+			XMFLOAT3 tempVertex;
 			file >> tempVertex.x;
 			file >> tempVertex.y;
 			file >> tempVertex.z;
@@ -19,14 +20,14 @@ Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 		}
 		else if (command == "vt")
 		{
-			float3 tempUv;
+			XMFLOAT2 tempUv;
 			file >> tempUv.x;
 			file >> tempUv.y;
 			uvs.push_back(tempUv);
 		}
 		else if (command == "vn")
 		{
-			float3 tempNormal;
+			XMFLOAT3 tempNormal;
 			file >> tempNormal.x;
 			file >> tempNormal.y;
 			file >> tempNormal.z;
@@ -34,18 +35,31 @@ Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
 		}
 		else if (command == "f")
 		{
-			//TODO: Does not load UV coords or normals
 			for (int i = 0; i < 3; i++)
 			{
 				int index;
 				file >> index;
 				Vertex tempVertex;
-				float3 vertex = vertices[index - 1];
-				tempVertex.x = vertex.x;
-				tempVertex.y = vertex.y;
-				tempVertex.z = vertex.z;
-				tempVertex.u = 1.0;
-				tempVertex.v = 0.0;
+
+				tempVertex.pos = vertices[index - 1];
+
+				//Check if we can load UV coordinates
+				if (file.peek() == '/')
+				{
+					file.get();
+					file >> index;
+					tempVertex.uv = uvs[index - 1];
+
+					//Check if we can load normals
+					if (file.peek() == '/')
+					{
+						file.get();
+						file >> index;
+						XMFLOAT3 normal = normals[index - 1];
+						//TODO: Vertex does not have normals
+					}
+				}
+				
 				faces.push_back(tempVertex);
 			}
 		}
