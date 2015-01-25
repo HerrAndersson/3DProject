@@ -24,6 +24,7 @@ private:
 	bool HandleInput(float frameTime);
 	bool RenderGraphics();
 	void CreateShaders();
+	void CreateTriangleData();
 
 public:
 	Application();

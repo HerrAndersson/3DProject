@@ -32,7 +32,7 @@ bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
 	}
 
 	CreateShaders();
-
+	CreateTriangleData();
 	//If it reaches this point it means no errors happened
 	return true;
 }
@@ -128,7 +128,7 @@ bool Application::RenderGraphics()
 	Direct3D->GetDeviceContext()->GSSetShader(nullptr, nullptr, 0);
 	Direct3D->GetDeviceContext()->PSSetShader(defaultPixelShader, nullptr, 0);
 
-	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 vertexSize = sizeof(float) * 6;
 	UINT32 offset = 0;
 	Direct3D->GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 	Direct3D->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -139,6 +139,37 @@ bool Application::RenderGraphics()
 	Direct3D->EndScene();
 
 	return result;
+}
+
+void Application::CreateTriangleData()
+{
+	struct TriangleVertex
+	{
+		float x, y, z;
+		float r, g, b;
+	}
+	triangleVertices[6] =
+	{
+		0.0f, 0.5f, 0.0f,	//v0 pos
+		1.0f, 0.0f, 0.0f,	//v0 color
+
+		0.5f, -0.5f, 0.0f,	//v1
+		0.0f, 1.0f, 0.0f,	//v1 color
+
+		-0.5f, -0.5f, 0.0f, //v2
+		0.0f, 0.0f, 1.0f,	//v2 color
+
+	};
+
+	D3D11_BUFFER_DESC bufferDesc;
+	memset(&bufferDesc, 0, sizeof(bufferDesc));
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.ByteWidth = sizeof(triangleVertices);
+
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = triangleVertices;
+	Direct3D->GetDevice()->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 }
 
 

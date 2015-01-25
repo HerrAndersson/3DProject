@@ -1,0 +1,125 @@
+#include <windows.h>
+#include "System.h"
+#include <crtdbg.h>
+
+<<<<<<< HEAD
+int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	bool result;
+=======
+#pragma comment (lib, "d3d11.lib")
+#pragma comment (lib, "d3dcompiler.lib")
+
+HWND InitWindow(HINSTANCE hInstance);
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+HRESULT CreateDirect3DContext(HWND wndHandle);
+
+IDXGISwapChain* gSwapChain = nullptr;
+ID3D11Device* gDevice = nullptr;
+ID3D11DeviceContext* gDeviceContext = nullptr;
+ID3D11RenderTargetView* gBackbufferRTV = nullptr;
+
+ID3D11Buffer* gVertexBuffer = nullptr;
+
+ID3D11InputLayout* gVertexLayout = nullptr;
+ID3D11VertexShader* gVertexShader = nullptr;
+ID3D11PixelShader* gPixelShader = nullptr;
+
+Object* teapot = nullptr;
+
+void CreateShaders()
+{
+	//create vertex shader
+	ID3DBlob* pVS = nullptr;
+	D3DCompileFromFile(L"assets/shaders/VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
+	gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &gVertexShader);
+
+	//create input layout (verified using vertex shader)
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	gDevice->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &gVertexLayout);
+	pVS->Release();
+
+	//create pixel shader
+	ID3DBlob* pPS = nullptr;
+	D3DCompileFromFile(L"assets/shaders/PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
+	gDevice->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &gPixelShader);
+	pPS->Release();
+}
+
+void SetViewport()
+{
+	D3D11_VIEWPORT vp;
+	vp.Width = (float)640;
+	vp.Height = (float)480;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	gDeviceContext->RSSetViewports(1, &vp);
+}
+
+void Render()
+{
+	// clear the back buffer to a deep blue
+	float clearColor[] = { 0, 0, 0, 1 };
+	gDeviceContext->ClearRenderTargetView(gBackbufferRTV, clearColor);
+
+	gDeviceContext->VSSetShader(gVertexShader, nullptr, 0);
+	gDeviceContext->HSSetShader(nullptr, nullptr, 0);
+	gDeviceContext->DSSetShader(nullptr, nullptr, 0);
+	gDeviceContext->GSSetShader(nullptr, nullptr, 0);
+	gDeviceContext->PSSetShader(gPixelShader, nullptr, 0);
+
+	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 offset = 0;
+	gDeviceContext->IASetVertexBuffers(0, 1, &gVertexBuffer, &vertexSize, &offset);
+
+	gDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	gDeviceContext->IASetInputLayout(gVertexLayout);
+
+
+	gDeviceContext->Draw(100, 0);
+}
+
+int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
+{
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	MSG msg = { 0 };
+	HWND wndHandle = InitWindow(hInstance); //1. Skapa fönster
+	
+	if (wndHandle)
+	{
+		CreateDirect3DContext(wndHandle); //2. Skapa och koppla SwapChain, Device och Device Context
+
+		SetViewport(); //3. Sätt viewport
+
+		CreateShaders(); //4. Skapa vertex- och pixel-shaders
+
+		teapot = new Object("assets/models/triangle.obj", gDevice);
+		gVertexBuffer = teapot->GetVertexBuffer();
+>>>>>>> 3118975f3e6d519ead5c9205b9694b57f2eaba66
+
+	// Initialize and run the system object.
+	System* system = new System();
+
+	if (!system)
+		return 0;
+
+	result = system->Initialize();
+
+	if (result)
+		system->Run();
+
+	// Shutdown and release the system object.
+	system->Shutdown();
+	delete system;
+	system = nullptr;
+
+	return 0;
+}
