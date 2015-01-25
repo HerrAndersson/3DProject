@@ -1,7 +1,5 @@
 #pragma once
 
-#include <d3d11.h>
-#include <string>
 #include <vector>
 #include <fstream>
 
@@ -22,7 +20,7 @@ private:
 
 public:
 
-	Object(std::string filename, ID3D11Device* device);
+	Object(std::string modelFilename, string textureFilename, ID3D11Device* device);
 	virtual ~Object();
 
 };

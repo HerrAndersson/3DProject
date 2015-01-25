@@ -2,6 +2,9 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Vertex.h"
+#include <string>
+
+using namespace std;
 
 class ObjectBase
 {
@@ -16,7 +19,7 @@ private:
 
 public:
 
-	ObjectBase(ID3D11Device* device);
+	ObjectBase(ID3D11Device* device, string textureFilename);
 	~ObjectBase();
 
 	void Render(ID3D11DeviceContext* deviceContext);

@@ -1,7 +1,7 @@
 #include "Object.h"
 
 
-Object::Object(std::string filename, ID3D11Device* device) : ObjectBase(device)
+Object::Object(std::string filename, string textureFilename, ID3D11Device* device) : ObjectBase(device, textureFilename)
 {
 	std::ifstream file(filename);
 
