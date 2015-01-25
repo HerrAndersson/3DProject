@@ -14,6 +14,12 @@ System::System(bool fullscreen, bool showCursor)
 
 System::~System()
 {
+	if (application)
+	{
+		delete application;
+		application = nullptr;
+	}
+	ShutdownWindows();
 }
 
 bool System::Initialize()
@@ -35,19 +41,6 @@ bool System::Initialize()
 
 	return result;
 }
-
-
-void System::Shutdown()
-{
-	if (application)
-	{
-		application->Shutdown();
-		delete application;
-		application = nullptr;
-	}
-	ShutdownWindows();
-}
-
 
 void System::Run()
 {

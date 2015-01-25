@@ -20,7 +20,74 @@ D3DClass::D3DClass()
 
 D3DClass::~D3DClass()
 {
-	//release everything?
+	if (swapChain)
+		swapChain->SetFullscreenState(false, NULL);
+
+	if (alphaEnableBlendingState)
+	{
+		alphaEnableBlendingState->Release();
+		alphaEnableBlendingState = nullptr;
+	}
+
+	if (alphaDisableBlendingState)
+	{
+		alphaDisableBlendingState->Release();
+		alphaDisableBlendingState = nullptr;
+	}
+
+	if (depthDisabledStencilState)
+	{
+		depthDisabledStencilState->Release();
+		depthDisabledStencilState = nullptr;
+	}
+
+	if (rasterState)
+	{
+		rasterState->Release();
+		rasterState = nullptr;
+	}
+
+	if (depthStencilView)
+	{
+		depthStencilView->Release();
+		depthStencilView = nullptr;
+	}
+
+	if (depthStencilState)
+	{
+		depthStencilState->Release();
+		depthStencilState = nullptr;
+	}
+
+	if (depthStencilBuffer)
+	{
+		depthStencilBuffer->Release();
+		depthStencilBuffer = nullptr;
+	}
+
+	if (renderTargetView)
+	{
+		renderTargetView->Release();
+		renderTargetView = nullptr;
+	}
+
+	if (deviceContext)
+	{
+		deviceContext->Release();
+		deviceContext = nullptr;
+	}
+
+	if (device)
+	{
+		device->Release();
+		device = nullptr;
+	}
+
+	if (swapChain)
+	{
+		swapChain->Release();
+		swapChain = nullptr;
+	}
 }
 
 bool D3DClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
@@ -255,80 +322,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, HWND hwnd, bool ful
 	}
 
 	return true;
-}
-
-
-void D3DClass::Shutdown()
-{
-
-	if (swapChain)
-		swapChain->SetFullscreenState(false, NULL);
-
-	if (alphaEnableBlendingState)
-	{
-		alphaEnableBlendingState->Release();
-		alphaEnableBlendingState = 0;
-	}
-
-	if (alphaDisableBlendingState)
-	{
-		alphaDisableBlendingState->Release();
-		alphaDisableBlendingState = 0;
-	}
-
-	if (depthDisabledStencilState)
-	{
-		depthDisabledStencilState->Release();
-		depthDisabledStencilState = 0;
-	}
-
-	if (rasterState)
-	{
-		rasterState->Release();
-		rasterState = 0;
-	}
-
-	if (depthStencilView)
-	{
-		depthStencilView->Release();
-		depthStencilView = 0;
-	}
-
-	if (depthStencilState)
-	{
-		depthStencilState->Release();
-		depthStencilState = 0;
-	}
-
-	if (depthStencilBuffer)
-	{
-		depthStencilBuffer->Release();
-		depthStencilBuffer = 0;
-	}
-
-	if (renderTargetView)
-	{
-		renderTargetView->Release();
-		renderTargetView = 0;
-	}
-
-	if (deviceContext)
-	{
-		deviceContext->Release();
-		deviceContext = 0;
-	}
-
-	if (device)
-	{
-		device->Release();
-		device = 0;
-	}
-
-	if (swapChain)
-	{
-		swapChain->Release();
-		swapChain = 0;
-	}
 }
 
 void D3DClass::BeginScene(float red, float green, float blue, float alpha)

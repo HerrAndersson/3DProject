@@ -8,6 +8,13 @@ Application::Application()
 
 Application::~Application()
 {
+
+	// Release the Direct3D object.
+	if (Direct3D)
+	{
+		delete Direct3D;
+		Direct3D = nullptr;
+	}
 }
 
 bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
@@ -36,19 +43,6 @@ bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
 	//If it reaches this point it means no errors happened
 	return true;
 }
-
-
-void Application::Shutdown()
-{
-	// Release the Direct3D object.
-	if (Direct3D)
-	{
-		Direct3D->Shutdown();
-		delete Direct3D;
-		Direct3D = nullptr;
-	}
-}
-
 
 bool Application::Update()
 {

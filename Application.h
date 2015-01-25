@@ -31,7 +31,6 @@ public:
 	~Application();
 
 	bool Initialize(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight);
-	void Shutdown();
 	bool Update();
 
 };

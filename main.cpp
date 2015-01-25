@@ -20,7 +20,6 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 		system->Run();
 
 	// Shutdown and release the system object.
-	system->Shutdown();
 	delete system;
 	system = nullptr;
 
