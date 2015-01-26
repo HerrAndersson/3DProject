@@ -17,7 +17,7 @@ private:
 	vector<XMFLOAT3> vertices;
 	vector<XMFLOAT2> uvs;
 	vector<XMFLOAT3> normals;
-	vector<Vertex> faces;
+	vector<VertexPosUV> faces;
 
 public:
 

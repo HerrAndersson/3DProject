@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "D3DClass.h"
 #include "ShaderBase.h"
-#include "Vertex.h"
+#include "VertexTypes.h"
 
 class Application
 {

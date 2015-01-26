@@ -95,7 +95,7 @@
     <ClInclude Include="ShaderBase.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
-    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\teapot.obj">

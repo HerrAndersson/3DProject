@@ -37,7 +37,7 @@ Object::Object(std::string filename, string textureFilename, ID3D11Device* devic
 			{
 				int index;
 				file >> index;
-				Vertex tempVertex;
+				VertexPosUV tempVertex;
 
 				tempVertex.pos = vertices[index - 1];
 
@@ -73,7 +73,7 @@ Object::Object(std::string filename, string textureFilename, ID3D11Device* devic
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(Vertex) * faces.size();
+	bufferDesc.ByteWidth = sizeof(VertexPosUV) * faces.size();
 
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = &faces[0];

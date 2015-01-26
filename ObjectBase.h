@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d11.h>
 #include <DirectXMath.h>
-#include "Vertex.h"
+#include "VertexTypes.h"
 #include <string>
 
 using namespace std;
