@@ -49,5 +49,9 @@ public:
 	void GetWorldMatrix(XMMATRIX& worldMatrix);
 	void GetOrthoMatrix(XMMATRIX& orthoMatrix);
 
+	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
+	void* operator new(size_t i);
+	void operator delete(void* p);
+
 };
 

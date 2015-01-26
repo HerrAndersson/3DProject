@@ -4,16 +4,22 @@
 Application::Application()
 {
 	Direct3D = nullptr;
+	defaultShader = nullptr;
 }
 
 Application::~Application()
 {
-
 	// Release the Direct3D object.
 	if (Direct3D)
 	{
 		delete Direct3D;
 		Direct3D = nullptr;
+	}
+
+	if (defaultShader)
+	{
+		delete defaultShader;
+		defaultShader = nullptr;
 	}
 }
 
@@ -23,23 +29,24 @@ bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
 	float cameraX, cameraY, cameraZ;
 	XMMATRIX baseViewMatrix;
 
-	// Create the Direct3D object.
+	//Create the Direct3D object.
 	Direct3D = new D3DClass();
 	if (!Direct3D)
 	{
 		return false;
 	}
 
-	// Initialize the Direct3D object.
-	result = Direct3D->Initialize(screenWidth, screenHeight, hwnd, false, 20, 0.5);
+	//Initialize the Direct3D object.
+	result = Direct3D->Initialize(screenWidth, screenHeight, hwnd, false, 1000, 0.5);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize DirectX 11.", L"Error", MB_OK);
 		return false;
 	}
 
-	CreateShaders();
+	CreateShaders(hwnd);
 	CreateTriangleData();
+
 	//If it reaches this point it means no errors happened
 	return true;
 }
@@ -110,24 +117,13 @@ bool Application::RenderGraphics()
 
 	// Render the terrain using the terrain shader.
 	//result = TerrainShader->Render(Direct3D->GetDeviceContext(), Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-	//	Light->GetAmbientColor(), Light->GetDiffuseColor(), m_Light->GetDirection(), Terrain->GetTexture());
+	//	Light->GetAmbientColor(), Light->GetDiffuseColor(), Light->GetDirection(), Terrain->GetTexture());
 	if (!result)
 	{
 		return false;
 	}
 
-	Direct3D->GetDeviceContext()->VSSetShader(defaultVertexShader, nullptr, 0);
-	Direct3D->GetDeviceContext()->HSSetShader(nullptr, nullptr, 0);
-	Direct3D->GetDeviceContext()->DSSetShader(nullptr, nullptr, 0);
-	Direct3D->GetDeviceContext()->GSSetShader(nullptr, nullptr, 0);
-	Direct3D->GetDeviceContext()->PSSetShader(defaultPixelShader, nullptr, 0);
-
-	UINT32 vertexSize = sizeof(float) * 6;
-	UINT32 offset = 0;
-	Direct3D->GetDeviceContext()->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
-	Direct3D->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	Direct3D->GetDeviceContext()->IASetInputLayout(defaultVertexLayout);
-
+	defaultShader->UseShader(Direct3D->GetDeviceContext(), vertexBuffer);
 	Direct3D->GetDeviceContext()->Draw(100, 0);
 
 	Direct3D->EndScene();
@@ -167,24 +163,23 @@ void Application::CreateTriangleData()
 }
 
 
-void Application::CreateShaders()
+bool Application::CreateShaders(HWND hwnd)
 {
-	//create vertex shader
-	ID3DBlob* pVS = nullptr;
-	D3DCompileFromFile(L"assets/shaders/VertexShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, NULL);
-	Direct3D->GetDevice()->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &defaultVertexShader);
+	bool result;
+	//Create Default shader object.
+	defaultShader = new ShaderBase();
+	if (!defaultShader)
+	{
+		return false;
+	}
 
-	//create input layout (verified using vertex shader)
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	Direct3D->GetDevice()->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &defaultVertexLayout);
-	pVS->Release();
+	//Initialize the Default shader object.
+	result = defaultShader->Initialize(Direct3D->GetDevice(), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl", hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Default shader.", L"Error", MB_OK);
+		return false;
+	}
 
-	//create pixel shader
-	ID3DBlob* pPS = nullptr;
-	D3DCompileFromFile(L"assets/shaders/PixelShader.hlsl", NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, NULL);
-	Direct3D->GetDevice()->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &defaultPixelShader);
-	pPS->Release();
+	return true;
 }

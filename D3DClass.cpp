@@ -373,3 +373,13 @@ void D3DClass::GetOrthoMatrix(XMMATRIX& orthoMatrix)
 	orthoMatrix = this->orthoMatrix;
 }
 
+void* D3DClass::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void D3DClass::operator delete(void* p)
+{
+	_mm_free(p);
+}
+
