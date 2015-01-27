@@ -11,7 +11,6 @@ struct VertexPosUV
 
 struct VertexPosCol
 {
-	XMVECTOR position;
-	XMVECTOR color;
+	XMFLOAT3 position;
+	XMFLOAT4 color;
 };
-

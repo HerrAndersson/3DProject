@@ -18,7 +18,7 @@ ShaderBase::~ShaderBase()
 	pixelShader = nullptr;
 }
 
-bool ShaderBase::Initialize(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFilename, HWND hwnd)
+bool ShaderBase::Initialize(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	//Create vertex shader.
 	HRESULT hr;
@@ -39,13 +39,7 @@ bool ShaderBase::Initialize(ID3D11Device* device, WCHAR* vsFilename, WCHAR* psFi
 
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &vertexShader);
 
-	//Create input layout (verified using vertex shader). 
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
-	{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-	device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &vertexLayout);
+	device->CreateInputLayout(inputDesc, idSize, pVS->GetBufferPointer(), pVS->GetBufferSize(), &vertexLayout);
 	pVS->Release();
 
 	//Create pixel shader.

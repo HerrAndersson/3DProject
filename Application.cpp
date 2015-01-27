@@ -173,8 +173,14 @@ bool Application::CreateShaders(HWND hwnd)
 		return false;
 	}
 
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
+	{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
 	//Initialize the Default shader object.
-	result = defaultShader->Initialize(Direct3D->GetDevice(), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl", hwnd);
+	result = defaultShader->Initialize(Direct3D->GetDevice(), hwnd, inputDesc, ARRAYSIZE(inputDesc), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Default shader.", L"Error", MB_OK);
