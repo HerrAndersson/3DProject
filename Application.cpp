@@ -1,5 +1,6 @@
 #include "Application.h"
 
+using namespace DirectX;
 
 Application::Application()
 {

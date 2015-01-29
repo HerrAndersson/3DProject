@@ -7,8 +7,6 @@
 #include <windows.h>
 #include "VertexTypes.h"
 
-using namespace DirectX;
-
 class Terrain
 {
 private:

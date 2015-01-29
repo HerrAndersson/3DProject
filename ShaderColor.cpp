@@ -1,5 +1,6 @@
 #include "ShaderColor.h"
 
+using namespace DirectX;
 
 ShaderColor::ShaderColor() : ShaderBase()
 {

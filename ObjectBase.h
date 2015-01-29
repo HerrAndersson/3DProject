@@ -4,8 +4,6 @@
 #include "VertexTypes.h"
 #include <string>
 
-using namespace std;
-
 class ObjectBase
 {
 protected:
@@ -19,7 +17,7 @@ private:
 
 public:
 
-	ObjectBase(ID3D11Device* device, string textureFilename);
+	ObjectBase(ID3D11Device* device, std::string textureFilename);
 	~ObjectBase();
 
 	void Render(ID3D11DeviceContext* deviceContext);

@@ -1,12 +1,15 @@
 #include "Object.h"
 
-Object::Object(std::string filename, string textureFilename, ID3D11Device* device) : ObjectBase(device, textureFilename)
+using namespace std;
+using namespace DirectX;
+
+Object::Object(string filename, string textureFilename, ID3D11Device* device) : ObjectBase(device, textureFilename)
 {
-	std::ifstream file(filename);
+	ifstream file(filename);
 
 	while (!file.eof())
 	{
-		std::string command;
+		string command;
 		file >> command;
 		if (command == "v")
 		{

@@ -1,5 +1,7 @@
 #include "ShaderBase.h"
 
+using namespace std;
+
 ShaderBase::ShaderBase()
 {
 	vertexShader = nullptr;

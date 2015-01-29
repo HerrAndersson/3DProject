@@ -1,5 +1,7 @@
 #include "Terrain.h"
 
+using namespace DirectX;
+
 Terrain::Terrain()
 {
 	indexBuffer = nullptr;

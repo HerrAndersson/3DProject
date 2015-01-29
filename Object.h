@@ -8,20 +8,17 @@
 
 #include "ObjectBase.h"
 
-using namespace std;
-using namespace DirectX;
-
 class Object : public ObjectBase
 {
 private:
-	vector<XMFLOAT3> vertices;
-	vector<XMFLOAT2> uvs;
-	vector<XMFLOAT3> normals;
-	vector<VertexPosUV> faces;
+	std::vector<DirectX::XMFLOAT3> vertices;
+	std::vector<DirectX::XMFLOAT2> uvs;
+	std::vector<DirectX::XMFLOAT3> normals;
+	std::vector<VertexPosUV> faces;
 
 public:
 
-	Object(std::string modelFilename, string textureFilename, ID3D11Device* device);
+	Object(std::string modelFilename, std::string textureFilename, ID3D11Device* device);
 	virtual ~Object();
 
 };

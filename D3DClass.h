@@ -7,8 +7,6 @@
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 
-using namespace DirectX;
-
 class D3DClass
 {
 
@@ -28,9 +26,9 @@ private:
 	ID3D11BlendState*			alphaEnableBlendingState;
 	ID3D11BlendState*			alphaDisableBlendingState;
 
-	XMMATRIX projectionMatrix;
-	XMMATRIX worldMatrix;
-	XMMATRIX orthoMatrix;
+	DirectX::XMMATRIX projectionMatrix;
+	DirectX::XMMATRIX worldMatrix;
+	DirectX::XMMATRIX orthoMatrix;
 
 public:
 
@@ -45,9 +43,9 @@ public:
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 
-	void GetProjectionMatrix(XMMATRIX& projectionMatrix);
-	void GetWorldMatrix(XMMATRIX& worldMatrix);
-	void GetOrthoMatrix(XMMATRIX& orthoMatrix);
+	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
+	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix);
+	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
 
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
 	void* operator new(size_t i);

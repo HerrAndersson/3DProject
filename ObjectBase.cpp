@@ -1,5 +1,6 @@
 #include "ObjectBase.h"
 
+using namespace std;
 
 ObjectBase::ObjectBase(ID3D11Device* device, string textureFilename)
 {

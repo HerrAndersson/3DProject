@@ -7,9 +7,9 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX world;
-		XMMATRIX view;
-		XMMATRIX projection;
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX projection;
 	};
 
 	ID3D11Buffer*				matrixBuffer;
@@ -20,7 +20,7 @@ public:
 	virtual ~ShaderColor();
 
 	virtual bool Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename);
-	virtual void UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projMatrix);
+	virtual void UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projMatrix);
 
 
 };
