@@ -18,7 +18,7 @@ bool ShaderColor::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	if (!this->ShaderBase::Initialize(device, hwnd, inputDesc, ARRAYSIZE(inputDesc), vsFilename, psFilename))
+	if (!((ShaderBase*)this)->Initialize(device, hwnd, inputDesc, ARRAYSIZE(inputDesc), vsFilename, psFilename))
 	{
 		return false;
 	}

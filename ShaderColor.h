@@ -1,5 +1,6 @@
 #pragma once
 #include "ShaderBase.h"
+
 class ShaderColor : public ShaderBase
 {
 

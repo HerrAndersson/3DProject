@@ -6,38 +6,56 @@ Application::Application()
 {
 	Direct3D = nullptr;
 	defaultShader = nullptr;
+	camera = nullptr;
+	terrain = nullptr;
 }
 
 Application::~Application()
 {
-	// Release the Direct3D object.
+	//OBJECTS
 	if (Direct3D)
 	{
 		delete Direct3D;
 		Direct3D = nullptr;
 	}
 
+	if (camera)
+	{
+		delete camera;
+		camera = nullptr;
+	}
+
+	if (terrain)
+	{
+		delete terrain;
+		terrain = nullptr;
+	}
+
+	//SHADERS
 	if (defaultShader)
 	{
 		delete defaultShader;
 		defaultShader = nullptr;
+	}
+
+	if (terrainShader)
+	{
+		delete terrainShader;
+		terrainShader = nullptr;
 	}
 }
 
 bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	bool result = true;
-	float cameraX, cameraY, cameraZ;
 	XMMATRIX baseViewMatrix;
 
-	//Create the Direct3D object.
 	Direct3D = new D3DClass();
 	if (!Direct3D)
 	{
 		return false;
 	}
 
-	//Initialize the Direct3D object.
 	result = Direct3D->Initialize(screenWidth, screenHeight, hwnd, false, 1000, 0.5);
 	if (!result)
 	{
@@ -45,10 +63,35 @@ bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, in
 		return false;
 	}
 
+	camera = new Camera();
+	if (!camera)
+	{
+		return false;
+	}
+
+	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -1.0f));
+	camera->Update();
+	camera->GetViewMatrix(baseViewMatrix);
+	camera->SetPosition(XMFLOAT3(0.0f, 20.0f, -10.0f));
+	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	terrain = new Terrain();
+	if (!terrain)
+	{
+		return false;
+	}
+
+	result = terrain->Initialize(Direct3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Terrain.", L"Error", MB_OK);
+		return false;
+	}
+
 	CreateShaders(hwnd);
 	CreateTriangleData();
 
-	//If it reaches this point it means no errors happened
+	//If it reaches this point it means no errors were encountered
 	return true;
 }
 
@@ -106,19 +149,19 @@ bool Application::RenderGraphics()
 
 	Direct3D->BeginScene(0.1f, 0.2f, 0.4f, 1.0f);
 
-	//Camera->Update();
-	//Camera->GetViewMatrix(viewMatrix);
+	camera->Update();
+	camera->GetViewMatrix(viewMatrix);
 
 	Direct3D->GetWorldMatrix(worldMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
 
-	// Render the terrain buffers.
-	//Terrain->Render(Direct3D->GetDeviceContext());
+	terrain->Render(Direct3D->GetDeviceContext());
 
-	// Render the terrain using the terrain shader.
-	//result = TerrainShader->Render(Direct3D->GetDeviceContext(), Terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-	//	Light->GetAmbientColor(), Light->GetDiffuseColor(), Light->GetDirection(), Terrain->GetTexture());
+	//// Render the terrain using the terrain shader.
+	//result = terrainShader->UseShader(Direct3D->GetDeviceContext(), terrain->)
+	//result = terrainShader->UseShader(Direct3D->GetDeviceContext(), terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+
 	if (!result)
 	{
 		return false;
@@ -166,7 +209,7 @@ void Application::CreateTriangleData()
 
 bool Application::CreateShaders(HWND hwnd)
 {
-	bool result;
+	bool result = true;
 	//Create Default shader object.
 	defaultShader = new ShaderBase();
 	if (!defaultShader)
@@ -188,5 +231,18 @@ bool Application::CreateShaders(HWND hwnd)
 		return false;
 	}
 
-	return true;
+	terrainShader = new ShaderColor();
+	if (!terrainShader)
+	{
+		return false;
+	}
+
+	result = terrainShader->Initialize(Direct3D->GetDevice(), hwnd, L"vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Terrainshader.", L"Error", MB_OK);
+		return false;
+	}
+
+	return result;
 }
