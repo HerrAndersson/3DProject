@@ -91,7 +91,6 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="float3.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ShaderBase.h" />
