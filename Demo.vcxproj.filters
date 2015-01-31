@@ -105,16 +105,16 @@
     <FxCompile Include="assets\shaders\PixelShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="assets\shaders\VertexShader.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="vsTerrain.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="assets\shaders\ShaderUvPS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="assets\shaders\ShaderUvVS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\VertexShader.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\vsTerrain.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

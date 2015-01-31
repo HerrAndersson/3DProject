@@ -237,7 +237,7 @@ bool Application::CreateShaders(HWND hwnd)
 		return false;
 	}
 
-	result = terrainShader->Initialize(Direct3D->GetDevice(), hwnd, L"vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
+	result = terrainShader->Initialize(Direct3D->GetDevice(), hwnd, L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Terrainshader.", L"Error", MB_OK);
