@@ -16,7 +16,10 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{e85375da-d009-483a-b168-f2db19dcdc08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Objects">
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{70e0961f-83c2-4a57-abfd-87815935529e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models">
       <UniqueIdentifier>{d4e8688f-2c63-4284-a655-26e6cfc6be2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -92,10 +95,10 @@
   </ItemGroup>
   <ItemGroup>
     <Object Include="assets\models\teapot.obj">
-      <Filter>Resource Files\Objects</Filter>
+      <Filter>Resource Files\Models</Filter>
     </Object>
     <Object Include="assets\models\triangle.obj">
-      <Filter>Resource Files\Objects</Filter>
+      <Filter>Resource Files\Models</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
@@ -108,5 +111,16 @@
     <FxCompile Include="vsTerrain.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="assets\shaders\ShaderUvPS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\ShaderUvVS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\textures\triangle.raw">
+      <Filter>Resource Files\Textures</Filter>
+    </None>
   </ItemGroup>
 </Project>
