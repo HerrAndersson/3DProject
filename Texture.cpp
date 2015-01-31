@@ -42,7 +42,7 @@ Texture::Texture(std::string filename, ID3D11Device* device)
 
 		ID3D11Texture2D* pTexture = nullptr;
 		D3D11_SUBRESOURCE_DATA subresourceData;
-		ZeroMemory(&data, sizeof(data));
+		ZeroMemory(&subresourceData, sizeof(subresourceData));
 
 		subresourceData.pSysMem = (void*)&data[0];
 		subresourceData.SysMemPitch = width * 4 * sizeof(char);
