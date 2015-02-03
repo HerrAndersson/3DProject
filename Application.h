@@ -1,5 +1,6 @@
 #pragma once
 #include <windows.h>
+#include <stdexcept>
 #include "D3DClass.h"
 #include "ShaderBase.h"
 #include "VertexTypes.h"
@@ -32,10 +33,9 @@ private:
 	void CreateTriangleData();
 
 public:
-	Application();
+	Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight);
 	~Application();
 
-	bool Initialize(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight);
 	bool Update();
 
 };

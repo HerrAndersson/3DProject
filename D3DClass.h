@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
+#include <stdexcept>
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -32,10 +33,8 @@ private:
 
 public:
 
-	D3DClass();
+	D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
 	~D3DClass();
-
-	bool Initialize(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
 
 	void BeginScene(float red, float green, float blue, float alpha);
 	void EndScene();

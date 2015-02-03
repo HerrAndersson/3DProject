@@ -1,13 +1,22 @@
 #include "Terrain.h"
 
 using namespace DirectX;
+using namespace std;
 
-Terrain::Terrain()
+Terrain::Terrain(ID3D11Device* device)
 {
 	indexBuffer = nullptr;
 	vertexBuffer = nullptr;
 	vertexCount = 0;
 	indexCount = 0;
+
+
+	bool result = true;
+
+	terrainWidth = 100;
+	terrainHeight = 100;
+	// Initialize the vertex and index buffer that holds the geometry for the terrain.
+	InitializeBuffers(device);
 }
 Terrain::~Terrain()
 {
@@ -26,21 +35,6 @@ Terrain::~Terrain()
 	}
 }
 
-bool Terrain::Initialize(ID3D11Device* device)
-{
-	bool result = true;
-
-	terrainWidth = 100;
-	terrainHeight = 100;
-	// Initialize the vertex and index buffer that holds the geometry for the terrain.
-	result = InitializeBuffers(device);
-	if (!result)
-	{
-		return false;
-	}
-
-	return result;
-}
 void Terrain::Render(ID3D11DeviceContext* deviceContext)
 {
 	SetBuffers(deviceContext);
@@ -52,7 +46,7 @@ int Terrain::GetIndexCount()
 	return indexCount;
 }
 
-bool Terrain::InitializeBuffers(ID3D11Device* device)
+void Terrain::InitializeBuffers(ID3D11Device* device)
 {
 	VertexPosCol* vertices = nullptr;
 	unsigned long* indices = nullptr;
@@ -67,16 +61,8 @@ bool Terrain::InitializeBuffers(ID3D11Device* device)
 	indexCount = vertexCount;
 
 	vertices = new VertexPosCol[vertexCount];
-	if (!vertices)
-	{
-		return false;
-	}
 
 	indices = new unsigned long[indexCount];
-	if (!indices)
-	{
-		return false;
-	}
 
 	//Create the terrain data
 	for (int j = 0; j < (terrainHeight - 1); j++)
@@ -176,7 +162,7 @@ bool Terrain::InitializeBuffers(ID3D11Device* device)
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 	if (FAILED(result))
 	{
-		return false;
+		throw runtime_error("Could not create terrain vertex buffer");
 	}
 
 	//Set up the description of the index buffer
@@ -194,17 +180,12 @@ bool Terrain::InitializeBuffers(ID3D11Device* device)
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 	if (FAILED(result))
 	{
-		return false;
+		throw runtime_error("Could not create terrain index buffer");
 	}
 
 	//Release the arrays when the buffers have all data
 	delete[] vertices;
-	vertices = 0;
-
 	delete[] indices;
-	indices = 0;
-
-	return true;
 }
 
 void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)

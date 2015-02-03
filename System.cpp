@@ -10,11 +10,7 @@ System::System(bool fullscreen, bool showCursor)
 	InitializeWindows();
 
 	//Create and initialize the application
-	application = new Application();
-
-	bool result = application->Initialize(hinstance, hwnd, screenWidth, screenHeight);
-	if (!result)
-		throw std::runtime_error("Application init failed");
+	application = new Application(hinstance, hwnd, screenWidth, screenHeight);
 }
 
 

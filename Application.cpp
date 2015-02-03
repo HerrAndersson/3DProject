@@ -1,13 +1,34 @@
 #include "Application.h"
 
 using namespace DirectX;
+using namespace std;
 
-Application::Application()
+Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	Direct3D = nullptr;
 	defaultShader = nullptr;
 	camera = nullptr;
 	terrain = nullptr;
+
+
+
+	bool result = true;
+	XMMATRIX baseViewMatrix;
+
+	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.5);
+
+	camera = new Camera();
+
+	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -1.0f));
+	camera->Update();
+	camera->GetViewMatrix(baseViewMatrix);
+	camera->SetPosition(XMFLOAT3(0.0f, 20.0f, -10.0f));
+	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	terrain = new Terrain(Direct3D->GetDevice());
+
+	CreateShaders(hwnd);
+	CreateTriangleData();
 }
 
 Application::~Application()
@@ -43,56 +64,6 @@ Application::~Application()
 		delete terrainShader;
 		terrainShader = nullptr;
 	}
-}
-
-bool Application::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
-{
-	bool result = true;
-	XMMATRIX baseViewMatrix;
-
-	Direct3D = new D3DClass();
-	if (!Direct3D)
-	{
-		return false;
-	}
-
-	result = Direct3D->Initialize(screenWidth, screenHeight, hwnd, false, 1000, 0.5);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize DirectX 11.", L"Error", MB_OK);
-		return false;
-	}
-
-	camera = new Camera();
-	if (!camera)
-	{
-		return false;
-	}
-
-	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -1.0f));
-	camera->Update();
-	camera->GetViewMatrix(baseViewMatrix);
-	camera->SetPosition(XMFLOAT3(0.0f, 20.0f, -10.0f));
-	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	terrain = new Terrain();
-	if (!terrain)
-	{
-		return false;
-	}
-
-	result = terrain->Initialize(Direct3D->GetDevice());
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Terrain.", L"Error", MB_OK);
-		return false;
-	}
-
-	CreateShaders(hwnd);
-	CreateTriangleData();
-
-	//If it reaches this point it means no errors were encountered
-	return true;
 }
 
 bool Application::Update()
@@ -209,10 +180,6 @@ bool Application::CreateShaders(HWND hwnd)
 	bool result = true;
 	//Create Default shader object.
 	defaultShader = new ShaderBase();
-	if (!defaultShader)
-	{
-		return false;
-	}
 
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
 	{
@@ -224,22 +191,14 @@ bool Application::CreateShaders(HWND hwnd)
 	result = defaultShader->Initialize(Direct3D->GetDevice(), hwnd, inputDesc, ARRAYSIZE(inputDesc), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl");
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize Default shader.", L"Error", MB_OK);
-		return false;
+		throw runtime_error("Could not initialize Default shader.");
 	}
 
 	terrainShader = new ShaderColor();
-	if (!terrainShader)
-	{
-		return false;
-	}
 
 	result = terrainShader->Initialize(Direct3D->GetDevice(), hwnd, L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize Terrainshader.", L"Error", MB_OK);
-		return false;
+		throw runtime_error("Could not initialize Terrainshader.");
 	}
-
-	return result;
 }
