@@ -1,7 +1,7 @@
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#pragma once
 
 #include <windows.h>
+#include <stdexcept>
 #include "Application.h"
 
 class System
@@ -21,14 +21,13 @@ private:
 	bool showCursor;
 
 	bool Update();
-	void InitializeWindows(int& screenWidth, int& screenHeight);
+	void InitializeWindows();
 	void ShutdownWindows();
 
 public:
 	System(bool fullscreen = false, bool showCursor = true);
 	~System();
 
-	bool Initialize();
 	void Run();
 
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
@@ -36,5 +35,3 @@ public:
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 static System* applicationHandle = nullptr;
-
-#endif

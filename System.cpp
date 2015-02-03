@@ -1,45 +1,27 @@
 #include "System.h"
 
-
 System::System(bool fullscreen, bool showCursor)
 {
-	application = nullptr;
-
 	screenWidth = 0;
 	screenHeight = 0;
 	this->fullscreen = fullscreen;
 	this->showCursor = showCursor;
+
+	InitializeWindows();
+
+	//Create and initialize the application
+	application = new Application();
+
+	bool result = application->Initialize(hinstance, hwnd, screenWidth, screenHeight);
+	if (!result)
+		throw std::runtime_error("Application init failed");
 }
 
 
 System::~System()
 {
-	if (application)
-	{
-		delete application;
-		application = nullptr;
-	}
+	delete application;
 	ShutdownWindows();
-}
-
-bool System::Initialize()
-{
-	bool result = true;
-
-	InitializeWindows(screenWidth, screenHeight);
-
-	//Create and initialize the application
-	application = new Application();
-
-	if (!application)
-		return false;
-
-	result = application->Initialize(hinstance, hwnd, screenWidth, screenHeight);
-
-	if (!result)
-		return false;
-
-	return result;
 }
 
 void System::Run()
@@ -92,7 +74,7 @@ LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPA
 }
 
 
-void System::InitializeWindows(int& screenWidth, int& screenHeight)
+void System::InitializeWindows()
 {
 	WNDCLASSEX wc;
 	DEVMODE dmScreenSettings;
