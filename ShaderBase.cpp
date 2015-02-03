@@ -75,7 +75,9 @@ void ShaderBase::UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* ver
 	UINT32 vertexSize = sizeof(float) * 6;
 	UINT32 offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	if (vertexBuffer != nullptr)
+		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->IASetInputLayout(vertexLayout);
 	 

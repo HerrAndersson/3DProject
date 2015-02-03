@@ -156,11 +156,8 @@ bool Application::RenderGraphics()
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
 
+	terrainShader->UseShader(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	terrain->Render(Direct3D->GetDeviceContext());
-
-	//// Render the terrain using the terrain shader.
-	//result = terrainShader->UseShader(Direct3D->GetDeviceContext(), terrain->)
-	//result = terrainShader->UseShader(Direct3D->GetDeviceContext(), terrain->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
 
 	if (!result)
 	{
@@ -220,7 +217,7 @@ bool Application::CreateShaders(HWND hwnd)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
 	{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	//Initialize the Default shader object.

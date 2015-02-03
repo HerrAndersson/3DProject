@@ -4,6 +4,7 @@ using namespace DirectX;
 
 ShaderColor::ShaderColor() : ShaderBase()
 {
+
 }
 
 ShaderColor::~ShaderColor()
@@ -15,7 +16,7 @@ bool ShaderColor::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
 	{
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	if (!((ShaderBase*)this)->Initialize(device, hwnd, inputDesc, ARRAYSIZE(inputDesc), vsFilename, psFilename))
@@ -44,7 +45,7 @@ bool ShaderColor::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 	return true;
 }
 
-void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projMatrix)
+void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projMatrix)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;

@@ -213,6 +213,7 @@ void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//deviceContext->IASetInputLayout(vertexLayout);
 }
