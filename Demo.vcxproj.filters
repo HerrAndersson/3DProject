@@ -63,6 +63,9 @@
     <ClCompile Include="Console.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
+    <ClCompile Include="Heightmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Console.h">
       <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Heightmap.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

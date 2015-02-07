@@ -16,10 +16,10 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.1f);
 	camera = new Camera();
 
-	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -1.0f));
+	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -0.5f));
 	camera->Update();
 	camera->GetViewMatrix(baseViewMatrix);
-	camera->SetPosition(XMFLOAT3(50.0f, 20.0f, -7.0f));
+	camera->SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	terrain = new Terrain(Direct3D->GetDevice());
@@ -86,6 +86,8 @@ bool Application::Update()
 	// Do the frame input processing.
 	//result = HandleInput(Timer->GetTime());
 
+	camera->Update();
+
 	// Render the graphics.
 	result = RenderGraphics();
 	if (!result)
@@ -111,7 +113,6 @@ bool Application::RenderGraphics()
 
 	Direct3D->BeginScene(0.1f, 0.2f, 0.4f, 0.1f);
 
-	camera->Update();
 	camera->GetViewMatrix(viewMatrix);
 	Direct3D->GetWorldMatrix(worldMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
@@ -119,8 +120,6 @@ bool Application::RenderGraphics()
 
 	terrainShader->UseShader(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	terrain->Render(Direct3D->GetDeviceContext());
-
-	cout << camera->GetPosition() << endl;
 
 	Direct3D->EndScene();
 

@@ -81,6 +81,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3DClass.cpp" />
+    <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DClass.h" />
+    <ClInclude Include="Heightmap.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ShaderBase.h" />

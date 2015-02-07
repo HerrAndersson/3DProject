@@ -183,7 +183,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	deviceContext->RSSetViewports(1, &viewport);
 
 	// Create the matrices for 3D rendering.
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI / 4.0f, (float)screenWidth / (float)screenHeight, screenNear, screenDepth);
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI * 0.4f, (float)screenWidth / (float)screenHeight, screenNear, screenDepth);
 	worldMatrix = XMMatrixIdentity();
 
 	// Create an orthographic projection matrix for 2D rendering.

@@ -46,6 +46,11 @@ int Terrain::GetIndexCount()
 	return indexCount;
 }
 
+int Terrain::GetY(int x, int z)
+{
+	return 0;
+}
+
 void Terrain::InitializeBuffers(ID3D11Device* device)
 {
 	VertexPosCol* vertices = nullptr;
@@ -65,16 +70,16 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	indices = new unsigned long[indexCount];
 
 	//Create the terrain data
-	for (int j = 0; j < (terrainHeight - 1); j++)
+	for (int j = -terrainHeight / 2; j < (terrainHeight - 1) - terrainHeight / 2; j++)
 	{
-		for (int i = 0; i < (terrainWidth - 1); i++)
+		for (int i = -terrainWidth / 2; i < (terrainWidth - 1) - terrainWidth / 2; i++)
 		{
 			// LINE 1
 			// Upper left.
 			positionX = (float)i;
 			positionZ = (float)(j + 1);
 
-			vertices[index].position = XMFLOAT3(positionX, 0.0f, positionZ);
+			vertices[index].position = XMFLOAT3(positionX, 5.0f, positionZ);
 			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 			indices[index] = index;
 			index++;

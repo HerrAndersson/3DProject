@@ -47,6 +47,7 @@ void Camera::Update()
 	up = XMVector3TransformCoord(up, rotationMatrix);
 
 	lookAt = position + lookAt;
+
 	viewMatrix = XMMatrixLookAtLH(position, lookAt, up);
 }
 

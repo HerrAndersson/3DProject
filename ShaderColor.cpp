@@ -35,10 +35,11 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	deviceContext->GSSetShader(nullptr, nullptr, 0);
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
 
+	XMMATRIX wvp = worldMatrix * viewMatrix * projMatrix;
+	wvp = XMMatrixTranspose(wvp);
 	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
 	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
 	XMMATRIX pm = XMMatrixTranspose(projMatrix);
-	XMMATRIX wvp = XMMatrixTranspose(worldMatrix * (viewMatrix * projMatrix));
 
 	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
@@ -54,6 +55,5 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	int bufferNumber = 0;
 
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
-	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->IASetInputLayout(vertexLayout);
 }
