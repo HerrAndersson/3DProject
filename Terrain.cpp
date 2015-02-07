@@ -38,7 +38,7 @@ Terrain::~Terrain()
 void Terrain::Render(ID3D11DeviceContext* deviceContext)
 {
 	SetBuffers(deviceContext);
-	deviceContext->Draw(vertexCount, 0);
+	deviceContext->DrawIndexed(vertexCount, 0,0);
 }
 
 int Terrain::GetIndexCount()
@@ -193,8 +193,10 @@ void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)
 	UINT32 vertexSize = sizeof(VertexPosCol);
 	UINT32 offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+
+	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//deviceContext->IASetInputLayout(vertexLayout);
 }

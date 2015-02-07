@@ -1,4 +1,5 @@
 #include "Application.h"
+#include <iostream>
 
 using namespace DirectX;
 using namespace std;
@@ -10,25 +11,20 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera = nullptr;
 	terrain = nullptr;
 
-
-
-	bool result = true;
 	XMMATRIX baseViewMatrix;
 
-	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.5);
-
+	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.1f);
 	camera = new Camera();
 
 	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -1.0f));
 	camera->Update();
 	camera->GetViewMatrix(baseViewMatrix);
-	camera->SetPosition(XMFLOAT3(0.0f, 20.0f, -10.0f));
+	camera->SetPosition(XMFLOAT3(50.0f, 20.0f, -7.0f));
 	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	terrain = new Terrain(Direct3D->GetDevice());
 
 	CreateShaders(hwnd);
-	CreateTriangleData();
 }
 
 Application::~Application()
@@ -90,11 +86,6 @@ bool Application::Update()
 	// Do the frame input processing.
 	//result = HandleInput(Timer->GetTime());
 
-	if (!result)
-	{
-		return false;
-	}
-
 	// Render the graphics.
 	result = RenderGraphics();
 	if (!result)
@@ -118,11 +109,10 @@ bool Application::RenderGraphics()
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool result = true;
 
-	Direct3D->BeginScene(0.1f, 0.2f, 0.4f, 1.0f);
+	Direct3D->BeginScene(0.1f, 0.2f, 0.4f, 0.1f);
 
 	camera->Update();
 	camera->GetViewMatrix(viewMatrix);
-
 	Direct3D->GetWorldMatrix(worldMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
@@ -130,75 +120,41 @@ bool Application::RenderGraphics()
 	terrainShader->UseShader(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
 	terrain->Render(Direct3D->GetDeviceContext());
 
-	if (!result)
-	{
-		return false;
-	}
-
-	defaultShader->UseShader(Direct3D->GetDeviceContext(), vertexBuffer);
-	Direct3D->GetDeviceContext()->Draw(100, 0);
+	cout << camera->GetPosition() << endl;
 
 	Direct3D->EndScene();
 
 	return result;
 }
 
-void Application::CreateTriangleData()
-{
-	struct TriangleVertex
-	{
-		float x, y, z;
-		float r, g, b;
-	}
-	triangleVertices[6] =
-	{
-		0.0f, 0.5f, 0.0f,	//v0 pos
-		1.0f, 0.0f, 0.0f,	//v0 color
-
-		0.5f, -0.5f, 0.0f,	//v1
-		0.0f, 1.0f, 0.0f,	//v1 color
-
-		-0.5f, -0.5f, 0.0f, //v2
-		0.0f, 0.0f, 1.0f,	//v2 color
-
-	};
-
-	D3D11_BUFFER_DESC bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(triangleVertices);
-
-	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = triangleVertices;
-	Direct3D->GetDevice()->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
-}
-
-
 bool Application::CreateShaders(HWND hwnd)
 {
 	bool result = true;
-	//Create Default shader object.
-	defaultShader = new ShaderBase();
 
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
+	D3D11_INPUT_ELEMENT_DESC defaultInputDesc[] =
 	{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	//Initialize the Default shader object.
-	result = defaultShader->Initialize(Direct3D->GetDevice(), hwnd, inputDesc, ARRAYSIZE(inputDesc), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl");
-	if (!result)
+	//Create Default shader object.
+	defaultShader = new ShaderBase(Direct3D->GetDevice(), hwnd, defaultInputDesc, ARRAYSIZE(defaultInputDesc), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl");
+	if (!defaultShader)
 	{
 		throw runtime_error("Could not initialize Default shader.");
 	}
 
-	terrainShader = new ShaderColor();
+	D3D11_INPUT_ELEMENT_DESC colorInputDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
 
-	result = terrainShader->Initialize(Direct3D->GetDevice(), hwnd, L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
-	if (!result)
+	terrainShader = new ShaderColor(Direct3D->GetDevice(), hwnd, colorInputDesc, ARRAYSIZE(colorInputDesc), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
+	if (!terrainShader)
 	{
 		throw runtime_error("Could not initialize Terrainshader.");
 	}
+
+	return result;
 }

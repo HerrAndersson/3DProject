@@ -2,26 +2,12 @@
 
 using namespace std;
 
-ShaderBase::ShaderBase()
+ShaderBase::ShaderBase(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename)
 {
 	vertexShader = nullptr;
 	vertexLayout = nullptr;
 	pixelShader = nullptr;
-}
 
-ShaderBase::~ShaderBase()
-{
-	vertexShader->Release();
-	vertexLayout->Release();
-	pixelShader->Release();
-
-	vertexShader = nullptr;
-	vertexLayout = nullptr;
-	pixelShader = nullptr;
-}
-
-bool ShaderBase::Initialize(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename)
-{
 	//Create vertex shader.
 	HRESULT hr;
 	ID3DBlob* errorMessage = nullptr;
@@ -35,8 +21,6 @@ bool ShaderBase::Initialize(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT
 			OutputErrorMessage(errorMessage, hwnd);
 		else
 			MessageBox(hwnd, vsFilename, L"Missing shader file", MB_OK);
-
-		return false;
 	}
 
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &vertexShader);
@@ -54,14 +38,21 @@ bool ShaderBase::Initialize(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT
 			OutputErrorMessage(errorMessage, hwnd);
 		else
 			MessageBox(hwnd, psFilename, L"Missing shader file", MB_OK);
-
-		return false;
 	}
 
 	device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &pixelShader);
 	pPS->Release();
+}
 
-	return true;
+ShaderBase::~ShaderBase()
+{
+	vertexShader->Release();
+	vertexLayout->Release();
+	pixelShader->Release();
+
+	vertexShader = nullptr;
+	vertexLayout = nullptr;
+	pixelShader = nullptr;
 }
 
 void ShaderBase::UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer)

@@ -21,10 +21,9 @@ private:
 
 public:
 
-	ShaderBase();
+	ShaderBase(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename);
 	virtual ~ShaderBase();
 
-	virtual bool Initialize(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename);
 	//If vertexBuffer = nullptr, then the vertex buffer is set from elsewhere, ex. in the object itself
 	virtual void UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer = nullptr);
 

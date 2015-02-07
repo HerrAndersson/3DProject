@@ -2,28 +2,9 @@
 
 using namespace DirectX;
 
-ShaderColor::ShaderColor() : ShaderBase()
+ShaderColor::ShaderColor(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename) 
+	: ShaderBase(device, hwnd, inputDesc, idSize, vsFilename, psFilename)
 {
-
-}
-
-ShaderColor::~ShaderColor()
-{
-}
-
-bool ShaderColor::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename, WCHAR* psFilename)
-{
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] = 
-	{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	if (!((ShaderBase*)this)->Initialize(device, hwnd, inputDesc, ARRAYSIZE(inputDesc), vsFilename, psFilename))
-	{
-		return false;
-	}
-
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	HRESULT hr;
 
@@ -37,42 +18,42 @@ bool ShaderColor::Initialize(ID3D11Device* device, HWND hwnd, WCHAR* vsFilename,
 
 	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
 	hr = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
-	if (FAILED(hr))
-	{
-		return false;
-	}
+}
 
-	return true;
+ShaderColor::~ShaderColor()
+{
 }
 
 void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projMatrix)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixBuffer* matrixDataBuffer;
-	unsigned int bufferNumber;
-
-	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
-	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
-	XMMATRIX pm = XMMatrixTranspose(projMatrix);
-
-	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
-
-	//Copy the matrices into the constant buffer.
-	matrixDataBuffer->world = wm;
-	matrixDataBuffer->view = vm;
-	matrixDataBuffer->projection = pm;
-
-	deviceContext->Unmap(matrixBuffer, 0);
-
-	bufferNumber = 0;
-
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 
 	deviceContext->VSSetShader(vertexShader, nullptr, 0);
 	deviceContext->HSSetShader(nullptr, nullptr, 0);
 	deviceContext->DSSetShader(nullptr, nullptr, 0);
 	deviceContext->GSSetShader(nullptr, nullptr, 0);
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
+
+	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
+	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
+	XMMATRIX pm = XMMatrixTranspose(projMatrix);
+	XMMATRIX wvp = XMMatrixTranspose(worldMatrix * (viewMatrix * projMatrix));
+
+	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
+
+	//Copy the matrices into the constant buffer.
+	matrixDataBuffer->world = wm;
+	matrixDataBuffer->view = vm;
+	matrixDataBuffer->projection = pm;
+	matrixDataBuffer->wvp = wvp;
+
+	deviceContext->Unmap(matrixBuffer, 0);
+
+	int bufferNumber = 0;
+
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
+	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetInputLayout(vertexLayout);
 }

@@ -24,7 +24,7 @@ VS_OUT VS_main(VS_IN input)
 
 	float4 temp = float4(input.Pos, 1);
 
-		output.Pos = mul(temp, worldMatrix);
+	output.Pos = mul(temp, worldMatrix);
 	output.Pos = mul(output.Pos, viewMatrix);
 	output.Pos = mul(output.Pos, projectionMatrix);
 
