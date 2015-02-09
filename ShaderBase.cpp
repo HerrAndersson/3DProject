@@ -29,15 +29,14 @@ ShaderBase::~ShaderBase()
 		domainShader->Release();
 }
 
-void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, string vertexShaderFilename, string pixelShaderFilename, D3D11_INPUT_ELEMENT_DESC* inputDesc, unsigned int inputDescSize)
+void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename, D3D11_INPUT_ELEMENT_DESC* inputDesc, unsigned int inputDescSize)
 {
 	HRESULT hr;
 	ID3DBlob* errorMessage = nullptr;
 
 	//Create vertex shader
-	LPCWSTR vsFilename = wstring(vertexShaderFilename.begin(), vertexShaderFilename.end()).c_str();
 	ID3DBlob* pVS = nullptr;
-	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
+	hr = D3DCompileFromFile(vertexShaderFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
 
 	if (FAILED(hr))
 	{
@@ -47,7 +46,7 @@ void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, string vertexShade
 		}
 		else
 		{
-			throw runtime_error("No such file: " + vertexShaderFilename);
+			throw runtime_error("No such file");
 		}
 	}
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &vertexShader);
@@ -57,9 +56,8 @@ void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, string vertexShade
 	pVS->Release();
 
 	//Create pixel shader.
-	LPCWSTR psFilename = wstring(pixelShaderFilename.begin(), pixelShaderFilename.end()).c_str();
 	ID3DBlob* pPS = nullptr;
-	hr = D3DCompileFromFile(psFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, &errorMessage);
+	hr = D3DCompileFromFile(pixelShaderFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, &errorMessage);
 
 	if (FAILED(hr))
 	{
@@ -69,7 +67,7 @@ void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, string vertexShade
 		}
 		else
 		{
-			throw runtime_error("No such file: " + pixelShaderFilename);
+			throw runtime_error("No such file");
 		}
 	}
 

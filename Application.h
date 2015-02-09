@@ -29,7 +29,7 @@ private:
 
 	bool HandleInput(float frameTime);
 	bool RenderGraphics();
-	bool CreateShaders(HWND hwnd);
+	void CreateShaders();
 	void CreateTriangleData();
 
 public:

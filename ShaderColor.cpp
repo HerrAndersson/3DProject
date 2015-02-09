@@ -4,11 +4,8 @@ using namespace DirectX;
 using namespace std;
 
 ShaderColor::ShaderColor(	ID3D11Device* device,
-							string vertexShaderFilename,
-							string pixelShaderFilename, 
-							string hullShaderFilename = "",
-							string geometryShaderFilename = "",
-							string domainShaderFilename = ""
+							LPCWSTR vertexShaderFilename,
+							LPCWSTR pixelShaderFilename
 						):	ShaderBase(device)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
@@ -38,22 +35,25 @@ ShaderColor::~ShaderColor()
 {
 }
 
-void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projMatrix)
+void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext)
 {
-	HRESULT hr;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-
 	deviceContext->VSSetShader(vertexShader, nullptr, 0);
 	deviceContext->HSSetShader(hullShader, nullptr, 0);
 	deviceContext->DSSetShader(domainShader, nullptr, 0);
 	deviceContext->GSSetShader(geometryShader, nullptr, 0);
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
+}
 
-	XMMATRIX wvp = worldMatrix * viewMatrix * projMatrix;
+void ShaderColor::SetMatrices(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+{
+	HRESULT hr;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+
+	XMMATRIX wvp = worldMatrix * viewMatrix * projectionMatrix;
 	wvp = XMMatrixTranspose(wvp);
 	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
 	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
-	XMMATRIX pm = XMMatrixTranspose(projMatrix);
+	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
 
 	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
@@ -71,3 +71,14 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext, XMMATRIX& worldM
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 	deviceContext->IASetInputLayout(inputLayout);
 }
+
+void* ShaderColor::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void ShaderColor::operator delete(void* p)
+{
+	_mm_free(p);
+}
+

@@ -24,7 +24,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	terrain = new Terrain(Direct3D->GetDevice());
 
-	CreateShaders(hwnd);
+	CreateShaders();
 }
 
 Application::~Application()
@@ -118,7 +118,9 @@ bool Application::RenderGraphics()
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
 
-	terrainShader->UseShader(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	terrainShader->UseShader(Direct3D->GetDeviceContext());
+	terrainShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+
 	terrain->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
@@ -126,34 +128,7 @@ bool Application::RenderGraphics()
 	return result;
 }
 
-bool Application::CreateShaders(HWND hwnd)
+void Application::CreateShaders()
 {
-	bool result = true;
-
-	D3D11_INPUT_ELEMENT_DESC defaultInputDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	//Create Default shader object.
-	defaultShader = new ShaderBase(Direct3D->GetDevice(), hwnd, defaultInputDesc, ARRAYSIZE(defaultInputDesc), L"assets/shaders/VertexShader.hlsl", L"assets/shaders/PixelShader.hlsl");
-	if (!defaultShader)
-	{
-		throw runtime_error("Could not initialize Default shader.");
-	}
-
-	D3D11_INPUT_ELEMENT_DESC colorInputDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	terrainShader = new ShaderColor(Direct3D->GetDevice(), hwnd, colorInputDesc, ARRAYSIZE(colorInputDesc), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
-	if (!terrainShader)
-	{
-		throw runtime_error("Could not initialize Terrainshader.");
-	}
-
-	return result;
+	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
 }

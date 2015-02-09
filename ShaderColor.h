@@ -1,8 +1,6 @@
 #pragma once
 #include "ShaderBase.h"
 
-using namespace DirectX;
-
 class ShaderColor : public ShaderBase
 {
 
@@ -10,21 +8,24 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX world;
-		XMMATRIX view;
-		XMMATRIX projection;
-		XMMATRIX wvp;
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX projection;
+		DirectX::XMMATRIX wvp;
 	};
 
 	ID3D11Buffer* matrixBuffer;
 
 public:
 
-	ShaderColor(ID3D11Device* device, string vertexShaderFilename, string pixelShaderFilename, string hullShaderFilename = "", string geometryShaderFilename = "", string domainShaderFilename = "");
+	ShaderColor(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename);
 	virtual ~ShaderColor();
 
-	virtual void UseShader(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projMatrix);
+	virtual void UseShader(ID3D11DeviceContext* deviceContext);
 
-
+	void SetMatrices(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix);
+	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };
 
