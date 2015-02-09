@@ -2,96 +2,77 @@
 
 using namespace std;
 
-ShaderBase::ShaderBase(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename)
+ShaderBase::ShaderBase(ID3D11Device* device)
 {
 	vertexShader = nullptr;
-	vertexLayout = nullptr;
+	hullShader = nullptr;
 	pixelShader = nullptr;
+	geometryShader = nullptr;
+	domainShader = nullptr;
+}
 
-	//Create vertex shader.
+ShaderBase::~ShaderBase()
+{
+	if (vertexShader)
+		vertexShader->Release();
+
+	if (pixelShader)
+		pixelShader->Release();
+
+	if (hullShader)
+		hullShader->Release();
+
+	if (geometryShader)
+		geometryShader->Release();
+
+	if (domainShader)
+		domainShader->Release();
+}
+
+void ShaderBase::CreateMandatoryShaders(ID3D11Device* device, string vertexShaderFilename, string pixelShaderFilename, D3D11_INPUT_ELEMENT_DESC* inputDesc, unsigned int inputDescSize)
+{
 	HRESULT hr;
 	ID3DBlob* errorMessage = nullptr;
 
+	//Create vertex shader
+	LPCWSTR vsFilename = wstring(vertexShaderFilename.begin(), vertexShaderFilename.end()).c_str();
 	ID3DBlob* pVS = nullptr;
 	hr = D3DCompileFromFile(vsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "vs_4_0", NULL, NULL, &pVS, &errorMessage);
 
 	if (FAILED(hr))
 	{
 		if (errorMessage)
-			OutputErrorMessage(errorMessage, hwnd);
+		{
+			throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		}
 		else
-			MessageBox(hwnd, vsFilename, L"Missing shader file", MB_OK);
+		{
+			throw runtime_error("No such file: " + vertexShaderFilename);
+		}
 	}
-
 	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &vertexShader);
 
-	device->CreateInputLayout(inputDesc, idSize, pVS->GetBufferPointer(), pVS->GetBufferSize(), &vertexLayout);
+	//Create vertex layout
+	device->CreateInputLayout(inputDesc, inputDescSize, pVS->GetBufferPointer(), pVS->GetBufferSize(), &inputLayout);
 	pVS->Release();
 
 	//Create pixel shader.
+	LPCWSTR psFilename = wstring(pixelShaderFilename.begin(), pixelShaderFilename.end()).c_str();
 	ID3DBlob* pPS = nullptr;
 	hr = D3DCompileFromFile(psFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "ps_4_0", NULL, NULL, &pPS, &errorMessage);
 
 	if (FAILED(hr))
 	{
 		if (errorMessage)
-			OutputErrorMessage(errorMessage, hwnd);
+		{
+			throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		}
 		else
-			MessageBox(hwnd, psFilename, L"Missing shader file", MB_OK);
+		{
+			throw runtime_error("No such file: " + pixelShaderFilename);
+		}
 	}
 
 	device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &pixelShader);
 	pPS->Release();
 }
-
-ShaderBase::~ShaderBase()
-{
-	vertexShader->Release();
-	vertexLayout->Release();
-	pixelShader->Release();
-
-	vertexShader = nullptr;
-	vertexLayout = nullptr;
-	pixelShader = nullptr;
-}
-
-void ShaderBase::UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer)
-{
-	deviceContext->VSSetShader(vertexShader, nullptr, 0);
-	deviceContext->HSSetShader(nullptr, nullptr, 0);
-	deviceContext->DSSetShader(nullptr, nullptr, 0);
-	deviceContext->GSSetShader(nullptr, nullptr, 0);
-	deviceContext->PSSetShader(pixelShader, nullptr, 0);
-
-	UINT32 vertexSize = sizeof(float) * 6;
-	UINT32 offset = 0;
-
-	if (vertexBuffer != nullptr)
-		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	deviceContext->IASetInputLayout(vertexLayout);
-	 
-}
-
-void ShaderBase::OutputErrorMessage(ID3DBlob* errorMessage, HWND hwnd)
-{
-	ofstream fout;
-
-	char* compileErrors = (char*)(errorMessage->GetBufferPointer());
-	unsigned long bufferSize = errorMessage->GetBufferSize();
-
-	//Open file and write error message to it
-	fout.open("shader-error.txt");
-	for (unsigned long i = 0; i<bufferSize; i++)
-	{
-		fout << compileErrors[i];
-	}
-	fout.close();
-
-	errorMessage->Release();
-	errorMessage = nullptr;
-
-	MessageBox(hwnd, L"Error compiling shader.  Check shader-error.txt for message.", L"Error", MB_OK);
-}
-

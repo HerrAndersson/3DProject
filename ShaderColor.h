@@ -16,11 +16,11 @@ private:
 		XMMATRIX wvp;
 	};
 
-	ID3D11Buffer*				matrixBuffer;
+	ID3D11Buffer* matrixBuffer;
 
 public:
 
-	ShaderColor(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename);
+	ShaderColor(ID3D11Device* device, string vertexShaderFilename, string pixelShaderFilename, string hullShaderFilename = "", string geometryShaderFilename = "", string domainShaderFilename = "");
 	virtual ~ShaderColor();
 
 	virtual void UseShader(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projMatrix);

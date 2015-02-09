@@ -8,25 +8,23 @@
 
 class ShaderBase
 {
-
 protected:
+	ID3D11VertexShader*		vertexShader;
+	ID3D11PixelShader*		pixelShader;
+	ID3D11HullShader*		hullShader;
+	ID3D11GeometryShader*	geometryShader;
+	ID3D11DomainShader*		domainShader;
 
-	ID3D11VertexShader*    vertexShader;
-	ID3D11InputLayout*     vertexLayout;
-	ID3D11PixelShader*     pixelShader;
+	ID3D11InputLayout*		inputLayout;
 
-private:
-
-	virtual void OutputErrorMessage(ID3DBlob* errorMessage, HWND hwnd);
+	unsigned int vertexSize;
 
 public:
 
-	ShaderBase(ID3D11Device* device, HWND hwnd, D3D11_INPUT_ELEMENT_DESC* inputDesc, UINT idSize, WCHAR* vsFilename, WCHAR* psFilename);
+	ShaderBase(ID3D11Device* device);
 	virtual ~ShaderBase();
 
-	//If vertexBuffer = nullptr, then the vertex buffer is set from elsewhere, ex. in the object itself
-	virtual void UseShader(ID3D11DeviceContext* deviceContext, ID3D11Buffer* vertexBuffer = nullptr);
-
-	//bool Update();
+	void CreateMandatoryShaders(ID3D11Device* device, string vertexShaderFilename, string pixelShaderFilename, D3D11_INPUT_ELEMENT_DESC* inputDesc, unsigned int inputDescSize);
+	virtual void UseShader(ID3D11DeviceContext* deviceContext) = 0;
 };
 
