@@ -1,34 +1,40 @@
-cbuffer VS_CONSTANT_BUFFER
+cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
+	matrix wvpMatrix;
 };
 
 struct VS_IN
 {
-	float3 Pos : POSITION;
-	float2 Uvcoord : UVCOORD;
+	float4 position : POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
 };
 
 struct VS_OUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Uvcoord : UVCOORD;
+	float4 position : SV_POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
 };
 
 VS_OUT VS_main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
+	input.position.w = 1.0f;
+	output.position = mul(input.position, wvpMatrix);
+	//output.position = mul(input.position, worldMatrix);
+	//output.position = mul(output.position, viewMatrix);
+	//output.position = mul(output.position, projectionMatrix);
 
-	float4 temp = float4(input.Pos, 1);
+	output.tex = input.tex;
 
-	output.Pos = mul(temp, worldMatrix);
-	output.Pos = mul(output.Pos, viewMatrix);
-	output.Pos = mul(output.Pos, projectionMatrix);
+	output.normal = mul(input.normal, (float3x3)worldMatrix);
+	output.normal = normalize(output.normal);
 
-
-	output.Uvcoord = input.Uvcoord;
+	output.tex = input.tex;
 	return output;
 }

@@ -6,14 +6,16 @@ SamplerState sampAni
 	AddressU = WRAP;
 	AddressU = WRAP;
 };
+
 struct VS_OUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Uvcoord : UVCOORD;
+	float4 position : SV_POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
 };
 
 float4 PS_main(VS_OUT input) : SV_Target
 {
-	float3 s = txDiffuse.Sample(sampAni, input.Uvcoord).xyz;
+	float3 s = txDiffuse.Sample(sampAni, input.tex).xyz;
 	return float4(s, 1.0f);
 }

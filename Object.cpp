@@ -4,7 +4,7 @@
 using namespace std;
 using namespace DirectX;
 
-Object::Object(string filename, string textureFilename, ID3D11Device* device) : ObjectBase(device, textureFilename)
+Object::Object(string filename, string textureFilename, ID3D11Device* device) : ObjectBase()
 {
 	bool result = true;
 	ifstream file(filename);
@@ -71,8 +71,8 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 			else if (command == "mtllib")
 			{
 				//TODO: Assumes object has a texture
-				Texture tempTexture(textureFilename, device);
-				texture = tempTexture.GetTexture();
+				Texture* tempTexture = new Texture(textureFilename, device);
+				texture = tempTexture;
 			}
 		}
 	}
