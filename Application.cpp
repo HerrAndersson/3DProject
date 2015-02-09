@@ -16,13 +16,13 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.1f);
 	camera = new Camera();
 
-	camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -0.5f));
+	//camera->SetPosition(XMFLOAT3(0.0f, 0.0f, -0.5f));
+	camera->SetPosition(XMFLOAT3(50.0f, 5.0f, -10.0f));
 	camera->Update();
 	camera->GetViewMatrix(baseViewMatrix);
-	camera->SetPosition(XMFLOAT3(0.0f, 5.0f, 0.0f));
 	camera->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	terrain = new Terrain(Direct3D->GetDevice());
+	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap01.bmp");
 
 	CreateShaders();
 }
