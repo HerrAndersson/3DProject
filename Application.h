@@ -7,27 +7,30 @@
 #include "Camera.h"
 #include "Terrain.h"
 #include "ShaderColor.h"
+#include "InputHandler.h"
+#include "Timer.h"
+#include "Position.h"
 
 class Application
 {
 
 private:
 
+	const float HEIGHT_FROM_GROUND = 4.0f;
+
 	//OBJECTS
 	D3DClass*		    Direct3D;
 	Camera*	            camera;
 	Terrain*		    terrain;
-	//Position*		    position;
-	//InputHandler*		input;
+	Position*		    position;
+	InputHandler*		input;
+	Timer*				timer;
 
-	//Only used temporary for the triangle
-	ID3D11Buffer*       vertexBuffer;
 
 	//SHADERS
-	ShaderBase*			defaultShader;
 	ShaderColor*        terrainShader;
 
-	bool HandleInput(float frameTime);
+	void HandleMovement(float frameTime);
 	bool RenderGraphics();
 	void CreateShaders();
 	void CreateTriangleData();

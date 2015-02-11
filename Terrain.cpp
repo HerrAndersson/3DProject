@@ -10,7 +10,6 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName)
 	vertexCount = 0;
 	indexCount = 0;
 
-
 	bool result = true;
 
 	terrainWidth = 100;
@@ -18,7 +17,7 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName)
 
 	//Load and normalize heightmap
 	result = LoadHeightMap(heightMapName);
-	NormalizeHeightMap(10.0f);
+	NormalizeHeightMap(15.0f);
 
 	// Initialize the vertex and index buffer that holds the geometry for the terrain.
 	InitializeBuffers(device);
@@ -38,6 +37,12 @@ Terrain::~Terrain()
 		vertexBuffer->Release();
 		vertexBuffer = nullptr;
 	}
+
+	if (heightMap)
+	{
+		delete[] heightMap;
+		heightMap = nullptr;
+	}
 }
 
 void Terrain::Render(ID3D11DeviceContext* deviceContext)
@@ -53,6 +58,11 @@ int Terrain::GetIndexCount()
 
 int Terrain::GetY(int x, int z)
 {
+	//if (xz within bounds of the ground)
+	//	return y
+	//else
+	//return 0
+
 	return 0;
 }
 
@@ -63,10 +73,9 @@ bool Terrain::LoadHeightMap(char* filename)
 	unsigned int count;
 	BITMAPFILEHEADER bitmapFileHeader;
 	BITMAPINFOHEADER bitmapInfoHeader;
-	int imageSize, i, j, k, index;
+	int imageSize;
 	unsigned char* bitmapImage;
 	unsigned char height;
-
 
 	// Open the height map file in binary
 	error = fopen_s(&filePtr, filename, "rb");
@@ -120,12 +129,13 @@ bool Terrain::LoadHeightMap(char* filename)
 	}
 
 	//Initialize the position in the image data buffer
-	k = 0;
+	int k = 0;
+	int index = 0;
 
 	//Read the image data into the height map
-	for (j = 0; j < terrainHeight; j++)
+	for (int j = 0; j < terrainHeight; j++)
 	{
-		for (i = 0; i < terrainWidth; i++)
+		for (int i = 0; i < terrainWidth; i++)
 		{
 			height = bitmapImage[k];
 
@@ -159,34 +169,21 @@ void Terrain::NormalizeHeightMap(float factor)
 
 void Terrain::InitializeBuffers(ID3D11Device* device)
 {
-	VertexPosCol* vertices;
-	unsigned long* indices;
-	int index, i, j;
-	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
 	int index1, index2, index3, index4;
 
-
-	// Calculate the number of vertices in the terrain mesh.
 	vertexCount = (terrainWidth - 1) * (terrainHeight - 1) * 12;
-
-	// Set the index count to the same as the vertex count.
 	indexCount = vertexCount;
 
-	// Create the vertex array.
-	vertices = new VertexPosCol[vertexCount];
+	VertexPosCol* vertices = new VertexPosCol[vertexCount];
+	unsigned long* indices = new unsigned long[indexCount];
 
-	// Create the index array.
-	indices = new unsigned long[indexCount];
-
-	// Initialize the index to the vertex buffer.
-	index = 0;
+	int index = 0;
 
 	// Load the vertex and index array with the terrain data.
-	for (j = 0; j < (terrainHeight - 1); j++)
+	for (int j = 0; j < (terrainHeight - 1); j++)
 	{
-		for (i = 0; i < (terrainWidth - 1); i++)
+		for (int i = 0; i < (terrainWidth - 1); i++)
 		{
 			index1 = (terrainHeight * j) + i;          
 			index2 = (terrainHeight * j) + (i + 1);      
@@ -267,6 +264,9 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 		}
 	}
 
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData;
+
 	// Set up the description of the vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexPosCol) * vertexCount;
@@ -282,6 +282,9 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	// Now create the vertex buffer.
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 
+	D3D11_BUFFER_DESC indexBufferDesc;
+	D3D11_SUBRESOURCE_DATA indexData;
+
 	// Set up the description of the index buffer.
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.ByteWidth = sizeof(unsigned long) * indexCount;
@@ -294,13 +297,12 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
-	// Create the index buffer.
 	result = device->CreateBuffer(&indexBufferDesc, &indexData, &indexBuffer);
 
 	delete[] vertices;
-	vertices = 0;
+	vertices = nullptr;
 	delete[] indices;
-	indices = 0;
+	indices = nullptr;
 }
 
 void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)

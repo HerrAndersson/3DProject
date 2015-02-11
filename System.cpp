@@ -1,9 +1,9 @@
 #include "System.h"
 
-System::System(bool fullscreen, bool showCursor)
+System::System(int screenWidth, int screenHeight, bool fullscreen, bool showCursor)
 {
-	screenWidth = 0;
-	screenHeight = 0;
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
 	this->fullscreen = fullscreen;
 	this->showCursor = showCursor;
 
@@ -23,11 +23,11 @@ System::~System()
 void System::Run()
 {
 	MSG msg;
-	bool done, result;
+	bool result;
+	bool done = false;
 
 	ZeroMemory(&msg, sizeof(MSG));
 
-	done = false;
 	while (!done)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -97,13 +97,13 @@ void System::InitializeWindows()
 
 	RegisterClassEx(&wc);
 
-	//Determine the resolution of the screen.
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
-
 	//Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 	if (fullscreen)
 	{
+		//Determine the resolution of the screen.
+		screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
 		//If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
@@ -119,9 +119,6 @@ void System::InitializeWindows()
 	}
 	else //If windowed
 	{
-		screenWidth = 800;
-		screenHeight = 600;
-
 		//Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
@@ -164,21 +161,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	switch (umessage)
 	{
-		//Check if the window is being destroyed
 		case WM_DESTROY:
 		{
 			PostQuitMessage(0);
 			return 0;
 		}
-
-		//Check if the window is being closed
 		case WM_CLOSE:
 		{
 			PostQuitMessage(0);
 			return 0;
 		}
-
-		//All other messages pass to the message handler in the system class
 		default:
 		{
 			return applicationHandle->MessageHandler(hwnd, umessage, wparam, lparam);

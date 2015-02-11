@@ -25,7 +25,7 @@ private:
 	void ShutdownWindows();
 
 public:
-	System(bool fullscreen = false, bool showCursor = true);
+	System(int screenWidth = 1000, int screenHeight = 800, bool fullscreen = false, bool showCursor = true);
 	~System();
 
 	void Run();

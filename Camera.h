@@ -11,7 +11,8 @@ class Camera
 
 private:
 
-	const float RAD = 0.0174532925f;
+	//Used to convert degrees to radians
+	const float RAD = XM_PI / 180;
 
 	XMFLOAT3 positionXYZ;
 	XMFLOAT3 rotationXYZ;

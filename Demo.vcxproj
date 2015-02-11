@@ -82,14 +82,17 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="Heightmap.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
     <ClCompile Include="ShaderColor.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -97,12 +100,15 @@
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="Heightmap.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectBase.h" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="ShaderBase.h" />
     <ClInclude Include="ShaderColor.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexTypes.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
