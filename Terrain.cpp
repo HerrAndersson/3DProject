@@ -59,13 +59,12 @@ int Terrain::GetIndexCount()
 	return indexCount;
 }
 
-float Terrain::GetY(int x, int z)
+float Terrain::GetY(float x, float z)
 {
 	float returnValue = 0.0f;
-	if (x <= 255 && z <= 255 && x >= 0 && z >= 0)
+	if (x <= terrainWidth - 2 && z <= terrainHeight - 2 && x >= 0 + 1 && z >= 0 + 1)
 	{
-		int index = (terrainHeight * z) + x;
-		returnValue = heightMap[index].y;
+		return 0.0f;
 	}
 	return returnValue;
 }

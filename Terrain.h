@@ -38,7 +38,7 @@ public:
 
 	void Render(ID3D11DeviceContext* deviceContext);
 
-	float GetY(int x, int z);
+	float GetY(float x, float z);
 
 	int GetIndexCount();
 };
