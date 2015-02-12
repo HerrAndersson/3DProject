@@ -10,17 +10,14 @@ protected:
 
 	ID3D11Buffer* vertexBuffer;
 	Texture* texture;
-
-private:
-
 	int vertexCount;
 
 public:
 
 	ObjectBase();
-	~ObjectBase();
+	virtual ~ObjectBase();
 
-	void Render(ID3D11DeviceContext* deviceContext);
+	virtual void Render(ID3D11DeviceContext* deviceContext) = 0;
 
 	ID3D11Buffer* GetVertexBuffer() const;
 	ID3D11ShaderResourceView* GetTexture() const;
