@@ -30,6 +30,7 @@ private:
 
 	bool LoadHeightMap(char* filename);
 	void NormalizeHeightMap(float factor);
+	float GetHeightAt(int x, int z);
 
 public:
 
@@ -39,6 +40,7 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	float GetY(float x, float z);
+	
 
 	int GetIndexCount();
 };

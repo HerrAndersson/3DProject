@@ -62,9 +62,23 @@ int Terrain::GetIndexCount()
 float Terrain::GetY(float x, float z)
 {
 	float returnValue = 0.0f;
-	if (x <= terrainWidth - 2 && z <= terrainHeight - 2 && x >= 0 + 1 && z >= 0 + 1)
+	if (x <= terrainWidth-2 && z <= terrainHeight-2 && x >= 0 + 1 && z >= 0 + 1)
 	{
-		return 0.0f;
+		float x1, x2, z1, z2, q11, q12, q21, q22;
+		x1 = (int)floor(x);
+		x2 = (int)floor(x+1);
+		z1 = (int)floor(z);
+		z2 = (int)floor(z+1);
+
+		q11 = GetHeightAt(x1, z1);
+		q12 = GetHeightAt(x1, z2);
+		q21 = GetHeightAt(x2, z1);
+		q22 = GetHeightAt(x2, z2);
+
+		returnValue = (1.0f / ((x2 - x1)*(z2 - z1)))*(q11*(x2 - x)*(z2 - z) +
+			q21*(x - x1)*(z2 - z) +
+			q12*(x2 - x)*(z - z1) +
+			q22*(x - x1)*(z - z1));
 	}
 	return returnValue;
 }
@@ -168,6 +182,11 @@ void Terrain::NormalizeHeightMap(float factor)
 			heightMap[(terrainHeight * i) + j].y /= factor;
 		}
 	}
+}
+
+float Terrain::GetHeightAt(int x, int z)
+{
+	return heightMap[(terrainHeight * z) + x].y;
 }
 
 void Terrain::InitializeBuffers(ID3D11Device* device)

@@ -125,7 +125,7 @@ void Application::HandleMovement(float frameTime)
 	XMFLOAT3 rot = position->GetRotation();
 
 	//Locking the Y-position to the ground
-	pos.y = terrain->GetY((int)pos.x, (int)pos.z) + HEIGHT_FROM_GROUND;
+	pos.y = terrain->GetY(pos.x, pos.z) + HEIGHT_FROM_GROUND;
 
 	// Set the position of the camera.
 	camera->SetPosition(pos);
