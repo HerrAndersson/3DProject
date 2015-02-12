@@ -59,14 +59,15 @@ int Terrain::GetIndexCount()
 	return indexCount;
 }
 
-int Terrain::GetY(int x, int z)
+float Terrain::GetY(int x, int z)
 {
-	//if (xz within bounds of the ground)
-	//	return y
-	//else
-	//return 0
-
-	return 0;
+	float returnValue = 0.0f;
+	if (x <= 255 && z <= 255 && x >= 0 && z >= 0)
+	{
+		int index = (terrainHeight * z) + x;
+		returnValue = heightMap[index].y;
+	}
+	return returnValue;
 }
 
 bool Terrain::LoadHeightMap(char* filename)
