@@ -56,6 +56,8 @@ bool System::Update()
 {
 	bool result = true;
 
+	SetCursorPos(1920 / 2, 1080 / 2);
+
 	result = application->Update();
 	if (!result)
 		return false;
@@ -146,6 +148,10 @@ void System::ShutdownWindows()
 	{
 		ChangeDisplaySettings(NULL, 0);
 	}
+
+	screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	SetCursorPos(screenWidth / 2, screenHeight / 2);
 
 	DestroyWindow(hwnd);
 	hwnd = NULL;
