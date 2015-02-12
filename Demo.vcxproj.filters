@@ -154,4 +154,15 @@
       <Filter>Resource Files\Models</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\heightmap01.bmp">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="assets\textures\heightmap02.bmp">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="assets\textures\heightmap03.bmp">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

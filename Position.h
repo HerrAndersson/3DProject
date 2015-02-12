@@ -11,6 +11,7 @@ private:
 	const float SPEED_MULTIPLIER = 0.03f;
 	const float RAD = XM_PI / 180;
 	const float LOOK_SPEED = 0.5f;
+	const float VIEW_BOUNDS_X = 75.0f;
 
 	XMFLOAT3 position;
 	XMFLOAT3 rotation;

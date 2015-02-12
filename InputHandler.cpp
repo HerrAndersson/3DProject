@@ -138,7 +138,7 @@ void InputHandler::ProcessInput()
 	mousePos.x += mouseState.lX;
 	mousePos.y += mouseState.lY;
 
-	//Ensure the mouse stays within the bounds of the window
+	//Ensure the mousePos is limited to the bounds of the window
 	if (mousePos.x < 0)  { mousePos.x = 0; }
 	if (mousePos.y < 0)  { mousePos.y = 0; }
 	if (mousePos.x  > screenWidth)  { mousePos.x = (float)screenWidth; }
@@ -214,11 +214,6 @@ XMFLOAT2 InputHandler::HandleMouse()
 	{
 		lxly.x = (float)mouseState.lX;
 		lxly.y = (float)mouseState.lY;
-
-		//lxly.y = (float)mouseCurrState.lY;
-
-		/*mouseState = mouseCurrState;*/
-		//cout << "Mouse moves: x" << lxly.x <<" y" << lxly.y << endl;
 	}
 	return lxly;
 }

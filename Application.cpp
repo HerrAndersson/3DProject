@@ -15,7 +15,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
 
-	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap01.bmp");
+	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.0f);
 
 	CreateShaders();
 }
@@ -71,7 +71,7 @@ bool Application::Update()
 {
 	bool result = true;
 
-	//Update the system stats
+	//Update the frameTime
 	timer->Update();
 
 	// Read the user input.
@@ -80,7 +80,9 @@ bool Application::Update()
 	//Handle input from keyboard and mouse
 	HandleMovement(timer->GetTime());
 
+	//Update the camera. viewMatrix gets updated here
 	camera->Update();
+
 	// Render the graphics.
 	result = RenderGraphics();
 	if (!result)
@@ -121,8 +123,6 @@ void Application::HandleMovement(float frameTime)
 	//Get the view point position/rotation.
 	XMFLOAT3 pos = position->GetPosition();
 	XMFLOAT3 rot = position->GetRotation();
-
-	//cout << rot.x << " " << rot.y << " " << rot.z << " " << endl;
 
 	//Locking the Y-position to the ground
 	pos.y = terrain->GetY((int)pos.x, (int)pos.z) + HEIGHT_FROM_GROUND;

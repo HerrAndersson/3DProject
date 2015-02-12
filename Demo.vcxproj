@@ -150,6 +150,11 @@
   <ItemGroup>
     <None Include="assets\textures\triangle.raw" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\heightmap01.bmp" />
+    <Image Include="assets\textures\heightmap02.bmp" />
+    <Image Include="assets\textures\heightmap03.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

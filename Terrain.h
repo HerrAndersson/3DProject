@@ -33,7 +33,7 @@ private:
 
 public:
 
-	Terrain(ID3D11Device* device, char* heightMapName);
+	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor);
 	~Terrain();
 
 	void Render(ID3D11DeviceContext* deviceContext);

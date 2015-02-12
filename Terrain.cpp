@@ -1,9 +1,10 @@
 #include "Terrain.h"
+#include <iostream>
 
 using namespace DirectX;
 using namespace std;
 
-Terrain::Terrain(ID3D11Device* device, char* heightMapName)
+Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor)
 {
 	indexBuffer = nullptr;
 	vertexBuffer = nullptr;
@@ -17,7 +18,9 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName)
 
 	//Load and normalize heightmap
 	result = LoadHeightMap(heightMapName);
-	NormalizeHeightMap(15.0f);
+	if (!result)
+		cout << "FALSE" << endl;
+	NormalizeHeightMap(normalizeFactor);
 
 	// Initialize the vertex and index buffer that holds the geometry for the terrain.
 	InitializeBuffers(device);
