@@ -15,7 +15,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
 
-	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.0f);
+	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
 
 	CreateShaders();
 }
@@ -102,7 +102,7 @@ bool Application::Update()
 void Application::HandleMovement(float frameTime)
 {
 	bool keyDown;
-
+	
 	position->SetFrameTime(frameTime);
 
 	//Handle the input.

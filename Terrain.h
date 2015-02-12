@@ -30,6 +30,8 @@ private:
 
 	bool LoadHeightMap(char* filename);
 	void NormalizeHeightMap(float factor);
+	bool CalculateNormals();
+
 	float GetHeightAt(int x, int z);
 
 public:

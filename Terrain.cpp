@@ -13,28 +13,26 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFacto
 
 	bool result = true;
 
-	terrainWidth = 100;
-	terrainHeight = 100;
-
 	//Load and normalize heightmap
 	result = LoadHeightMap(heightMapName);
 	if (!result)
-		cout << "FALSE" << endl;
+		throw runtime_error("LoadHeightMap Error");
+
 	NormalizeHeightMap(normalizeFactor);
 
-	// Initialize the vertex and index buffer that holds the geometry for the terrain.
+	//Initialize the vertex and index buffer that holds the geometry for the terrain.
 	InitializeBuffers(device);
 }
 Terrain::~Terrain()
 {
-	// Release the index buffer.
+	//Release the index buffer.
 	if (indexBuffer)
 	{
 		indexBuffer->Release();
 		indexBuffer = nullptr;
 	}
 
-	// Release the vertex buffer.
+	//Release the vertex buffer.
 	if (vertexBuffer)
 	{
 		vertexBuffer->Release();
@@ -62,6 +60,8 @@ int Terrain::GetIndexCount()
 float Terrain::GetY(float x, float z)
 {
 	float returnValue = 0.0f;
+
+	//Normalizing with bilinear interpolation
 	if (x <= terrainWidth-2 && z <= terrainHeight-2 && x >= 0 + 1 && z >= 0 + 1)
 	{
 		int x1, x2, z1, z2;
@@ -338,5 +338,4 @@ void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
 
 	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//deviceContext->IASetInputLayout(vertexLayout);
 }
