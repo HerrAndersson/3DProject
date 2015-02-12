@@ -65,52 +65,53 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 				}
 				for (int i = 2; i >= 0; i--)
 				{
-					VertexPosUV tempVertex;
+					Vertex tempVertex;
 					tempVertex.pos = vertices[vertexIndex[i] - 1];
-					//tempVertex.uv = uvs[uvIndex[i] - 1];
-					//tempVertex.norm = normals[normalIndex[i] - 1];
-					//TODO: Vertex does not have normals
+					tempVertex.uv = uvs[uvIndex[i] - 1];
+					tempVertex.normal = normals[normalIndex[i] - 1];
 					faces.push_back(tempVertex);
 				}
-				
-				
-
-				
 			}
 			else if (command == "mtllib")
 			{
 				//TODO: Assumes object has a texture
-				Texture* tempTexture = new Texture(textureFilename, device);
-				texture = tempTexture;
+				texture = new Texture(textureFilename, device);
 			}
 		}
 	}
 	else
 	{
-		result = false;
+		throw runtime_error("Failed to load file: " + filename);
 	}
 	file.close();
 
-	if (result)
-	{
-		D3D11_BUFFER_DESC bufferDesc;
-		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		bufferDesc.ByteWidth = sizeof(VertexPosUV) * faces.size();
+	D3D11_BUFFER_DESC bufferDesc;
+	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	bufferDesc.ByteWidth = sizeof(VertexPosUV) * faces.size();
 
-		D3D11_SUBRESOURCE_DATA data;
-		data.pSysMem = &faces[0];
-		device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
-	}
-	else
-	{
-		MessageBoxA(nullptr, "Failed to load file", string("No such file: " + filename).c_str(), MB_OK);
-	}
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = &faces[0];
+	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
+
+	vertexCount = faces.size();
 }
-
 
 Object::~Object()
 {
 }
+
+void Object::Render(ID3D11DeviceContext* deviceContext)
+{
+	UINT32 vertexSize = sizeof(Vertex);
+	UINT32 offset = 0;
+	ID3D11ShaderResourceView* textureView = GetTexture();
+
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->PSSetShaderResources(0, 1, &textureView);
+
+	deviceContext->Draw(vertexCount, 0);
+}
+
 

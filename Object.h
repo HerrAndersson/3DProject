@@ -15,12 +15,13 @@ private:
 	std::vector<DirectX::XMFLOAT3> vertices;
 	std::vector<DirectX::XMFLOAT2> uvs;
 	std::vector<DirectX::XMFLOAT3> normals;
-	std::vector<VertexPosUV> faces;
+	std::vector<Vertex> faces;
 
 public:
 
 	Object(std::string modelFilename, std::string textureFilename, ID3D11Device* device);
 	virtual ~Object();
 
+	virtual void Render(ID3D11DeviceContext* deviceContext);
 };
 
