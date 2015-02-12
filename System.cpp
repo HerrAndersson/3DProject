@@ -1,6 +1,6 @@
 #include "System.h"
 
-System::System(int screenWidth, int screenHeight, bool fullscreen, bool showCursor)
+System::System(bool fullscreen, bool showCursor, int screenWidth, int screenHeight)
 {
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;

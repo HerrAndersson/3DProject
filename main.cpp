@@ -19,7 +19,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	// Initialize and run the system object.
 	try
 	{
-		system = new System();
+		system = new System(false, false);
 		system->Run();
 		// Shutdown and release the system object.
 		delete system;
