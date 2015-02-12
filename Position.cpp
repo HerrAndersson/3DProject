@@ -149,7 +149,7 @@ void Position::MoveLeft(bool keyDown)
 		}
 	}
 
-	float radians = rotation.y * RAD;
+	float radians = (rotation.y-90) * RAD;
 
 	//Update the position.
 	position.x += sinf(radians) * leftSpeed;
@@ -158,5 +158,27 @@ void Position::MoveLeft(bool keyDown)
 
 void Position::MoveRight(bool keyDown)
 {
+	//Update the forward speed movement. If the key is down, accelerate.
+	if (keyDown)
+	{
+		rightSpeed += frameTime * ACCELERATION;
+		if (rightSpeed > (frameTime * SPEED_MULTIPLIER))
+		{
+			rightSpeed = frameTime * SPEED_MULTIPLIER;
+		}
+	}
+	else
+	{
+		rightSpeed -= frameTime * DECELERATION;
+		if (rightSpeed < 0.0f)
+		{
+			rightSpeed = 0.0f;
+		}
+	}
 
+	float radians = (rotation.y + 90) * RAD;
+
+	//Update the position.
+	position.x += sinf(radians) * rightSpeed;
+	position.z += cosf(radians) * rightSpeed;
 }
