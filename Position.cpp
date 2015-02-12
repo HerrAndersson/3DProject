@@ -50,11 +50,14 @@ void Position::SetFrameTime(float frameTime)
 
 void Position::LookAround(XMFLOAT2 lxly)
 {
+	//If no mouse-movement happened the InputHandler will return the 1000000.0f for both x and y,
+	//therefore nothing is done when these values show up
 	if (lxly.x < 1000000.0f && lxly.y < 1000000.0f)
 	{
 		rotation.y += lxly.x * LOOK_SPEED;
 		rotation.x += lxly.y * LOOK_SPEED;
 
+		////Keep y-rotation within 360-bounds
 		if (rotation.y < 0.0f)
 		{
 			rotation.y += 360.0f;
@@ -63,14 +66,14 @@ void Position::LookAround(XMFLOAT2 lxly)
 		{
 			rotation.y = 0;
 		}
-
-		if (rotation.x < -45.0f)
+		//Lock x-rotation to given bounds otherwise the camera can be turned upside-down
+		if (rotation.x < -VIEW_BOUNDS_X)
 		{
-			rotation.x = -45.0f;
+			rotation.x = -VIEW_BOUNDS_X;
 		}
-		else if (rotation.x > 45.0f)
+		else if (rotation.x > VIEW_BOUNDS_X)
 		{
-			rotation.x = 45.0f;
+			rotation.x = VIEW_BOUNDS_X;
 		}
 	}
 }
@@ -86,7 +89,7 @@ void Position::MoveForward(bool keyDown)
 			forwardSpeed = frameTime * SPEED_MULTIPLIER;
 		}
 	}
-	else
+	else //If the key is not down, decelerate.
 	{
 		forwardSpeed -= frameTime * DECELERATION;
 		if (forwardSpeed < 0.0f)
@@ -113,7 +116,7 @@ void Position::MoveBackward(bool keyDown)
 			backwardSpeed = frameTime * SPEED_MULTIPLIER;
 		}
 	}
-	else
+	else //If the key is not down, decelerate.
 	{
 		backwardSpeed -= frameTime * DECELERATION;
 		if (backwardSpeed < 0.0f)
@@ -131,7 +134,7 @@ void Position::MoveBackward(bool keyDown)
 
 void Position::MoveLeft(bool keyDown)
 {
-	//Update the forward speed movement. If the key is down, accelerate.
+	//Update the left speed movement. If the key is down, accelerate.
 	if (keyDown)
 	{
 		leftSpeed += frameTime * ACCELERATION;
@@ -140,7 +143,7 @@ void Position::MoveLeft(bool keyDown)
 			leftSpeed = frameTime * SPEED_MULTIPLIER;
 		}
 	}
-	else
+	else //If the key is not down, decelerate.
 	{
 		leftSpeed -= frameTime * DECELERATION;
 		if (leftSpeed < 0.0f)
@@ -149,7 +152,8 @@ void Position::MoveLeft(bool keyDown)
 		}
 	}
 
-	float radians = rotation.y * RAD;
+	//rotation.y gives forward-direction. -90 gives left
+	float radians = (rotation.y - 90.0f) * RAD;
 
 	//Update the position.
 	position.x += sinf(radians) * leftSpeed;
@@ -158,5 +162,28 @@ void Position::MoveLeft(bool keyDown)
 
 void Position::MoveRight(bool keyDown)
 {
+	//Update the right speed movement. If the key is down, accelerate.
+	if (keyDown)
+	{
+		rightSpeed += frameTime * ACCELERATION;
+		if (rightSpeed > (frameTime * SPEED_MULTIPLIER))
+		{
+			rightSpeed = frameTime * SPEED_MULTIPLIER;
+		}
+	}
+	else //If the key is not down, decelerate.
+	{
+		rightSpeed -= frameTime * DECELERATION;
+		if (rightSpeed < 0.0f)
+		{
+			rightSpeed = 0.0f;
+		}
+	}
 
+	//rotation.y gives forward-direction. +90 gives right
+	float radians = (rotation.y + 90.0f) * RAD;
+
+	//Update the position.
+	position.x += sinf(radians) * rightSpeed;
+	position.z += cosf(radians) * rightSpeed;
 }
