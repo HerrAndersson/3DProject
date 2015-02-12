@@ -21,6 +21,7 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 				file >> tempVertex.x;
 				file >> tempVertex.y;
 				file >> tempVertex.z;
+				tempVertex.z *= -1.0f;
 				vertices.push_back(tempVertex);
 			}
 			else if (command == "vt")
@@ -28,6 +29,7 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 				XMFLOAT2 tempUv;
 				file >> tempUv.x;
 				file >> tempUv.y;
+				tempUv.y = 1.0f - tempUv.y;
 				uvs.push_back(tempUv);
 			}
 			else if (command == "vn")
@@ -36,37 +38,44 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 				file >> tempNormal.x;
 				file >> tempNormal.y;
 				file >> tempNormal.z;
+				tempNormal.z *= -1.0f;
 				normals.push_back(tempNormal);
 			}
 			else if (command == "f")
 			{
+				int vertexIndex[3];
+				int uvIndex[3];
+				int normalIndex[3];
+
 				for (int i = 0; i < 3; i++)
 				{
-					int index;
-					file >> index;
-					VertexPosUV tempVertex;
-
-					tempVertex.pos = vertices[index - 1];
-
+					file >> vertexIndex[i];
 					//Check if we can load UV coordinates
 					if (file.peek() == '/')
 					{
 						file.get();
-						file >> index;
-						tempVertex.uv = uvs[index - 1];
-
+						file >> uvIndex[i];
 						//Check if we can load normals
 						if (file.peek() == '/')
 						{
 							file.get();
-							file >> index;
-							XMFLOAT3 normal = normals[index - 1];
-							//TODO: Vertex does not have normals
+							file >> normalIndex[i];
 						}
 					}
-
+				}
+				for (int i = 2; i >= 0; i--)
+				{
+					VertexPosUV tempVertex;
+					tempVertex.pos = vertices[vertexIndex[i] - 1];
+					//tempVertex.uv = uvs[uvIndex[i] - 1];
+					//tempVertex.norm = normals[normalIndex[i] - 1];
+					//TODO: Vertex does not have normals
 					faces.push_back(tempVertex);
 				}
+				
+				
+
+				
 			}
 			else if (command == "mtllib")
 			{
