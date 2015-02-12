@@ -121,6 +121,8 @@
     <None Include="assets\models\triangle.obj">
       <FileType>Document</FileType>
     </None>
+    <None Include="assets\textures\missing.raw" />
+    <None Include="assets\textures\teapot.raw" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">
@@ -148,9 +150,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="assets\textures\triangle.raw" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\textures\heightmap01.bmp" />

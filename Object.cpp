@@ -109,6 +109,7 @@ void Object::Render(ID3D11DeviceContext* deviceContext)
 	ID3D11ShaderResourceView* textureView = GetTexture();
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceContext->PSSetShaderResources(0, 1, &textureView);
 
 	deviceContext->Draw(vertexCount, 0);
