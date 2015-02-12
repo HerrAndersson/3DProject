@@ -20,7 +20,7 @@ struct VS_OUT
 	float3 normal : NORMAL;
 };
 
-VS_OUT VS_main(VS_IN input)
+VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 

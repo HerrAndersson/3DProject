@@ -16,6 +16,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetRotation(position->GetRotation());
 
 	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
+	teapot = new Object("assets/models/teapot2.obj", "assets/textures/triangle.raw", Direct3D->GetDevice());
 
 	CreateShaders();
 }
@@ -59,11 +60,23 @@ Application::~Application()
 		position = nullptr;
 	}
 
+	//MODELS
+	if (teapot)
+	{
+		delete teapot;
+		teapot = nullptr;
+	}
+
 	//SHADERS
 	if (terrainShader)
 	{
 		delete terrainShader;
 		terrainShader = nullptr;
+	}
+	if (defaultShader)
+	{
+		delete defaultShader;
+		defaultShader = nullptr;
 	}
 }
 
@@ -147,8 +160,12 @@ bool Application::RenderGraphics()
 
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
 	terrainShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
-
+	
 	terrain->Render(Direct3D->GetDeviceContext());
+
+	defaultShader->UseShader(Direct3D->GetDeviceContext());
+	defaultShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	teapot->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
 
@@ -158,4 +175,5 @@ bool Application::RenderGraphics()
 void Application::CreateShaders()
 {
 	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
+	defaultShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
 }

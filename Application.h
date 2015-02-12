@@ -10,6 +10,8 @@
 #include "InputHandler.h"
 #include "Timer.h"
 #include "Position.h"
+#include "ShaderDefault.h"
+#include "Object.h"
 
 class Application
 {
@@ -26,9 +28,12 @@ private:
 	InputHandler*		input;
 	Timer*				timer;
 
+	//MODELS
+	ObjectBase*				teapot;
 
 	//SHADERS
 	ShaderColor*        terrainShader;
+	ShaderDefault*		defaultShader;
 
 	void HandleMovement(float frameTime);
 	bool RenderGraphics();

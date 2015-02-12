@@ -14,7 +14,7 @@ struct VS_OUT
 	float3 normal : NORMAL;
 };
 
-float4 PS_main(VS_OUT input) : SV_Target
+float4 main(VS_OUT input) : SV_Target
 {
 	float3 s = txDiffuse.Sample(sampAni, input.tex).xyz;
 	return float4(s, 1.0f);
