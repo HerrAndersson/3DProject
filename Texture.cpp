@@ -12,13 +12,13 @@ Texture::Texture(std::string filename, ID3D11Device* device)
 
 		//Get the filesize in bytes
 		file.seekg(0, file.end);
-		int size = file.tellg();
+		unsigned int size = (unsigned int)file.tellg();
 		file.seekg(0, file.beg);
 
 		data.resize(size);
 
 		//Assume texture is always square and RGBA format
-		width = height = sqrt(size / 4);
+		width = height = (int)sqrt(size / 4);
 		
 		//Read the whole file into the vector
 		file.read((char*)&data[0], data.size());

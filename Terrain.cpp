@@ -64,7 +64,8 @@ float Terrain::GetY(float x, float z)
 	float returnValue = 0.0f;
 	if (x <= terrainWidth-2 && z <= terrainHeight-2 && x >= 0 + 1 && z >= 0 + 1)
 	{
-		float x1, x2, z1, z2, q11, q12, q21, q22;
+		int x1, x2, z1, z2;
+		float q11, q12, q21, q22;
 		x1 = (int)floor(x);
 		x2 = (int)floor(x+1);
 		z1 = (int)floor(z);
