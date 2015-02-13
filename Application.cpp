@@ -16,7 +16,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetRotation(position->GetRotation());
 
 	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
-	teapot = new Object("assets/models/teapot.obj", "assets/textures/teapot.raw", Direct3D->GetDevice());
+	teapot = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 
 	CreateShaders();
 }

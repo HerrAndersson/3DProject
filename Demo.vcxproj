@@ -118,9 +118,7 @@
     <None Include="assets\models\teapot.obj">
       <FileType>Document</FileType>
     </None>
-    <None Include="assets\models\triangle.obj">
-      <FileType>Document</FileType>
-    </None>
+    <None Include="assets\textures\camel.raw" />
     <None Include="assets\textures\missing.raw" />
     <None Include="assets\textures\teapot.raw" />
   </ItemGroup>
@@ -155,6 +153,9 @@
     <Image Include="assets\textures\heightmap01.bmp" />
     <Image Include="assets\textures\heightmap02.bmp" />
     <Image Include="assets\textures\heightmap03.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="assets\models\camel.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
