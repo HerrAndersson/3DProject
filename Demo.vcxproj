@@ -155,7 +155,9 @@
     <Image Include="assets\textures\heightmap03.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="assets\models\camel.obj" />
+    <None Include="assets\models\camel.obj">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
