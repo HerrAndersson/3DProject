@@ -16,7 +16,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetRotation(position->GetRotation());
 
 	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
-	teapot = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
+	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 
 	CreateShaders();
 }
@@ -61,10 +61,10 @@ Application::~Application()
 	}
 
 	//MODELS
-	if (teapot)
+	if (camel)
 	{
-		delete teapot;
-		teapot = nullptr;
+		delete camel;
+		camel = nullptr;
 	}
 
 	//SHADERS
@@ -158,14 +158,18 @@ bool Application::RenderGraphics()
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
 
+	//Render terrain
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
 	terrainShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
-	
 	terrain->Render(Direct3D->GetDeviceContext());
 
+
+	//Render objects
 	defaultShader->UseShader(Direct3D->GetDeviceContext());
-	defaultShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
-	teapot->Render(Direct3D->GetDeviceContext());
+	XMMATRIX world = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
+	//camel->GetWorldMatrix(world);
+	defaultShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
+	camel->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
 

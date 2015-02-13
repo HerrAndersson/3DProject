@@ -11,6 +11,7 @@ protected:
 	ID3D11Buffer* vertexBuffer;
 	Texture* texture;
 	int vertexCount;
+	DirectX::XMFLOAT4X4 worldMatrix;
 
 public:
 
@@ -21,5 +22,6 @@ public:
 
 	ID3D11Buffer* GetVertexBuffer() const;
 	ID3D11ShaderResourceView* GetTexture() const;
+	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix) const;
 };
 

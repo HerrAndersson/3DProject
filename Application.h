@@ -29,7 +29,7 @@ private:
 	Timer*				timer;
 
 	//MODELS
-	ObjectBase*				teapot;
+	ObjectBase*				camel;
 
 	//SHADERS
 	ShaderColor*        terrainShader;
