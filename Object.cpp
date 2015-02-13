@@ -89,10 +89,10 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	bufferDesc.ByteWidth = sizeof(VertexPosUV) * faces.size();
+	bufferDesc.ByteWidth = sizeof(Vertex) * faces.size();
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = &faces[0];
+	data.pSysMem = faces.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 
 	vertexCount = faces.size();
