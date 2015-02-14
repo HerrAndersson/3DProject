@@ -160,13 +160,13 @@
     <FxCompile Include="assets\shaders\vsTerrain.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderParticlesPS.hlsl">
+    <FxCompile Include="assets\shaders\ShaderParticlesPS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderParticlesVS.hlsl">
+    <FxCompile Include="assets\shaders\ShaderParticlesVS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="ShaderParticlesGS.hlsl">
+    <FxCompile Include="assets\shaders\ShaderParticlesGS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
