@@ -17,6 +17,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
+	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/camel.raw");
 
 	CreateShaders();
 }
@@ -66,6 +67,11 @@ Application::~Application()
 		delete camel;
 		camel = nullptr;
 	}
+	if (particleEmitter)
+	{
+		delete particleEmitter;
+		particleEmitter = nullptr;
+	}
 
 	//SHADERS
 	if (terrainShader)
@@ -77,6 +83,11 @@ Application::~Application()
 	{
 		delete defaultShader;
 		defaultShader = nullptr;
+	}
+	if (particleShader)
+	{
+		delete particleShader;
+		particleShader = nullptr;
 	}
 }
 
@@ -143,6 +154,8 @@ void Application::HandleMovement(float frameTime)
 	// Set the position of the camera.
 	camera->SetPosition(pos);
 	camera->SetRotation(rot);
+
+	static_cast<ParticleEmitter*>(particleEmitter)->Update(Direct3D->GetDeviceContext(), frameTime);
 }
 
 
@@ -171,6 +184,11 @@ bool Application::RenderGraphics()
 	defaultShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	camel->Render(Direct3D->GetDeviceContext());
 
+	//Render particles
+	particleShader->UseShader(Direct3D->GetDeviceContext());
+	particleShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	particleEmitter->Render(Direct3D->GetDeviceContext());
+
 	Direct3D->EndScene();
 
 	return result;
@@ -180,4 +198,5 @@ void Application::CreateShaders()
 {
 	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
 	defaultShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
+	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 }

@@ -18,7 +18,7 @@ private:
 
 public:
 
-	ShaderParticles(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename);
+	ShaderParticles(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename, LPCWSTR geometryShaderFilename);
 	virtual ~ShaderParticles();
 
 	virtual void UseShader(ID3D11DeviceContext* deviceContext);

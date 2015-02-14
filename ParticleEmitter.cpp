@@ -6,12 +6,17 @@ using namespace DirectX;
 ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilename)
 {
 	texture = new Texture(textureFilename, device);
-	particles.resize(100);
 
-	VertexParticles testParticle;
-	testParticle.pos = XMFLOAT3(0, 4, 0);
 
-	particles.push_back(testParticle);
+	//Test particles
+	VertexParticles testParticle[3];
+	testParticle[0].pos = XMFLOAT3(4, 4, 0);
+	testParticle[1].pos = XMFLOAT3(8, 4, 0);
+	testParticle[2].pos = XMFLOAT3(12, 4, 0);
+	
+	particles.push_back(testParticle[0]);
+	particles.push_back(testParticle[1]);
+	particles.push_back(testParticle[2]);
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -24,7 +29,7 @@ ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilena
 	data.pSysMem = particles.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 
-	vertexCount = particles.size() * 2;
+	vertexCount = particles.size();
 }
 
 
@@ -39,7 +44,7 @@ void ParticleEmitter::Render(ID3D11DeviceContext* deviceContext)
 	ID3D11ShaderResourceView* textureView = GetTexture();
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 	deviceContext->PSSetShaderResources(0, 1, &textureView);
 
 	deviceContext->Draw(vertexCount, 0);
@@ -50,7 +55,7 @@ void ParticleEmitter::Update(ID3D11DeviceContext* deviceContext, float frameTime
 	//Update the particles
 
 
-	vertexCount = particles.size() * 2;
+	vertexCount = particles.size();
 	//Update the buffer
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	deviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

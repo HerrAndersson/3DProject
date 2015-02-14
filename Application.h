@@ -12,6 +12,8 @@
 #include "Position.h"
 #include "ShaderDefault.h"
 #include "Object.h"
+#include "ShaderParticles.h"
+#include "ParticleEmitter.h"
 
 class Application
 {
@@ -29,11 +31,13 @@ private:
 	Timer*				timer;
 
 	//MODELS
-	ObjectBase*				camel;
+	ObjectBase*			camel;
+	ObjectBase*			particleEmitter;
 
 	//SHADERS
 	ShaderColor*        terrainShader;
 	ShaderDefault*		defaultShader;
+	ShaderParticles*	particleShader;
 
 	void HandleMovement(float frameTime);
 	bool RenderGraphics();

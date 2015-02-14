@@ -1,11 +1,3 @@
-cbuffer MatrixBuffer
-{
-	matrix worldMatrix;
-	matrix viewMatrix;
-	matrix projectionMatrix;
-	matrix wvpMatrix;
-};
-
 struct VS_IN
 {
 	float4 position : POSITION;
@@ -19,9 +11,7 @@ struct VS_OUT
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
-
-	input.position.w = 1.0f;
-	output.position = mul(input.position, wvpMatrix);
+	output.position = input.position;
 
 	return output;
 }

@@ -5,7 +5,8 @@ using namespace std;
 
 ShaderParticles::ShaderParticles(ID3D11Device* device,
 	LPCWSTR vertexShaderFilename,
-	LPCWSTR pixelShaderFilename
+	LPCWSTR pixelShaderFilename,
+	LPCWSTR geometryShaderFilename
 	) : ShaderBase(device)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
@@ -15,8 +16,27 @@ ShaderParticles::ShaderParticles(ID3D11Device* device,
 
 	CreateMandatoryShaders(device, vertexShaderFilename, pixelShaderFilename, inputDesc, ARRAYSIZE(inputDesc));
 
-	D3D11_BUFFER_DESC matrixBufferDesc;
+	//Create geomtery shader
 	HRESULT hr;
+	ID3DBlob* pGS = nullptr;
+	ID3DBlob* errorMessage = nullptr;
+
+	hr = D3DCompileFromFile(geometryShaderFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_4_0", NULL, NULL, &pGS, &errorMessage);
+
+	if (FAILED(hr))
+	{
+		if (errorMessage)
+		{
+			throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		}
+		else
+		{
+			throw runtime_error("No such file");
+		}
+	}
+	device->CreateGeometryShader(pGS->GetBufferPointer(), pGS->GetBufferSize(), nullptr, &geometryShader);
+
+	D3D11_BUFFER_DESC matrixBufferDesc;
 
 	// Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
 	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -67,7 +87,7 @@ void ShaderParticles::SetMatrices(ID3D11DeviceContext* deviceContext, XMMATRIX& 
 
 	int bufferNumber = 0;
 
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
+	deviceContext->GSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
