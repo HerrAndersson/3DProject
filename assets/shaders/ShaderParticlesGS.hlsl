@@ -4,6 +4,7 @@ cbuffer MatrixBuffer
 	matrix viewMatrix;
 	matrix projectionMatrix;
 	matrix wvpMatrix;
+	float3 campos;
 };
 
 struct GS_OUT
@@ -23,7 +24,8 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 {
 	GS_OUT output = (GS_OUT)0;
 	float scale = 3;
-	float4 campos = float4(4, 4, 4, 0);
+	//float4 campos = float4(4, 4, 4, 0);
+	
 	float4 up = float4(0, 1, 0, 0);
 	float4 right = float4(normalize(cross(campos, up)).xyz, 0);
 	float4 temp;

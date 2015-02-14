@@ -63,7 +63,7 @@ void ShaderParticles::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
 }
 
-void ShaderParticles::SetMatrices(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+void ShaderParticles::SetMatrices(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMFLOAT3 campos)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -82,6 +82,7 @@ void ShaderParticles::SetMatrices(ID3D11DeviceContext* deviceContext, XMMATRIX& 
 	matrixDataBuffer->view = vm;
 	matrixDataBuffer->projection = pm;
 	matrixDataBuffer->wvp = wvp;
+	matrixDataBuffer->campos = campos;
 
 	deviceContext->Unmap(matrixBuffer, 0);
 

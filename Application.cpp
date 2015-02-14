@@ -154,8 +154,6 @@ void Application::HandleMovement(float frameTime)
 	// Set the position of the camera.
 	camera->SetPosition(pos);
 	camera->SetRotation(rot);
-
-	static_cast<ParticleEmitter*>(particleEmitter)->Update(Direct3D->GetDeviceContext(), frameTime);
 }
 
 
@@ -186,7 +184,7 @@ bool Application::RenderGraphics()
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());
-	particleShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	particleShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, camera->GetPosition());
 	particleEmitter->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
