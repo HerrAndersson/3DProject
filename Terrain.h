@@ -10,9 +10,15 @@ class Terrain
 {
 private:
 
+	struct float3
+	{
+		float x, y, z;
+	};
+
 	struct HeightMap
 	{
 		float x, y, z;
+		float nx, ny, nz;
 	};
 
 	int terrainWidth;
@@ -30,7 +36,7 @@ private:
 
 	bool LoadHeightMap(char* filename);
 	void NormalizeHeightMap(float factor);
-	bool CalculateNormals();
+	void CalculateNormals();
 
 	float GetHeightAt(int x, int z);
 

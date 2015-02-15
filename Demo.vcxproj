@@ -81,8 +81,8 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="D3DClass.cpp" />
-    <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="InputHandler.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
@@ -102,8 +102,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DClass.h" />
-    <ClInclude Include="Heightmap.h" />
     <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectBase.h" />
     <ClInclude Include="ParticleEmitter.h" />
@@ -132,6 +132,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="assets\shaders\TerrainPS.hlsl" />
     <FxCompile Include="assets\shaders\ShaderUvPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -147,7 +148,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="assets\shaders\vsTerrain.hlsl">
+    <FxCompile Include="assets\shaders\TerrainVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

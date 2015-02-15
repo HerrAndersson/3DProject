@@ -10,7 +10,7 @@ struct VertexPosUV
 struct VertexPosCol
 {
 	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT4 color;
+	DirectX::XMFLOAT3 normal;
 };
 
 struct Vertex

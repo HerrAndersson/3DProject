@@ -63,9 +63,6 @@
     <ClCompile Include="Console.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Heightmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -82,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,9 +122,6 @@
     <ClInclude Include="Console.h">
       <Filter>Debug</Filter>
     </ClInclude>
-    <ClInclude Include="Heightmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -143,6 +140,9 @@
     <ClInclude Include="ParticleEmitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">
@@ -157,9 +157,6 @@
     <FxCompile Include="assets\shaders\VertexShader.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="assets\shaders\vsTerrain.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="assets\shaders\ShaderParticlesVS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
@@ -167,6 +164,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="assets\shaders\ShaderParticlesGS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\TerrainPS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\TerrainVS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

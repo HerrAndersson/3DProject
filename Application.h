@@ -14,6 +14,7 @@
 #include "Object.h"
 #include "ShaderParticles.h"
 #include "ParticleEmitter.h"
+#include "Light.h"
 
 class Application
 {
@@ -38,6 +39,9 @@ private:
 	ShaderColor*        terrainShader;
 	ShaderDefault*		defaultShader;
 	ShaderParticles*	particleShader;
+
+	//OTHER
+	Light* light;
 
 	void HandleMovement(float frameTime);
 	bool RenderGraphics();

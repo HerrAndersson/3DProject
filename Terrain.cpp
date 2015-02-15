@@ -19,6 +19,7 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFacto
 		throw runtime_error("LoadHeightMap Error");
 
 	NormalizeHeightMap(normalizeFactor);
+	CalculateNormals();
 
 	//Initialize the vertex and index buffer that holds the geometry for the terrain.
 	InitializeBuffers(device);
@@ -84,6 +85,11 @@ float Terrain::GetY(float x, float z)
 	return returnValue;
 }
 
+float Terrain::GetHeightAt(int x, int z)
+{
+	return heightMap[(terrainHeight * z) + x].y;
+}
+
 bool Terrain::LoadHeightMap(char* filename)
 {
 	FILE* filePtr;
@@ -132,21 +138,19 @@ bool Terrain::LoadHeightMap(char* filename)
 		return false;
 	}
 
-	//Close the file.
+	//Close the file
 	error = fclose(filePtr);
 	if (error != 0)
 	{
 		return false;
 	}
 
-	//Create the structure to hold the height map data
 	heightMap = new HeightMap[terrainWidth * terrainHeight];
 	if (!heightMap)
 	{
 		return false;
 	}
 
-	//Initialize the position in the image data buffer
 	int k = 0;
 	int index = 0;
 
@@ -168,7 +172,7 @@ bool Terrain::LoadHeightMap(char* filename)
 	}
 
 	delete[] bitmapImage;
-	bitmapImage = 0;
+	bitmapImage = nullptr;
 
 	return true;
 
@@ -176,6 +180,7 @@ bool Terrain::LoadHeightMap(char* filename)
 
 void Terrain::NormalizeHeightMap(float factor)
 {
+	//Simple normalizing by a given number
 	for (int i = 0; i < terrainHeight; i++)
 	{
 		for (int j = 0; j < terrainWidth; j++)
@@ -185,9 +190,125 @@ void Terrain::NormalizeHeightMap(float factor)
 	}
 }
 
-float Terrain::GetHeightAt(int x, int z)
+void Terrain::CalculateNormals()
 {
-	return heightMap[(terrainHeight * z) + x].y;
+	int index1, index2, index3;
+	int index;
+	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3];
+
+	float3* normals = new float3[(terrainHeight - 1) * (terrainWidth - 1)];
+
+	//Go through all faces and calculate normals
+	for (int i = 0; i < (terrainHeight - 1); i++)
+	{
+		for (int j = 0; j < (terrainWidth - 1); j++)
+		{
+			index1 = (i * terrainHeight) + j;
+			index2 = (i * terrainHeight) + (j + 1);
+			index3 = ((i + 1) * terrainHeight) + j;
+
+			//Get vertices from face
+			vertex1[0] = heightMap[index1].x;
+			vertex1[1] = heightMap[index1].y;
+			vertex1[2] = heightMap[index1].z;
+
+			vertex2[0] = heightMap[index2].x;
+			vertex2[1] = heightMap[index2].y;
+			vertex2[2] = heightMap[index2].z;
+
+			vertex3[0] = heightMap[index3].x;
+			vertex3[1] = heightMap[index3].y;
+			vertex3[2] = heightMap[index3].z;
+
+			//Calculate two vectors for the face
+			vector1[0] = vertex1[0] - vertex3[0];
+			vector1[1] = vertex1[1] - vertex3[1];
+			vector1[2] = vertex1[2] - vertex3[2];
+			vector2[0] = vertex3[0] - vertex2[0];
+			vector2[1] = vertex3[1] - vertex2[1];
+			vector2[2] = vertex3[2] - vertex2[2];
+
+			index = (i * (terrainHeight - 1)) + j;
+
+			//Calculate the cross product of those two vectors to get the un-normalized for this normal
+			normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
+			normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
+			normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
+		}
+	}
+
+	float sum[3] = { 0.0f, 0.0f, 0.0f };
+	int count = 0;
+	int length = 0;
+
+	//Go through all the vertices and take an average of each face normal 	
+	for (int i = 0; i < terrainHeight; i++)
+	{
+		for (int j = 0; j < terrainWidth; j++)
+		{
+			//Bottom left
+			if (((j - 1) >= 0) && ((i - 1) >= 0))
+			{
+				index = ((i - 1) * (terrainHeight - 1)) + (j - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//Bottom right
+			if ((j < (terrainWidth - 1)) && ((i - 1) >= 0))
+			{
+				index = ((i - 1) * (terrainHeight - 1)) + j;
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//Upper left
+			if (((j - 1) >= 0) && (i < (terrainHeight - 1)))
+			{
+				index = (i * (terrainHeight - 1)) + (j - 1);
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//Upper right
+			if ((j < (terrainWidth - 1)) && (i < (terrainHeight - 1)))
+			{
+				index = (i * (terrainHeight - 1)) + j;
+
+				sum[0] += normals[index].x;
+				sum[1] += normals[index].y;
+				sum[2] += normals[index].z;
+				count++;
+			}
+
+			//Average of the faces touching this vertex
+			sum[0] = (sum[0] / (float)count);
+			sum[1] = (sum[1] / (float)count);
+			sum[2] = (sum[2] / (float)count);
+
+			length = (int)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
+
+			//Vertex location in the height map array
+			index = (i * terrainHeight) + j;
+
+			//Normalize the final normal and store in the heightMap-array
+			heightMap[index].nx = (sum[0] / length);
+			heightMap[index].ny = (sum[1] / length);
+			heightMap[index].nz = (sum[2] / length);
+		}
+	}
+
+	delete[] normals;
+	normals = nullptr;
 }
 
 void Terrain::InitializeBuffers(ID3D11Device* device)
@@ -203,85 +324,49 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 
 	int index = 0;
 
-	// Load the vertex and index array with the terrain data.
-	for (int j = 0; j < (terrainHeight - 1); j++)
+	//Load the vertex and index array with the terrain data.
+	for (int i = 0; i < (terrainHeight - 1); i++)
 	{
-		for (int i = 0; i < (terrainWidth - 1); i++)
+		for (int j = 0; j < (terrainWidth - 1); j++)
 		{
-			index1 = (terrainHeight * j) + i;          
-			index2 = (terrainHeight * j) + (i + 1);      
-			index3 = (terrainHeight * (j + 1)) + i;      
-			index4 = (terrainHeight * (j + 1)) + (i + 1);
+			index1 = (terrainHeight * i) + j;					//Bottom left
+			index2 = (terrainHeight * i) + (j + 1);				//Bottom right
+			index3 = (terrainHeight * (i + 1)) + j;				//Upper left
+			index4 = (terrainHeight * (i + 1)) + (j + 1);		//Upper right
 
-			// Upper left.
+			// Upper left
 			vertices[index].position = XMFLOAT3(heightMap[index3].x, heightMap[index3].y, heightMap[index3].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index3].nx, heightMap[index3].ny, heightMap[index3].nz);
 			indices[index] = index;
 			index++;
 
-			// Upper right.
+			// Upper right
 			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index4].nx, heightMap[index4].ny, heightMap[index4].nz);
 			indices[index] = index;
 			index++;
 
-			// Upper right.
-			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Bottom left.
+			// Bottom left
 			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index1].nx, heightMap[index1].ny, heightMap[index1].nz);
 			indices[index] = index;
 			index++;
 
-			// Bottom left.
+			// Bottom left
 			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index1].nx, heightMap[index1].ny, heightMap[index1].nz);
 			indices[index] = index;
 			index++;
 
-			// Upper left.
-			vertices[index].position = XMFLOAT3(heightMap[index3].x, heightMap[index3].y, heightMap[index3].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Bottom left.
-			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Upper right.
+			// Upper right
 			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index4].nx, heightMap[index4].ny, heightMap[index4].nz);
 			indices[index] = index;
 			index++;
 
-			// Upper right.
-			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Bottom right.
+			// Bottom right
 			vertices[index].position = XMFLOAT3(heightMap[index2].x, heightMap[index2].y, heightMap[index2].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Bottom right.
-			vertices[index].position = XMFLOAT3(heightMap[index2].x, heightMap[index2].y, heightMap[index2].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			indices[index] = index;
-			index++;
-
-			// Bottom left.
-			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
-			vertices[index].color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			vertices[index].normal = XMFLOAT3(heightMap[index2].nx, heightMap[index2].ny, heightMap[index2].nz);
 			indices[index] = index;
 			index++;
 		}
@@ -290,7 +375,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
 
-	// Set up the description of the vertex buffer.
+	//Set up the description of the vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(VertexPosCol) * vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -302,7 +387,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	// Now create the vertex buffer.
+	//Create the vertex buffer.
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 
 	D3D11_BUFFER_DESC indexBufferDesc;
@@ -333,9 +418,8 @@ void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)
 	UINT32 vertexSize = sizeof(VertexPosCol);
 	UINT32 offset = 0;
 
-	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	//deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

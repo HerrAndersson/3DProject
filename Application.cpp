@@ -19,6 +19,13 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/camel.raw");
 
+	// Initialize the light object.
+	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
+	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
+	XMFLOAT3 direction(0.0f, 0.0f, 0.75f);
+
+	light = new Light(ambient, diffuse, direction);
+
 	CreateShaders();
 }
 
@@ -171,7 +178,7 @@ bool Application::RenderGraphics()
 
 	//Render terrain
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
-	terrainShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix);
+	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f);
 	terrain->Render(Direct3D->GetDeviceContext());
 
 
@@ -194,7 +201,7 @@ bool Application::RenderGraphics()
 
 void Application::CreateShaders()
 {
-	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/vsTerrain.hlsl", L"assets/shaders/PixelShader.hlsl");
+	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
 	defaultShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 }
