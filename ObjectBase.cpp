@@ -15,6 +15,10 @@ ObjectBase::~ObjectBase()
 	delete texture;
 }
 
+void ObjectBase::Update(ID3D11DeviceContext* deviceContext, float frameTime)
+{
+
+}
 
 ID3D11Buffer* ObjectBase::GetVertexBuffer() const
 {

@@ -19,6 +19,7 @@ public:
 	virtual ~ObjectBase();
 
 	virtual void Render(ID3D11DeviceContext* deviceContext) = 0;
+	virtual void Update(ID3D11DeviceContext* deviceContext, float frameTime);
 
 	ID3D11Buffer* GetVertexBuffer() const;
 	ID3D11ShaderResourceView* GetTexture() const;
