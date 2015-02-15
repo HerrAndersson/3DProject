@@ -21,10 +21,13 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
-	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
-	XMFLOAT3 direction(0.0f, 0.0f, 0.75f);
+	XMFLOAT4 diffuse(0.0f, 1.0f, 1.0f, 1.0f);
+	XMFLOAT3 direction(0.0f, 0.0f, 0.75);
 
 	light = new Light(ambient, diffuse, direction);
+	light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
+	light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	light->SetDirection(0.0f, 0.0f, 0.75f);
 
 	CreateShaders();
 }
@@ -66,6 +69,11 @@ Application::~Application()
 	{
 		delete position;
 		position = nullptr;
+	}
+	if (light)
+	{
+		delete light;
+		light = nullptr;
 	}
 
 	//MODELS
@@ -169,7 +177,7 @@ bool Application::RenderGraphics()
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool result = true;
 
-	Direct3D->BeginScene(0.1f, 0.2f, 0.4f, 0.1f);
+	Direct3D->BeginScene(0.2f, 0.4f, 1.0f, 1.0f);
 
 	camera->GetViewMatrix(viewMatrix);
 	Direct3D->GetWorldMatrix(worldMatrix);
@@ -180,7 +188,6 @@ bool Application::RenderGraphics()
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
 	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f);
 	terrain->Render(Direct3D->GetDeviceContext());
-
 
 	//Render objects
 	defaultShader->UseShader(Direct3D->GetDeviceContext());

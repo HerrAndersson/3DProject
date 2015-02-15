@@ -1,4 +1,5 @@
 #include "ShaderColor.h"
+#include <iostream>
 
 using namespace DirectX;
 using namespace std;
@@ -46,7 +47,7 @@ ShaderColor::ShaderColor(	ID3D11Device* device,
 	lightBufferDesc.MiscFlags = 0;
 	lightBufferDesc.StructureByteStride = 0;
 
-	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
 	hr = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
 
 	if (FAILED(hr))
@@ -90,14 +91,14 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->DSSetShader(domainShader, nullptr, 0);
 	deviceContext->GSSetShader(geometryShader, nullptr, 0);
 	deviceContext->PSSetShader(pixelShader, nullptr, 0);
-
-	deviceContext->PSSetSamplers(0, 1, &samplerState);
+	deviceContext->IASetInputLayout(inputLayout);
 }
 
 void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	int bufferNumber;
 
 	XMMATRIX wvp = worldMatrix * viewMatrix * projectionMatrix;
 	wvp = XMMatrixTranspose(wvp);
@@ -116,14 +117,14 @@ void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& world
 
 	deviceContext->Unmap(matrixBuffer, 0);
 
-	int bufferNumber = 0;
+	bufferNumber = 0;
 
 	//Set matrix buffer to the vertex shader
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 
-	LightBuffer* lightDataBuffer = (LightBuffer*)mappedResource.pData;
-
-	hr = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	D3D11_MAPPED_SUBRESOURCE mr;
+	hr = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr);
+	LightBuffer* lightDataBuffer = (LightBuffer*)mr.pData;
 
 	//Copy the lighting variables into the constant buffer
 	lightDataBuffer->ambientColor = light->GetAmbientColor();
@@ -138,8 +139,7 @@ void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& world
 	//Set the light buffer in the pixel shader
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
-
-	deviceContext->IASetInputLayout(inputLayout);
+	deviceContext->PSSetSamplers(0, 1, &samplerState);
 }
 
 void* ShaderColor::operator new(size_t i)

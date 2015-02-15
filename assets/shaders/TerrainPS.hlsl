@@ -1,6 +1,6 @@
 SamplerState SampleType;
 
-cbuffer LightBuffer
+cbuffer LightBuffer : register(cb0)
 {
 	float4 ambientColor;
 	float4 diffuseColor;

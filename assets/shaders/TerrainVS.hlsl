@@ -1,5 +1,5 @@
 
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(cb0)
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
@@ -33,7 +33,6 @@ VS_OUT main(VS_IN input)
 
 	//Calculate the normal vector against the world matrix only.
 	output.Normal = mul(input.Normal, (float3x3)worldMatrix);
-
 	//Normalize the normal vector.
 	output.Normal = normalize(output.Normal);
 

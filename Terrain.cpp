@@ -192,22 +192,22 @@ void Terrain::NormalizeHeightMap(float factor)
 
 void Terrain::CalculateNormals()
 {
-	int index1, index2, index3;
-	int index;
-	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3];
+	int index1, index2, index3, index, count;
+	float vertex1[3], vertex2[3], vertex3[3], vector1[3], vector2[3], sum[3], length;
 
+	// Create a temporary array to hold the un-normalized normal vectors.
 	float3* normals = new float3[(terrainHeight - 1) * (terrainWidth - 1)];
 
-	//Go through all faces and calculate normals
-	for (int i = 0; i < (terrainHeight - 1); i++)
+	// Go through all the faces in the mesh and calculate their normals.
+	for (int j = 0; j < (terrainHeight - 1); j++)
 	{
-		for (int j = 0; j < (terrainWidth - 1); j++)
+		for (int i = 0; i < (terrainWidth - 1); i++)
 		{
-			index1 = (i * terrainHeight) + j;
-			index2 = (i * terrainHeight) + (j + 1);
-			index3 = ((i + 1) * terrainHeight) + j;
+			index1 = (j * terrainHeight) + i;
+			index2 = (j * terrainHeight) + (i + 1);
+			index3 = ((j + 1) * terrainHeight) + i;
 
-			//Get vertices from face
+			// Get three vertices from the face.
 			vertex1[0] = heightMap[index1].x;
 			vertex1[1] = heightMap[index1].y;
 			vertex1[2] = heightMap[index1].z;
@@ -220,7 +220,7 @@ void Terrain::CalculateNormals()
 			vertex3[1] = heightMap[index3].y;
 			vertex3[2] = heightMap[index3].z;
 
-			//Calculate two vectors for the face
+			// Calculate the two vectors for this face.
 			vector1[0] = vertex1[0] - vertex3[0];
 			vector1[1] = vertex1[1] - vertex3[1];
 			vector1[2] = vertex1[2] - vertex3[2];
@@ -228,28 +228,30 @@ void Terrain::CalculateNormals()
 			vector2[1] = vertex3[1] - vertex2[1];
 			vector2[2] = vertex3[2] - vertex2[2];
 
-			index = (i * (terrainHeight - 1)) + j;
+			index = (j * (terrainHeight - 1)) + i;
 
-			//Calculate the cross product of those two vectors to get the un-normalized for this normal
+			// Calculate the cross product of those two vectors to get the un-normalized value for this face normal.
 			normals[index].x = (vector1[1] * vector2[2]) - (vector1[2] * vector2[1]);
 			normals[index].y = (vector1[2] * vector2[0]) - (vector1[0] * vector2[2]);
 			normals[index].z = (vector1[0] * vector2[1]) - (vector1[1] * vector2[0]);
 		}
 	}
 
-	float sum[3] = { 0.0f, 0.0f, 0.0f };
-	int count = 0;
-	int length = 0;
-
-	//Go through all the vertices and take an average of each face normal 	
-	for (int i = 0; i < terrainHeight; i++)
+	// Now go through all the vertices and take an average of each face normal 	
+	// that the vertex touches to get the averaged normal for that vertex.
+	for (int j = 0; j < terrainHeight; j++)
 	{
-		for (int j = 0; j < terrainWidth; j++)
+		for (int i = 0; i < terrainWidth; i++)
 		{
-			//Bottom left
-			if (((j - 1) >= 0) && ((i - 1) >= 0))
+			sum[0] = 0.0f;
+			sum[1] = 0.0f;
+			sum[2] = 0.0f;
+			count = 0;
+
+			// Bottom left face.
+			if (((i - 1) >= 0) && ((j - 1) >= 0))
 			{
-				index = ((i - 1) * (terrainHeight - 1)) + (j - 1);
+				index = ((j - 1) * (terrainHeight - 1)) + (i - 1);
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
@@ -257,10 +259,10 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			//Bottom right
-			if ((j < (terrainWidth - 1)) && ((i - 1) >= 0))
+			// Bottom right face.
+			if ((i < (terrainWidth - 1)) && ((j - 1) >= 0))
 			{
-				index = ((i - 1) * (terrainHeight - 1)) + j;
+				index = ((j - 1) * (terrainHeight - 1)) + i;
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
@@ -268,10 +270,10 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			//Upper left
-			if (((j - 1) >= 0) && (i < (terrainHeight - 1)))
+			// Upper left face.
+			if (((i - 1) >= 0) && (j < (terrainHeight - 1)))
 			{
-				index = (i * (terrainHeight - 1)) + (j - 1);
+				index = (j * (terrainHeight - 1)) + (i - 1);
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
@@ -279,10 +281,10 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			//Upper right
-			if ((j < (terrainWidth - 1)) && (i < (terrainHeight - 1)))
+			// Upper right face.
+			if ((i < (terrainWidth - 1)) && (j < (terrainHeight - 1)))
 			{
-				index = (i * (terrainHeight - 1)) + j;
+				index = (j * (terrainHeight - 1)) + i;
 
 				sum[0] += normals[index].x;
 				sum[1] += normals[index].y;
@@ -290,25 +292,27 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			//Average of the faces touching this vertex
+			// Take the average of the faces touching this vertex.
 			sum[0] = (sum[0] / (float)count);
 			sum[1] = (sum[1] / (float)count);
 			sum[2] = (sum[2] / (float)count);
 
-			length = (int)sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
+			// Calculate the length of this normal.
+			length = sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
 
-			//Vertex location in the height map array
-			index = (i * terrainHeight) + j;
+			// Get an index to the vertex location in the height map array.
+			index = (j * terrainHeight) + i;
 
-			//Normalize the final normal and store in the heightMap-array
+			// Normalize the final shared normal for this vertex and store it in the height map array.
 			heightMap[index].nx = (sum[0] / length);
 			heightMap[index].ny = (sum[1] / length);
 			heightMap[index].nz = (sum[2] / length);
 		}
 	}
 
+	// Release the temporary normals.
 	delete[] normals;
-	normals = nullptr;
+	normals = 0;
 }
 
 void Terrain::InitializeBuffers(ID3D11Device* device)
@@ -316,7 +320,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	HRESULT result;
 	int index1, index2, index3, index4;
 
-	vertexCount = (terrainWidth - 1) * (terrainHeight - 1) * 12;
+	vertexCount = (terrainWidth - 1) * (terrainHeight - 1) * 6;
 	indexCount = vertexCount;
 
 	VertexPosCol* vertices = new VertexPosCol[vertexCount];
