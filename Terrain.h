@@ -5,10 +5,17 @@
 #include <stdexcept>
 #include <windows.h>
 #include "VertexTypes.h"
+#include "Texture.h"
+
+using namespace std;
 
 class Terrain
 {
 private:
+
+	//For our texture-blending to work this has to be set to 1. 
+	//If no blending is used then repeating texture works
+	const int TEXTURE_REPEAT = 16;
 
 	struct float3
 	{
@@ -18,6 +25,7 @@ private:
 	struct HeightMap
 	{
 		float x, y, z;
+		float tu, tv;
 		float nx, ny, nz;
 	};
 
@@ -31,24 +39,27 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
+	Texture* texture;
+
 	void InitializeBuffers(ID3D11Device* device);
 	void SetBuffers(ID3D11DeviceContext* deviceContext);
 
 	bool LoadHeightMap(char* filename);
 	void NormalizeHeightMap(float factor);
 	void CalculateNormals();
+	void CalculateTextureCoordinates();
 
 	float GetHeightAt(int x, int z);
 
 public:
 
-	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor);
+	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string textureName);
 	~Terrain();
 
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	float GetY(float x, float z);
 	
-
 	int GetIndexCount();
+	ID3D11ShaderResourceView* GetTexture();
 };

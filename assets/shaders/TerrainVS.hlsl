@@ -10,12 +10,14 @@ cbuffer MatrixBuffer : register(cb0)
 struct VS_IN
 {
 	float3 Pos : POSITION;
+	float2 Tex : TEXCOORD0;
 	float3 Normal : NORMAL;
 };
 
 struct VS_OUT
 {
 	float4 Pos : SV_POSITION;
+	float2 Tex : TEXCOORD0;
 	float3 Normal : NORMAL;
 };
 
@@ -23,7 +25,7 @@ VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	output.Pos = float4(input.Pos, 1);
+	output.Pos = float4(input.Pos, 1.0f);
 
 	//output.Pos = mul(input.Pos, wvpMatrix);
 
@@ -31,9 +33,9 @@ VS_OUT main(VS_IN input)
 	output.Pos = mul(output.Pos, viewMatrix);
 	output.Pos = mul(output.Pos, projectionMatrix);
 
-	//Calculate the normal vector against the world matrix only.
+	output.Tex = input.Tex;
+
 	output.Normal = mul(input.Normal, (float3x3)worldMatrix);
-	//Normalize the normal vector.
 	output.Normal = normalize(output.Normal);
 
 	return output;

@@ -4,7 +4,7 @@
 using namespace DirectX;
 using namespace std;
 
-Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor)
+Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string textureName)
 {
 	indexBuffer = nullptr;
 	vertexBuffer = nullptr;
@@ -13,27 +13,28 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFacto
 
 	bool result = true;
 
-	//Load and normalize heightmap
+	texture = new Texture(textureName, device);
+
+	//Load, normalize, calculate normals and calculate texture coordinates for the heightmap
 	result = LoadHeightMap(heightMapName);
 	if (!result)
 		throw runtime_error("LoadHeightMap Error");
 
 	NormalizeHeightMap(normalizeFactor);
 	CalculateNormals();
+	CalculateTextureCoordinates();
 
 	//Initialize the vertex and index buffer that holds the geometry for the terrain.
 	InitializeBuffers(device);
 }
 Terrain::~Terrain()
 {
-	//Release the index buffer.
 	if (indexBuffer)
 	{
 		indexBuffer->Release();
 		indexBuffer = nullptr;
 	}
 
-	//Release the vertex buffer.
 	if (vertexBuffer)
 	{
 		vertexBuffer->Release();
@@ -44,6 +45,12 @@ Terrain::~Terrain()
 	{
 		delete[] heightMap;
 		heightMap = nullptr;
+	}
+
+	if (texture)
+	{
+		delete texture;
+		texture = nullptr;
 	}
 }
 
@@ -88,6 +95,11 @@ float Terrain::GetY(float x, float z)
 float Terrain::GetHeightAt(int x, int z)
 {
 	return heightMap[(terrainHeight * z) + x].y;
+}
+
+ID3D11ShaderResourceView* Terrain::GetTexture()
+{
+	return texture->GetTexture();
 }
 
 bool Terrain::LoadHeightMap(char* filename)
@@ -315,6 +327,48 @@ void Terrain::CalculateNormals()
 	normals = 0;
 }
 
+void Terrain::CalculateTextureCoordinates()
+{
+	//Initialize necessary values
+	float incrementValue = (float)TEXTURE_REPEAT / (float)terrainWidth;
+	int incrementCount = terrainWidth / TEXTURE_REPEAT;
+	float tuCoordinate = 0.0f;
+	float tvCoordinate = 1.0f;
+	int tuCount = 0;
+	int tvCount = 0;
+
+	// Loop through heightmap and calculate texture coordinates for each vertex
+	for (int i = 0; i < terrainHeight; i++)
+	{
+		for (int j = 0; j < terrainWidth; j++)
+		{
+			//Store the texture coordinate in the height map
+			heightMap[(terrainHeight * i) + j].tu = tuCoordinate;
+			heightMap[(terrainHeight * i) + j].tv = tvCoordinate;
+
+			tuCoordinate += incrementValue;
+			tuCount++;
+
+			// Check if at the far right end of the texture. If so, start from the left
+			if (tuCount == incrementCount)
+			{
+				tuCoordinate = 0.0f;
+				tuCount = 0;
+			}
+		}
+
+		tvCoordinate -= incrementValue;
+		tvCount++;
+
+		// Check if at the top of the texture. If so, start from the bottom
+		if (tvCount == incrementCount)
+		{
+			tvCoordinate = 1.0f;
+			tvCount = 0;
+		}
+	}
+}
+
 void Terrain::InitializeBuffers(ID3D11Device* device)
 {
 	HRESULT result;
@@ -323,10 +377,13 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	vertexCount = (terrainWidth - 1) * (terrainHeight - 1) * 6;
 	indexCount = vertexCount;
 
-	VertexPosCol* vertices = new VertexPosCol[vertexCount];
+	Vertex* vertices = new Vertex[vertexCount];
 	unsigned long* indices = new unsigned long[indexCount];
 
 	int index = 0;
+
+	float tu = 0.0f;
+	float tv = 0.0f;
 
 	//Load the vertex and index array with the terrain data.
 	for (int i = 0; i < (terrainHeight - 1); i++)
@@ -339,37 +396,72 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 			index4 = (terrainHeight * (i + 1)) + (j + 1);		//Upper right
 
 			// Upper left
-			vertices[index].position = XMFLOAT3(heightMap[index3].x, heightMap[index3].y, heightMap[index3].z);
+			tv = heightMap[index3].tv;
+			//Cover the top edge
+			if (tv == 1.0f)
+				tv = 0.0f;
+
+			vertices[index].pos = XMFLOAT3(heightMap[index3].x, heightMap[index3].y, heightMap[index3].z);
+			vertices[index].uv = XMFLOAT2(heightMap[index3].tu, tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index3].nx, heightMap[index3].ny, heightMap[index3].nz);
 			indices[index] = index;
 			index++;
 
 			// Upper right
-			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
+			tu = heightMap[index4].tu;
+			tv = heightMap[index4].tv;
+
+			//Cover the top and right edge
+			if (tu == 0.0f)
+				tu = 1.0f;
+			if (tv == 1.0f)
+				tv = 0.0f; 
+
+			vertices[index].pos = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
+			vertices[index].uv = XMFLOAT2(tu, tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index4].nx, heightMap[index4].ny, heightMap[index4].nz);
 			indices[index] = index;
 			index++;
 
 			// Bottom left
-			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
+			vertices[index].pos = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
+			vertices[index].uv = XMFLOAT2(heightMap[index1].tu, heightMap[index1].tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index1].nx, heightMap[index1].ny, heightMap[index1].nz);
 			indices[index] = index;
 			index++;
 
 			// Bottom left
-			vertices[index].position = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
+			vertices[index].pos = XMFLOAT3(heightMap[index1].x, heightMap[index1].y, heightMap[index1].z);
+			vertices[index].uv = XMFLOAT2(heightMap[index1].tu, heightMap[index1].tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index1].nx, heightMap[index1].ny, heightMap[index1].nz);
 			indices[index] = index;
 			index++;
 
 			// Upper right
-			vertices[index].position = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
+			tu = heightMap[index4].tu;
+			tv = heightMap[index4].tv;
+
+			//Cover the top and right edge.
+			if (tu == 0.0f) 
+				tu = 1.0f; 
+			if (tv == 1.0f) 
+				tv = 0.0f; 
+
+			vertices[index].pos = XMFLOAT3(heightMap[index4].x, heightMap[index4].y, heightMap[index4].z);
+			vertices[index].uv = XMFLOAT2(tu, tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index4].nx, heightMap[index4].ny, heightMap[index4].nz);
 			indices[index] = index;
 			index++;
 
 			// Bottom right
-			vertices[index].position = XMFLOAT3(heightMap[index2].x, heightMap[index2].y, heightMap[index2].z);
+			tu = heightMap[index2].tu;
+
+			// Cover the right edge.
+			if (tu == 0.0f) 
+				tu = 1.0f; 
+
+			vertices[index].pos = XMFLOAT3(heightMap[index2].x, heightMap[index2].y, heightMap[index2].z);
+			vertices[index].uv = XMFLOAT2(tu, heightMap[index2].tv);
 			vertices[index].normal = XMFLOAT3(heightMap[index2].nx, heightMap[index2].ny, heightMap[index2].nz);
 			indices[index] = index;
 			index++;
@@ -381,7 +473,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 
 	//Set up the description of the vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexPosCol) * vertexCount;
+	vertexBufferDesc.ByteWidth = sizeof(Vertex) * vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -419,7 +511,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 
 void Terrain::SetBuffers(ID3D11DeviceContext* deviceContext)
 {
-	UINT32 vertexSize = sizeof(VertexPosCol);
+	UINT32 vertexSize = sizeof(Vertex);
 	UINT32 offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &vertexSize, &offset);

@@ -15,19 +15,17 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
 
-	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/heightmap03.bmp", 8.5f);
+	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/terrain/heightmap01.bmp", 10.0f, "assets/textures/terrain/grass01.raw");
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/camel.raw");
 
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
 	XMFLOAT4 diffuse(0.0f, 1.0f, 1.0f, 1.0f);
-	XMFLOAT3 direction(0.0f, 0.0f, 0.75);
+	XMFLOAT3 direction(0.0f, -0.8f, 0.75f);
 
 	light = new Light(ambient, diffuse, direction);
-	light->SetAmbientColor(0.05f, 0.05f, 0.05f, 1.0f);
-	light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	light->SetDirection(0.0f, 0.0f, 0.75f);
+
 
 	CreateShaders();
 }
@@ -110,26 +108,21 @@ bool Application::Update()
 {
 	bool result = true;
 
-	//Update the frameTime
 	timer->Update();
-
-	// Read the user input.
 	input->Update();
 
-	//Handle input from keyboard and mouse
 	HandleMovement(timer->GetTime());
 
-	//Update the camera. viewMatrix gets updated here
+	//Update the camera. viewMatrix gets updated here.
 	camera->Update();
 
-	// Render the graphics.
 	result = RenderGraphics();
 	if (!result)
 	{
 		return false;
 	}
 
-	// Check if the user pressed escape and wants to exit the application.
+	//Check if the user pressed escape and wants to exit the application.
 	if (input->Escape() == true)
 	{
 		result = false;
@@ -186,7 +179,7 @@ bool Application::RenderGraphics()
 
 	//Render terrain
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
-	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f);
+	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTexture());
 	terrain->Render(Direct3D->GetDeviceContext());
 
 	//Render objects

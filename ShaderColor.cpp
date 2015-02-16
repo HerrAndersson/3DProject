@@ -12,7 +12,8 @@ ShaderColor::ShaderColor(	ID3D11Device* device,
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	CreateMandatoryShaders(device, vertexShaderFilename, pixelShaderFilename, inputDesc, ARRAYSIZE(inputDesc));
@@ -94,7 +95,7 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
-void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding)
+void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView* texture)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -140,6 +141,7 @@ void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& world
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 }
 
 void* ShaderColor::operator new(size_t i)
