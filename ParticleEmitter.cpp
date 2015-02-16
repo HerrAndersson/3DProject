@@ -7,39 +7,47 @@ ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilena
 {
 	texture = new Texture(textureFilename, device);
 
-
-	//Test particles
-	VertexParticles testParticle[3];
-	testParticle[0].pos = XMFLOAT3(4, 4, 0);
-	testParticle[1].pos = XMFLOAT3(8, 4, 0);
-	testParticle[2].pos = XMFLOAT3(12, 4, 0);
+	//Test particleData
+	for (int i = 0; i < 10; i++)
+	{
+		for (int j = 0; j < 10; j++)
+		{
+			particles.push_back(new Particle(XMFLOAT3(5*i, 100, 5*j), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0)));
+		}
+	}
 	
-	particles.push_back(testParticle[0]);
-	particles.push_back(testParticle[1]);
-	particles.push_back(testParticle[2]);
+	particleData.clear();
+	for (unsigned int i = 0; i < particles.size(); i++)
+	{
+		particleData.push_back(particles.at(i)->GetPosition());
+	}
 
 	D3D11_BUFFER_DESC bufferDesc;
 	ZeroMemory(&bufferDesc, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.ByteWidth = sizeof(VertexParticles) * particles.size();
+	bufferDesc.ByteWidth = sizeof(XMFLOAT3) * particleData.size();
 	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
 	D3D11_SUBRESOURCE_DATA data;
-	data.pSysMem = particles.data();
+	data.pSysMem = particleData.data();
 	device->CreateBuffer(&bufferDesc, &data, &vertexBuffer);
 
-	vertexCount = particles.size();
+	vertexCount = particleData.size();
 }
 
 
 ParticleEmitter::~ParticleEmitter()
 {
+	for (unsigned int i = 0; i < particles.size(); i++)
+	{
+		delete particles.at(i);
+	}
 }
 
 void ParticleEmitter::Render(ID3D11DeviceContext* deviceContext)
 {
-	UINT32 vertexSize = sizeof(VertexParticles);
+	UINT32 vertexSize = sizeof(XMFLOAT3);
 	UINT32 offset = 0;
 	ID3D11ShaderResourceView* textureView = GetTexture();
 
@@ -52,13 +60,27 @@ void ParticleEmitter::Render(ID3D11DeviceContext* deviceContext)
 
 void ParticleEmitter::Update(ID3D11DeviceContext* deviceContext, float frameTime)
 {
-	//Update the particles
+	//Update the particleData
+	particleData.clear();
+	for (unsigned int i = 0; i < particles.size(); i++)
+	{
+		Particle* currentParticle = particles.at(i);
+		currentParticle->Update(frameTime);
+		if (!currentParticle->IsAlive())
+		{
+			float xpos = currentParticle->GetPosition().x;
+			float zpos = currentParticle->GetPosition().z;
+			delete currentParticle;
+			particles[i] = new Particle(XMFLOAT3(xpos, 100, zpos), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0));
+		}
+		
+		particleData.push_back(currentParticle->GetPosition());
+	}
 
-
-	vertexCount = particles.size();
+	vertexCount = particleData.size();
 	//Update the buffer
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	deviceContext->Map(vertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, particles.data(), sizeof(VertexParticles)*particles.size());
+	memcpy(mappedResource.pData, particleData.data(), sizeof(XMFLOAT3)*particleData.size());
 	deviceContext->Unmap(vertexBuffer, 0);
 }

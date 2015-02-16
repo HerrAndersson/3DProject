@@ -19,8 +19,3 @@ struct Vertex
 	DirectX::XMFLOAT2 uv;
 	DirectX::XMFLOAT3 normal;
 };
-
-struct VertexParticles
-{
-	DirectX::XMFLOAT3 pos;
-};
