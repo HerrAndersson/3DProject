@@ -186,14 +186,14 @@
     <None Include="assets\textures\missing.raw">
       <Filter>Resource Files\Textures</Filter>
     </None>
-    <None Include="assets\textures\teapot.raw">
-      <Filter>Resource Files\Textures</Filter>
-    </None>
     <None Include="assets\textures\camel.raw">
       <Filter>Resource Files\Textures</Filter>
     </None>
     <None Include="assets\models\camel.obj">
       <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="assets\textures\dollar.raw">
+      <Filter>Resource Files\Textures</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

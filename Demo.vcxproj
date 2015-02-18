@@ -125,8 +125,8 @@
       <FileType>Document</FileType>
     </None>
     <None Include="assets\textures\camel.raw" />
+    <None Include="assets\textures\dollar.raw" />
     <None Include="assets\textures\missing.raw" />
-    <None Include="assets\textures\teapot.raw" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">

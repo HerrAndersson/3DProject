@@ -23,7 +23,7 @@ struct GS_IN
 void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 {
 	GS_OUT output = (GS_OUT)0;
-	float scale = 3;
+	float scale = 1;
 	
 	float4 up = float4(0, 1, 0, 0);
 	float4 particlepos = mul(input[0].position, worldMatrix);
@@ -31,7 +31,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	float4 temp;
 
 	up = up*scale;
-	right = right*scale;
+	right = right*scale*0.42;
 
 	//First triangle
 	temp = input[0].position + up - right;

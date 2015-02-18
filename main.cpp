@@ -6,12 +6,16 @@
 #include <fstream>
 #include <conio.h>
 #include <stdio.h>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
 int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	srand(time(NULL));
 
 	RedirectIOToConsole();
 
