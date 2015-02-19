@@ -128,7 +128,6 @@
     <None Include="assets\textures\grass01.raw" />
     <None Include="assets\textures\grass02.raw" />
     <None Include="assets\textures\grass03.raw" />
-    <None Include="assets\textures\missing.raw" />
     <None Include="assets\textures\teapot.raw" />
     <None Include="assets\textures\terrain\grass04.raw" />
     <None Include="assets\textures\dollar.raw" />

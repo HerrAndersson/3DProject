@@ -206,6 +206,7 @@
     </None>
     <None Include="assets\textures\terrain\grass04.raw">
       <Filter>Resource Files\Textures\Terrain</Filter>
+	</None>
     <None Include="assets\textures\dollar.raw">
       <Filter>Resource Files\Textures</Filter>
     </None>
