@@ -9,13 +9,13 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.1f);
 	timer = new Timer();
 	input = new InputHandler(hInstance, hwnd, screenWidth, screenHeight);
-	position = new Position(XMFLOAT3(125.0f, 15.0f, -15.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+	position = new Position(XMFLOAT3(170.0f, 15.0f, 50.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	camera = new Camera();
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
 
-	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/terrain/heightmap01.bmp", 10.0f, "assets/textures/terrain/grass01.raw");
+	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/terrain/heightmap02.bmp", 7.0f, "assets/textures/terrain/grass01.raw");
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/missing.raw");
 
@@ -109,12 +109,16 @@ bool Application::Update()
 	bool result = true;
 
 	timer->Update();
+	float frameTime = timer->GetTime();
+
 	input->Update();
 
-	HandleMovement(timer->GetTime());
+	HandleMovement(frameTime);
 
 	//Update the camera. viewMatrix gets updated here.
 	camera->Update();
+
+	particleEmitter->Update(Direct3D->GetDeviceContext(), frameTime);
 
 	result = RenderGraphics();
 	if (!result)
@@ -162,8 +166,6 @@ void Application::HandleMovement(float frameTime)
 	// Set the position of the camera.
 	camera->SetPosition(pos);
 	camera->SetRotation(rot);
-
-	particleEmitter->Update(Direct3D->GetDeviceContext(), frameTime);
 }
 
 
@@ -203,7 +205,7 @@ bool Application::RenderGraphics()
 
 void Application::CreateShaders()
 {
-	terrainShader = new ShaderColor(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
+	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
 	defaultShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 }

@@ -90,7 +90,7 @@
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
-    <ClCompile Include="ShaderColor.cpp" />
+    <ClCompile Include="ShaderTerrain.cpp" />
     <ClCompile Include="ShaderDefault.cpp" />
     <ClCompile Include="ShaderParticles.cpp" />
     <ClCompile Include="System.cpp" />
@@ -111,7 +111,7 @@
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ShaderBase.h" />
-    <ClInclude Include="ShaderColor.h" />
+    <ClInclude Include="ShaderTerrain.h" />
     <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderParticles.h" />
     <ClInclude Include="System.h" />

@@ -16,12 +16,11 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 	RedirectIOToConsole();
 
 	System* system;
-	// Initialize and run the system object.
+
 	try
 	{
-		system = new System(false, false);
+		system = new System(false, false, 1440, 900);
 		system->Run();
-		// Shutdown and release the system object.
 		delete system;
 	}
 	catch (exception& e)

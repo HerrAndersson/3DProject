@@ -21,7 +21,7 @@ float4 main(VS_OUT input) : SV_Target
 	float4 textureColor = shaderTexture.Sample(SampleType, input.Tex);		//Sample texture color
 	float4 color = ambientColor; 											//Set default to ambient light
 	float3 lightDir = -lightDirection;										//Invert the light direction for calculations.
-	float lightIntensity = saturate(dot(input.Normal, lightDir)) + 0.0f; 	//Calculate the amount of light on this pixel.
+	float lightIntensity = saturate(dot(input.Normal, lightDir)) - 0.2f; 	//Calculate the amount of light on this pixel.
 
 	if (lightIntensity > 0.0f)
 	{

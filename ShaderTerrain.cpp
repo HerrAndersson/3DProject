@@ -1,10 +1,10 @@
-#include "ShaderColor.h"
+#include "ShaderTerrain.h"
 #include <iostream>
 
 using namespace DirectX;
 using namespace std;
 
-ShaderColor::ShaderColor(	ID3D11Device* device,
+ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
 							LPCWSTR vertexShaderFilename,
 							LPCWSTR pixelShaderFilename
 						):	ShaderBase(device)
@@ -81,11 +81,11 @@ ShaderColor::ShaderColor(	ID3D11Device* device,
 	}
 }
 
-ShaderColor::~ShaderColor()
+ShaderTerrain::~ShaderTerrain()
 {
 }
 
-void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext)
+void ShaderTerrain::UseShader(ID3D11DeviceContext* deviceContext)
 {
 	deviceContext->VSSetShader(vertexShader, nullptr, 0);
 	deviceContext->HSSetShader(hullShader, nullptr, 0);
@@ -95,7 +95,7 @@ void ShaderColor::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
-void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView* texture)
+void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView* texture)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -144,12 +144,12 @@ void ShaderColor::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& world
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 }
 
-void* ShaderColor::operator new(size_t i)
+void* ShaderTerrain::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);
 }
 
-void ShaderColor::operator delete(void* p)
+void ShaderTerrain::operator delete(void* p)
 {
 	_mm_free(p);
 }

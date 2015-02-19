@@ -24,14 +24,10 @@ void Timer::Update()
 	INT64 currentTime;
 	float timeDifference;
 
-	//Query the current time
-	QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);
-	//Difference in time since the last time-query 
-	timeDifference = (float)(currentTime - startTime);
-	//Time difference over the timer speed resolution give frameTime
-	frameTime = timeDifference / ticksPerMs;
-	//Restart the timer
-	startTime = currentTime;
+	QueryPerformanceCounter((LARGE_INTEGER*)&currentTime);		//Query the current time
+	timeDifference = (float)(currentTime - startTime); 			//Difference in time since the last time-query 
+	frameTime = timeDifference / ticksPerMs;					//Time difference over the timer speed resolution give frameTime
+	startTime = currentTime; 									//Restart the timer
 }
 
 float Timer::GetTime()

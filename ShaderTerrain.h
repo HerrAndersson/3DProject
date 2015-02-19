@@ -6,7 +6,7 @@
 using namespace std;
 using namespace DirectX;
 
-class ShaderColor : public ShaderBase
+class ShaderTerrain : public ShaderBase
 {
 
 private:
@@ -33,8 +33,8 @@ private:
 
 public:
 
-	ShaderColor(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename);
-	virtual ~ShaderColor();
+	ShaderTerrain(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename);
+	virtual ~ShaderTerrain();
 
 	virtual void UseShader(ID3D11DeviceContext* deviceContext);
 

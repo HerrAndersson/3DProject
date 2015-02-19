@@ -20,7 +20,6 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 
 	HRESULT result;
 
-	D3D_FEATURE_LEVEL featureLevel;
 	ID3D11Texture2D* backBufferPtr;
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -30,6 +29,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	D3D11_BLEND_DESC blendStateDescription;
 
+	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Initialize the swap chain description.
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
@@ -60,8 +60,6 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = 0;
-
-	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Create the swap chain, device, and device context.
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &deviceContext);
@@ -151,7 +149,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	//Bind the render target view and depth stencil buffer to the output render pipeline.
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
-	//Setup the raster description which will determine how and what polygons will be drawn.
+	//Setup the raster description which will determine how and what polygons will be drawn
 	rasterDesc.AntialiasedLineEnable = false;
 	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
@@ -171,7 +169,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	}
 	deviceContext->RSSetState(rasterState);
 
-	// Setup the viewport for rendering.
+	//Setup the viewport for rendering
 	viewport.Width = (float)screenWidth;
 	viewport.Height = (float)screenHeight;
 	viewport.MinDepth = 0.0f;
@@ -179,11 +177,10 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	viewport.TopLeftX = 0.0f;
 	viewport.TopLeftY = 0.0f;
 
-	// Create the viewport.
 	deviceContext->RSSetViewports(1, &viewport);
 
 	// Create the matrices for 3D rendering.
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI * 0.4f, (float)screenWidth / (float)screenHeight, screenNear, screenDepth);
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PI * 0.45f, (float)screenWidth / (float)screenHeight, screenNear, screenDepth);
 	worldMatrix = XMMatrixIdentity();
 
 	// Create an orthographic projection matrix for 2D rendering.
@@ -207,15 +204,13 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	// Create the state using the device.
 	result = device->CreateDepthStencilState(&depthDisabledStencilDesc, &depthDisabledStencilState);
 	if (FAILED(result))
 	{
 		throw std::runtime_error("Depth stencil state error");
 	}
 
-
-	// Clear the blend state description.
+	//Clear the blend state description.
 	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
 
 	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;

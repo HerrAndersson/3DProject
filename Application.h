@@ -6,7 +6,7 @@
 #include "VertexTypes.h"
 #include "Camera.h"
 #include "Terrain.h"
-#include "ShaderColor.h"
+#include "ShaderTerrain.h"
 #include "InputHandler.h"
 #include "Timer.h"
 #include "Position.h"
@@ -21,7 +21,7 @@ class Application
 
 private:
 
-	const float HEIGHT_FROM_GROUND = 4.0f;
+	const float HEIGHT_FROM_GROUND = 6.0f;
 
 	//OBJECTS
 	D3DClass*		    Direct3D;
@@ -36,7 +36,7 @@ private:
 	ObjectBase*			particleEmitter;
 
 	//SHADERS
-	ShaderColor*        terrainShader;
+	ShaderTerrain*        terrainShader;
 	ShaderDefault*		defaultShader;
 	ShaderParticles*	particleShader;
 
