@@ -17,7 +17,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/terrain/heightmap02.bmp", 7.0f, "assets/textures/terrain/grass01.raw");
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
-	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/missing.raw");
+	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);

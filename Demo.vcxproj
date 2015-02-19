@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -131,6 +131,8 @@
     <None Include="assets\textures\missing.raw" />
     <None Include="assets\textures\teapot.raw" />
     <None Include="assets\textures\terrain\grass04.raw" />
+    <None Include="assets\textures\dollar.raw" />
+    <None Include="assets\textures\missing.raw" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\PixelShader.hlsl">
