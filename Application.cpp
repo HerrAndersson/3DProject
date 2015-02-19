@@ -195,7 +195,7 @@ bool Application::RenderGraphics()
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());
-	particleShader->SetMatrices(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, camera->GetPosition());
+	particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
 	particleEmitter->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
