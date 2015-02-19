@@ -1,5 +1,5 @@
 SamplerState SampleType;
-Texture2D shaderTexture;
+Texture2D shaderTexture[4];
 
 cbuffer LightBuffer : register(cb0)
 {
@@ -18,16 +18,21 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_Target
 {
-	float4 textureColor = shaderTexture.Sample(SampleType, input.Tex);		//Sample texture color
-	float4 color = ambientColor; 											//Set default to ambient light
-	float3 lightDir = -lightDirection;										//Invert the light direction for calculations.
-	float lightIntensity = saturate(dot(input.Normal, lightDir)) - 0.2f; 	//Calculate the amount of light on this pixel.
+	float4 blendMapColor = shaderTexture[0].Sample(SampleType, input.Tex);
+	float4 textureColor;
+	textureColor =  shaderTexture[1].Sample(SampleType, input.Tex) * blendMapColor.r;
+	textureColor += shaderTexture[2].Sample(SampleType, input.Tex) * blendMapColor.g;
+	textureColor += shaderTexture[3].Sample(SampleType, input.Tex) * blendMapColor.b;
 
+	float4 color = ambientColor;
+	float3 lightDir = -lightDirection;
+	float lightIntensity = saturate(dot(input.Normal, lightDir));
+	
 	if (lightIntensity > 0.0f)
 	{
 		color += (diffuseColor * lightIntensity);
 	}
-
+	
 	color = saturate(color);
 	color = color * textureColor;
 

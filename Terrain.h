@@ -15,7 +15,7 @@ private:
 
 	//For our texture-blending to work this has to be set to 1. 
 	//If no blending is used then repeating texture works
-	const int TEXTURE_REPEAT = 16;
+	const int TEXTURE_REPEAT = 1;
 
 	struct float3
 	{
@@ -39,7 +39,9 @@ private:
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
 
-	Texture* texture;
+	Texture* texture[4];
+
+	ID3D11ShaderResourceView* textureArray[4];
 
 	void InitializeBuffers(ID3D11Device* device);
 	void SetBuffers(ID3D11DeviceContext* deviceContext);
@@ -53,7 +55,7 @@ private:
 
 public:
 
-	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string textureName);
+	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string blendMapFilename, string grassTextureFilename, string stoneTextureFilename, string sandTextureFilename);
 	~Terrain();
 
 	void Render(ID3D11DeviceContext* deviceContext);
@@ -61,5 +63,5 @@ public:
 	float GetY(float x, float z);
 	
 	int GetIndexCount();
-	ID3D11ShaderResourceView* GetTexture();
+	ID3D11ShaderResourceView** GetTextures();
 };

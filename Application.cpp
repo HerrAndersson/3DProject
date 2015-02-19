@@ -15,13 +15,17 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
 
-	terrain = new Terrain(Direct3D->GetDevice(), "assets/textures/terrain/heightmap02.bmp", 7.0f, "assets/textures/terrain/grass01.raw");
+	terrain = new Terrain(	Direct3D->GetDevice(), "assets/textures/terrain/heightmap02.bmp", 7.0f, 
+							"assets/textures/terrain/blendmap.raw",
+							"assets/textures/terrain/grass.raw",
+							"assets/textures/terrain/stone.raw",
+							"assets/textures/terrain/sand.raw");
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
-	XMFLOAT4 diffuse(0.0f, 1.0f, 1.0f, 1.0f);
+	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
 	XMFLOAT3 direction(0.0f, -0.8f, 0.75f);
 
 	light = new Light(ambient, diffuse, direction);
@@ -183,7 +187,7 @@ bool Application::RenderGraphics()
 
 	//Render terrain
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
-	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTexture());
+	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
 	terrain->Render(Direct3D->GetDeviceContext());
 
 	//Render objects

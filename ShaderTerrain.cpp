@@ -95,7 +95,7 @@ void ShaderTerrain::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
-void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView* texture)
+void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView** textures)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -141,7 +141,7 @@ void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& wor
 	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 4, textures);
 }
 
 void* ShaderTerrain::operator new(size_t i)

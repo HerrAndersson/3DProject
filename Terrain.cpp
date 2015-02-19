@@ -4,7 +4,7 @@
 using namespace DirectX;
 using namespace std;
 
-Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string textureName)
+Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string blendMapFilename, string grassTextureFilename, string stoneTextureFilename, string sandTextureFilename)
 {
 	indexBuffer = nullptr;
 	vertexBuffer = nullptr;
@@ -13,7 +13,10 @@ Terrain::Terrain(ID3D11Device* device, char* heightMapName, float normalizeFacto
 
 	bool result = true;
 
-	texture = new Texture(textureName, device);
+	texture[0] = new Texture(blendMapFilename, device);
+	texture[1] = new Texture(grassTextureFilename, device);
+	texture[2] = new Texture(stoneTextureFilename, device);
+	texture[3] = new Texture(sandTextureFilename, device);
 
 	//Load, normalize, calculate normals and calculate texture coordinates for the heightmap
 	result = LoadHeightMap(heightMapName);
@@ -47,10 +50,25 @@ Terrain::~Terrain()
 		heightMap = nullptr;
 	}
 
-	if (texture)
+	if (texture[0])
 	{
-		delete texture;
-		texture = nullptr;
+		delete texture[0];
+		texture[0] = nullptr;
+	}
+	if (texture[1])
+	{
+		delete texture[1];
+		texture[1] = nullptr;
+	}
+	if (texture[2])
+	{
+		delete texture[2];
+		texture[2] = nullptr;
+	}
+	if (texture[3])
+	{
+		delete texture[3];
+		texture[3] = nullptr;
 	}
 }
 
@@ -97,9 +115,13 @@ float Terrain::GetHeightAt(int x, int z)
 	return heightMap[(terrainHeight * z) + x].y;
 }
 
-ID3D11ShaderResourceView* Terrain::GetTexture()
+ID3D11ShaderResourceView** Terrain::GetTextures()
 {
-	return texture->GetTexture();
+	textureArray[0] = texture[0]->GetTexture();
+	textureArray[1] = texture[1]->GetTexture();
+	textureArray[2] = texture[2]->GetTexture();
+	textureArray[3] = texture[3]->GetTexture();
+	return textureArray;
 }
 
 bool Terrain::LoadHeightMap(char* filename)
