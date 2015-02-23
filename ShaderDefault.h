@@ -1,5 +1,6 @@
 #pragma once
 #include "ShaderBase.h"
+#include "BufferTypes.h"
 
 class ShaderDefault : public ShaderBase
 {

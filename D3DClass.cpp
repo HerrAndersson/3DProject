@@ -25,7 +25,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
-	D3D11_VIEWPORT viewport;
+	D3D11_RASTERIZER_DESC rasterNoCullingDesc;
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	D3D11_BLEND_DESC blendStateDescription;
 
@@ -165,9 +165,26 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	result = device->CreateRasterizerState(&rasterDesc, &rasterState);
 	if (FAILED(result))
 	{
-		throw std::runtime_error("Resterizer state error");
+		throw std::runtime_error("Resterizer state error 1");
 	}
 	deviceContext->RSSetState(rasterState);
+
+	rasterNoCullingDesc.AntialiasedLineEnable = false;
+	rasterNoCullingDesc.CullMode = D3D11_CULL_NONE;
+	rasterNoCullingDesc.DepthBias = 0;
+	rasterNoCullingDesc.DepthBiasClamp = 0.0f;
+	rasterNoCullingDesc.DepthClipEnable = true;
+	rasterNoCullingDesc.FillMode = D3D11_FILL_SOLID;
+	rasterNoCullingDesc.FrontCounterClockwise = false;
+	rasterNoCullingDesc.MultisampleEnable = false;
+	rasterNoCullingDesc.ScissorEnable = false;
+	rasterNoCullingDesc.SlopeScaledDepthBias = 0.0f;
+
+	result = device->CreateRasterizerState(&rasterNoCullingDesc, &rasterNoCullingState);
+	if (FAILED(result))
+	{
+		throw std::runtime_error("Resterizer state error 2");
+	}
 
 	//Setup the viewport for rendering
 	viewport.Width = (float)screenWidth;
@@ -328,7 +345,6 @@ void D3DClass::EndScene()
 	swapChain->Present(0, 0);
 }
 
-
 ID3D11Device* D3DClass::GetDevice()
 {
 	return device;
@@ -339,7 +355,6 @@ ID3D11DeviceContext* D3DClass::GetDeviceContext()
 {
 	return deviceContext;
 }
-
 
 void D3DClass::GetProjectionMatrix(XMMATRIX& projectionMatrix)
 {
@@ -356,6 +371,56 @@ void D3DClass::GetWorldMatrix(XMMATRIX& worldMatrix)
 void D3DClass::GetOrthoMatrix(XMMATRIX& orthoMatrix)
 {
 	orthoMatrix = this->orthoMatrix;
+}
+
+void D3DClass::TurnZBufferON()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+}
+
+void D3DClass::TurnZBufferOFF()
+{
+	deviceContext->OMSetDepthStencilState(depthDisabledStencilState, 1);
+}
+
+void D3DClass::SetBackBufferRenderTarget()
+{
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+}
+
+void D3DClass::ResetViewport()
+{
+	deviceContext->RSSetViewports(1, &viewport);
+}
+
+void D3DClass::TurnOnAlphaBlending()
+{
+	float blendFactor[4];
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	deviceContext->OMSetBlendState(alphaEnableBlendingState, blendFactor, 0xffffffff);
+}
+void D3DClass::TurnOffAlphaBlending()
+{
+	float blendFactor[4];
+	blendFactor[0] = 0.0f;
+	blendFactor[1] = 0.0f;
+	blendFactor[2] = 0.0f;
+	blendFactor[3] = 0.0f;
+
+	deviceContext->OMSetBlendState(alphaDisableBlendingState, blendFactor, 0xffffffff);
+}
+
+void D3DClass::TurnOnCulling()
+{
+	deviceContext->RSSetState(rasterState);
+}
+void D3DClass::TurnOffCulling()
+{
+	deviceContext->RSSetState(rasterNoCullingState);
 }
 
 void* D3DClass::operator new(size_t i)

@@ -33,6 +33,11 @@ void Camera::GetViewMatrix(XMMATRIX& viewMatrix)
 	viewMatrix = this->viewMatrix;
 }
 
+void Camera::GetBaseViewMatrix(XMMATRIX& baseViewMatrix)
+{
+	baseViewMatrix = this->baseViewMatrix;
+}
+
 void Camera::Update()
 {
 	XMMATRIX rotationMatrix;
@@ -49,6 +54,24 @@ void Camera::Update()
 	lookAt = position + lookAt;
 
 	viewMatrix = XMMatrixLookAtLH(position, lookAt, up);
+}
+
+void Camera::CreateBaseViewMatrix()
+{
+	XMMATRIX rotationMatrix;
+
+	XMVECTOR up = { { 0.0f, 1.0f, 0.0f } };
+	XMVECTOR position = { { positionXYZ.x, positionXYZ.y, positionXYZ.z } };
+	XMVECTOR lookAt = { { 0.0f, 0.0f, 1.0f } };
+
+	rotationMatrix = XMMatrixRotationRollPitchYaw(rotationXYZ.x * RAD, rotationXYZ.y * RAD, rotationXYZ.z * RAD);
+
+	lookAt = XMVector3TransformCoord(lookAt, rotationMatrix);
+	up = XMVector3TransformCoord(up, rotationMatrix);
+
+	lookAt = position + lookAt;
+
+	baseViewMatrix = XMMatrixLookAtLH(position, lookAt, up);
 }
 
 void* Camera::operator new(size_t i)

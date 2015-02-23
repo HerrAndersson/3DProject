@@ -17,12 +17,14 @@ private:
 	ID3D11Device*			    device;
 	ID3D11DeviceContext*		deviceContext;
 	ID3D11RenderTargetView*		renderTargetView;
+	D3D11_VIEWPORT				viewport;
 
-	//Used for 2D rendering, ex. text.
+	//Used for 2D rendering, ex. text or deferred shading.
 	ID3D11Texture2D*			depthStencilBuffer;
 	ID3D11DepthStencilState*	depthStencilState;
 	ID3D11DepthStencilView*		depthStencilView;
 	ID3D11RasterizerState*		rasterState;
+	ID3D11RasterizerState*      rasterNoCullingState;
 	ID3D11DepthStencilState*    depthDisabledStencilState;
 	ID3D11BlendState*			alphaEnableBlendingState;
 	ID3D11BlendState*			alphaDisableBlendingState;
@@ -45,6 +47,16 @@ public:
 	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix);
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
+
+	void TurnZBufferON();
+	void TurnZBufferOFF();
+	void TurnOnAlphaBlending();
+	void TurnOffAlphaBlending();
+	void TurnOnCulling();
+	void TurnOffCulling();
+
+	void SetBackBufferRenderTarget();
+	void ResetViewport();
 
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
 	void* operator new(size_t i);

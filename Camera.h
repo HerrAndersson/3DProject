@@ -17,6 +17,7 @@ private:
 	XMFLOAT3 positionXYZ;
 	XMFLOAT3 rotationXYZ;
 	XMMATRIX viewMatrix;
+	XMMATRIX baseViewMatrix;
 
 public:
 	Camera();
@@ -29,6 +30,9 @@ public:
 	XMFLOAT3 GetRotation();
 
 	void GetViewMatrix(XMMATRIX& viewMatrix);
+	void GetBaseViewMatrix(XMMATRIX& baseViewMatrix);
+
+	void CreateBaseViewMatrix();
 
 	void Update();
 

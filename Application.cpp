@@ -14,6 +14,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	camera = new Camera();
 	camera->SetPosition(position->GetPosition());
 	camera->SetRotation(position->GetRotation());
+	camera->CreateBaseViewMatrix();
 
 	terrain = new Terrain(	Direct3D->GetDevice(), "assets/textures/terrain/heightmap02.bmp", 7.0f, 
 							"assets/textures/terrain/blendmap.raw",
@@ -26,12 +27,13 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
 	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
-	XMFLOAT3 direction(0.0f, -0.8f, 0.75f);
+	//XMFLOAT3 direction(0.0f, -0.8f, 0.75f);
+	XMFLOAT3 direction(0.0f, 0.0f, 1.0f);
 
 	light = new Light(ambient, diffuse, direction);
+	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
 
-
-	CreateShaders();
+	CreateShaders(screenHeight, screenWidth);
 }
 
 Application::~Application()
@@ -77,6 +79,11 @@ Application::~Application()
 		delete light;
 		light = nullptr;
 	}
+	//if (orthoWindow)
+	//{
+	//	delete orthoWindow;
+	//	orthoWindow = nullptr;
+	//}
 
 	//MODELS
 	if (camel)
@@ -105,6 +112,16 @@ Application::~Application()
 	{
 		delete particleShader;
 		particleShader = nullptr;
+	}
+	if (deferredShader)
+	{
+		delete deferredShader;
+		deferredShader = nullptr;
+	}
+	if (lightShader)
+	{
+		delete lightShader;
+		lightShader = nullptr;
 	}
 }
 
@@ -175,20 +192,33 @@ void Application::HandleMovement(float frameTime)
 
 bool Application::RenderGraphics()
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, baseViewMatrix;
 	bool result = true;
+
+	RenderToTexture();
 
 	Direct3D->BeginScene(0.2f, 0.4f, 1.0f, 1.0f);
 
 	camera->GetViewMatrix(viewMatrix);
+	camera->GetBaseViewMatrix(baseViewMatrix);
 	Direct3D->GetWorldMatrix(worldMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 	Direct3D->GetOrthoMatrix(orthoMatrix);
 
-	//Render terrain
-	terrainShader->UseShader(Direct3D->GetDeviceContext());
-	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
-	terrain->Render(Direct3D->GetDeviceContext());
+	Direct3D->TurnZBufferOFF();
+
+	orthoWindow->Render(Direct3D->GetDeviceContext());
+
+	//SKA VARA BASEVIEWMATRIX, men funkar inte just nu!
+	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, deferredShader->GetShaderResourceView(0), deferredShader->GetShaderResourceView(1), light->GetDirection());
+	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
+
+	Direct3D->TurnZBufferON();
+
+	////Render terrain
+	//terrainShader->UseShader(Direct3D->GetDeviceContext());
+	//terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
+	//terrain->Render(Direct3D->GetDeviceContext());
 
 	//Render objects
 	defaultShader->UseShader(Direct3D->GetDeviceContext());
@@ -197,19 +227,43 @@ bool Application::RenderGraphics()
 	defaultShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	camel->Render(Direct3D->GetDeviceContext());
 
-	//Render particles
-	particleShader->UseShader(Direct3D->GetDeviceContext());
-	particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
-	particleEmitter->Render(Direct3D->GetDeviceContext());
+	////Render particles
+	//particleShader->UseShader(Direct3D->GetDeviceContext());
+	//particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
+	//particleEmitter->Render(Direct3D->GetDeviceContext());
 
 	Direct3D->EndScene();
 
 	return result;
 }
 
-void Application::CreateShaders()
+void Application::RenderToTexture()
+{
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+
+	deferredShader->SetRenderTargets(Direct3D->GetDeviceContext());
+	deferredShader->ClearRenderTargets(Direct3D->GetDeviceContext(), 0.0f, 1.0f, 0.0f, 1.0f);
+
+	Direct3D->GetWorldMatrix(worldMatrix);
+	camera->GetViewMatrix(viewMatrix);
+	Direct3D->GetProjectionMatrix(projectionMatrix);
+
+	//Render terrain
+	//terrainShader->UseShader(Direct3D->GetDeviceContext());
+	//terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
+	deferredShader->UseShader(Direct3D->GetDeviceContext());
+	deferredShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, terrain->GetTextures()[1]);
+	terrain->Render(Direct3D->GetDeviceContext());
+
+	Direct3D->SetBackBufferRenderTarget();
+	Direct3D->ResetViewport();
+}
+
+void Application::CreateShaders(int screenHeight, int screenWidth)
 {
 	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
 	defaultShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
+	deferredShader = new ShaderDeferred(Direct3D->GetDevice(), L"assets/shaders/DeferredVS.hlsl", L"assets/shaders/DeferredPS.hlsl", screenWidth, screenHeight);
+	lightShader = new ShaderLight(Direct3D->GetDevice(), L"assets/shaders/LightVS.hlsl", L"assets/shaders/LightPS.hlsl");
 }

@@ -16,6 +16,11 @@
 #include "ParticleEmitter.h"
 #include "Light.h"
 
+//Deferred shading
+#include "ShaderDeferred.h"
+#include "ShaderLight.h"
+#include "OrthoWindow.h"
+
 class Application
 {
 
@@ -30,25 +35,29 @@ private:
 	Position*		    position;
 	InputHandler*		input;
 	Timer*				timer;
+	OrthoWindow*		orthoWindow;
 
 	//MODELS
 	ObjectBase*			camel;
 	ObjectBase*			particleEmitter;
 
 	//SHADERS
-	ShaderTerrain*        terrainShader;
+	ShaderTerrain*      terrainShader;
 	ShaderDefault*		defaultShader;
 	ShaderParticles*	particleShader;
+	ShaderDeferred*     deferredShader;
+	ShaderLight*        lightShader;
 
 	//OTHER
 	Light* light;
 
 	void HandleMovement(float frameTime);
+	void CreateShaders(int screenHeight, int screenWidth);
+	void RenderToTexture();
 	bool RenderGraphics();
-	void CreateShaders();
-	void CreateTriangleData();
 
 public:
+
 	Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int screenHeight);
 	~Application();
 

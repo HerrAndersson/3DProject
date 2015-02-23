@@ -2,6 +2,7 @@
 #include "ShaderBase.h"
 #include <stdexcept>
 #include "Light.h"
+#include "BufferTypes.h"
 
 using namespace std;
 using namespace DirectX;

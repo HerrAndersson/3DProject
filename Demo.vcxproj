@@ -86,10 +86,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectBase.cpp" />
+    <ClCompile Include="OrthoWindow.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
+    <ClCompile Include="ShaderDeferred.cpp" />
+    <ClCompile Include="ShaderLight.cpp" />
     <ClCompile Include="ShaderTerrain.cpp" />
     <ClCompile Include="ShaderDefault.cpp" />
     <ClCompile Include="ShaderParticles.cpp" />
@@ -100,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="BufferTypes.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DClass.h" />
@@ -107,10 +111,13 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectBase.h" />
+    <ClInclude Include="OrthoWindow.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="ShaderBase.h" />
+    <ClInclude Include="ShaderDeferred.h" />
+    <ClInclude Include="ShaderLight.h" />
     <ClInclude Include="ShaderTerrain.h" />
     <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderParticles.h" />
@@ -133,6 +140,22 @@
     <None Include="assets\textures\missing.raw" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="assets\shaders\DeferredPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\DeferredVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\LightPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\LightVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="assets\shaders\TerrainPS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
