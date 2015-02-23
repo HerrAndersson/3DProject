@@ -30,10 +30,11 @@ void OrthoWindow::InitializeBuffers(ID3D11Device* device, int windowWidth, int w
 	HRESULT result;
 
 	//Screen coordinates of the window
-	float left = (float)((windowWidth / 2) * -1);
-	float right = left + (float)windowWidth;
-	float top = (float)(windowHeight / 2);
-	float bottom = top - (float)windowHeight;
+	float left = -1.0f;
+	float right = 1.0f;
+	float top = 1.0f;
+	float bottom = -1.0f;
+	
 
 	vertexCount = 6;
 	indexCount = vertexCount;

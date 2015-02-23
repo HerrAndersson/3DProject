@@ -21,12 +21,7 @@ VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	input.position.w = 1.0f;
-
-	output.position = mul(input.position, worldMatrix);
-	output.position = mul(output.position, viewMatrix);
-	output.position = mul(output.position, projectionMatrix);
-
+	output.position = input.position;
 	output.tex = input.tex;
 
 	return output;
