@@ -20,9 +20,10 @@ float4 main(VS_OUT input) : SV_Target
 {
 	float4 blendMapColor = shaderTexture[0].Sample(SampleType, input.Tex);
 	float4 textureColor;
-	textureColor =  shaderTexture[1].Sample(SampleType, input.Tex) * blendMapColor.r;
-	textureColor += shaderTexture[2].Sample(SampleType, input.Tex) * blendMapColor.g;
-	textureColor += shaderTexture[3].Sample(SampleType, input.Tex) * blendMapColor.b;
+	int repeat = 32;
+	textureColor =  shaderTexture[1].Sample(SampleType, input.Tex*repeat) * blendMapColor.r;
+	textureColor += shaderTexture[2].Sample(SampleType, input.Tex*repeat) * blendMapColor.g;
+	textureColor += shaderTexture[3].Sample(SampleType, input.Tex*repeat) * blendMapColor.b;
 
 	float4 color = ambientColor;
 	float3 lightDir = -lightDirection;
