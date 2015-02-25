@@ -98,11 +98,6 @@ Application::~Application()
 	}
 
 	//SHADERS
-	if (terrainShader)
-	{
-		delete terrainShader;
-		terrainShader = nullptr;
-	}
 	if (modelShader)
 	{
 		delete modelShader;
@@ -215,18 +210,6 @@ bool Application::RenderGraphics()
 
 	Direct3D->TurnZBufferON();
 
-	////Render terrain
-	//terrainShader->UseShader(Direct3D->GetDeviceContext());
-	//terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
-	//terrain->Render(Direct3D->GetDeviceContext());
-
-	
-
-	////Render particles
-	//particleShader->UseShader(Direct3D->GetDeviceContext());
-	//particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
-	//particleEmitter->Render(Direct3D->GetDeviceContext());
-
 	Direct3D->EndScene();
 
 	return result;
@@ -244,12 +227,9 @@ void Application::RenderToTexture()
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 
 	//Render terrain
-	//terrainShader->UseShader(Direct3D->GetDeviceContext());
-	//terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, light, 0.0f, terrain->GetTextures());
 	deferredShader->UseShader(Direct3D->GetDeviceContext());
 	deferredShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, terrain->GetTextures()[1]);
 	terrain->Render(Direct3D->GetDeviceContext());
-
 
 	//Render objects
 	modelShader->UseShader(Direct3D->GetDeviceContext());
@@ -257,13 +237,17 @@ void Application::RenderToTexture()
 	modelShader->SetBuffers(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix, camel->GetTexture());
 	camel->Render(Direct3D->GetDeviceContext());
 
+	////Render particles
+	//particleShader->UseShader(Direct3D->GetDeviceContext());
+	//particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
+	//particleEmitter->Render(Direct3D->GetDeviceContext());
+
 	Direct3D->SetBackBufferRenderTarget();
 	Direct3D->ResetViewport();
 }
 
 void Application::CreateShaders(int screenHeight, int screenWidth)
 {
-	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
 	modelShader = new ShaderDeferred(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl", screenWidth, screenHeight);
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 	deferredShader = new ShaderDeferred(Direct3D->GetDevice(), L"assets/shaders/DeferredVS.hlsl", L"assets/shaders/DeferredPS.hlsl", screenWidth, screenHeight);
