@@ -43,7 +43,7 @@ private:
 
 	//SHADERS
 	ShaderTerrain*      terrainShader;
-	ShaderDefault*		defaultShader;
+	ShaderDeferred*		modelShader;
 	ShaderParticles*	particleShader;
 	ShaderDeferred*     deferredShader;
 	ShaderLight*        lightShader;
