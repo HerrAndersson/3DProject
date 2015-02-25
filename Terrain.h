@@ -7,8 +7,6 @@
 #include "VertexTypes.h"
 #include "Texture.h"
 
-using namespace std;
-
 class Terrain
 {
 private:
@@ -55,7 +53,7 @@ private:
 
 public:
 
-	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, string blendMapFilename, string grassTextureFilename, string stoneTextureFilename, string sandTextureFilename);
+	Terrain(ID3D11Device* device, char* heightMapName, float normalizeFactor, std::string blendMapFilename, std::string grassTextureFilename, std::string stoneTextureFilename, std::string sandTextureFilename);
 	~Terrain();
 
 	void Render(ID3D11DeviceContext* deviceContext);

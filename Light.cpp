@@ -1,5 +1,6 @@
 #include "Light.h"
 
+using namespace DirectX;
 
 Light::Light(XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 direction)
 {

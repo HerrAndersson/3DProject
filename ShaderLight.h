@@ -1,9 +1,6 @@
 #pragma once
 #include "ShaderBase.h"
 
-using namespace DirectX;
-using namespace std;
-
 class ShaderLight : public ShaderBase
 {
 
@@ -11,14 +8,14 @@ private:
 
 	struct MatrixBuffer
 	{
-		XMMATRIX world;
-		XMMATRIX view;
-		XMMATRIX projection;
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX view;
+		DirectX::XMMATRIX projection;
 	};
 
 	struct LightBuffer
 	{
-		XMFLOAT3 lightDirection;
+		DirectX::XMFLOAT3 lightDirection;
 		float padding;
 	};
 
@@ -26,16 +23,16 @@ private:
 	ID3D11Buffer*			matrixBuffer;
 	ID3D11Buffer*			lightBuffer;
 
-	void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
-	void SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 lightDirection);
+	void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix);
+	void SetLightBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT3 lightDirection);
 
 public:
 
 	ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename);
 	virtual ~ShaderLight();
 
-	void SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* colorTexture,
-					ID3D11ShaderResourceView* normalTexture, XMFLOAT3 lightDirection);
+	void SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* colorTexture,
+		ID3D11ShaderResourceView* normalTexture, DirectX::XMFLOAT3 lightDirection);
 
 	virtual void Draw(ID3D11DeviceContext* deviceContext, int indexCount);
 

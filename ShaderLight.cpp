@@ -1,5 +1,7 @@
 #include "ShaderLight.h"
 
+using namespace std;
+using namespace DirectX;
 
 ShaderLight::ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename)
 		   : ShaderBase(device)

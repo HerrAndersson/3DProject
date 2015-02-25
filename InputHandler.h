@@ -9,9 +9,6 @@
 #include <DirectXMath.h>
 #include <stdexcept>
 
-using namespace DirectX;
-using namespace std;
-
 class InputHandler
 {
 private:
@@ -27,7 +24,7 @@ private:
 	int screenWidth;
 	int screenHeight;
 
-	XMFLOAT2 mousePos;
+	DirectX::XMFLOAT2 mousePos;
 
 	bool ReadKeyboard();
 	bool ReadMouse();
@@ -40,7 +37,7 @@ public:
 
 	void Update();
 
-	XMFLOAT2 GetMouseLocation();
+	DirectX::XMFLOAT2 GetMouseLocation();
 
 	bool Escape();
 	bool W();
@@ -49,7 +46,7 @@ public:
 	bool D();
 
 	//Returns lX and lY from the mouse state
-	XMFLOAT2 HandleMouse();
+	DirectX::XMFLOAT2 HandleMouse();
 
 };
 

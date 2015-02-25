@@ -1,5 +1,7 @@
 #include "ShaderDeferred.h"
 
+using namespace std;
+using namespace DirectX;
 
 ShaderDeferred::ShaderDeferred(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename, int textureWidth, int textureHeight)
 			  : ShaderBase(device)

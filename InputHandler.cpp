@@ -1,6 +1,8 @@
 #include "InputHandler.h"
 #include <iostream>
+
 using namespace std;
+using namespace DirectX;
 
 InputHandler::InputHandler(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {

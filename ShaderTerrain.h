@@ -4,9 +4,6 @@
 #include "Light.h"
 #include "BufferTypes.h"
 
-using namespace std;
-using namespace DirectX;
-
 class ShaderTerrain : public ShaderBase
 {
 
@@ -22,9 +19,9 @@ private:
 
 	struct LightBuffer
 	{
-		XMFLOAT4 ambientColor;
-		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
+		DirectX::XMFLOAT4 ambientColor;
+		DirectX::XMFLOAT4 diffuseColor;
+		DirectX::XMFLOAT3 lightDirection;
 		float padding;
 	};
 
@@ -39,7 +36,7 @@ public:
 
 	virtual void UseShader(ID3D11DeviceContext* deviceContext);
 
-	void SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix,
+	void SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix,
 					Light* light, float padding, ID3D11ShaderResourceView** textures);
 
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation

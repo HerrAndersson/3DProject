@@ -1,5 +1,7 @@
 #include "Timer.h"
 
+using namespace std;
+
 Timer::Timer()
 {
 	// Check to see if this system supports high performance timers

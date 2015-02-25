@@ -4,9 +4,6 @@
 #include <d3d11.h>
 #include <stdexcept>
 
-using namespace DirectX;
-using namespace std;
-
 class OrthoWindow
 {
 private:

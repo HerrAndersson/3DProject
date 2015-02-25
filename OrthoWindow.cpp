@@ -1,5 +1,8 @@
 #include "OrthoWindow.h"
 
+using namespace std;
+using namespace DirectX;
+
 OrthoWindow::OrthoWindow(ID3D11Device* device, int windowWidth, int windowHeight)
 {
 	vertexCount = 0;

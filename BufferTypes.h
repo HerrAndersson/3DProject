@@ -1,20 +1,18 @@
 #include <DirectXMath.h>
 
-using namespace DirectX;
-
 //Ger redefinition errors, fixa sedan.
 //struct MatrixBuffer
 //{
-//	XMMATRIX world;
-//	XMMATRIX view;
-//	XMMATRIX projection;
-//	XMMATRIX wvp;
+//	DirectX::XMMATRIX world;
+//	DirectX::XMMATRIX view;
+//	DirectX::XMMATRIX projection;
+//	DirectX::XMMATRIX wvp;
 //};
 //
 //struct LightBuffer
 //{
-//	XMFLOAT4 ambientColor;
-//	XMFLOAT4 diffuseColor;
-//	XMFLOAT3 lightDirection;
+//	DirectX::XMFLOAT4 ambientColor;
+//	DirectX::XMFLOAT4 diffuseColor;
+//	DirectX::XMFLOAT3 lightDirection;
 //	float padding;
 //};
