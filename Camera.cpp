@@ -46,7 +46,7 @@ void Camera::Update()
 	XMVECTOR position = { { positionXYZ.x, positionXYZ.y, positionXYZ.z } };
 	XMVECTOR lookAt = { { 0.0f, 0.0f, 1.0f } };
 
-	rotationMatrix = XMMatrixRotationRollPitchYaw(rotationXYZ.x * RAD, rotationXYZ.y * RAD, rotationXYZ.z * RAD);
+	rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotationXYZ.x), XMConvertToRadians(rotationXYZ.y), XMConvertToRadians(rotationXYZ.z));
 
 	lookAt = XMVector3TransformCoord(lookAt, rotationMatrix);
 	up = XMVector3TransformCoord(up, rotationMatrix);
@@ -64,7 +64,7 @@ void Camera::CreateBaseViewMatrix()
 	XMVECTOR position = { { positionXYZ.x, positionXYZ.y, positionXYZ.z } };
 	XMVECTOR lookAt = { { 0.0f, 0.0f, 1.0f } };
 
-	rotationMatrix = XMMatrixRotationRollPitchYaw(rotationXYZ.x * RAD, rotationXYZ.y * RAD, rotationXYZ.z * RAD);
+	rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotationXYZ.x), XMConvertToRadians(rotationXYZ.y), XMConvertToRadians(rotationXYZ.z));
 
 	lookAt = XMVector3TransformCoord(lookAt, rotationMatrix);
 	up = XMVector3TransformCoord(up, rotationMatrix);

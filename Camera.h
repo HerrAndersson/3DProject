@@ -10,10 +10,6 @@ class Camera
 {
 
 private:
-
-	//Used to convert degrees to radians
-	const float RAD = XM_PI / 180;
-
 	XMFLOAT3 positionXYZ;
 	XMFLOAT3 rotationXYZ;
 	XMMATRIX viewMatrix;

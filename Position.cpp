@@ -98,7 +98,7 @@ void Position::MoveForward(bool keyDown)
 		}
 	}
 
-	float radians = rotation.y * RAD;
+	float radians = XMConvertToRadians(rotation.y);
 
 	//Update the position.
 	position.x += sinf(radians) * forwardSpeed;
@@ -125,7 +125,7 @@ void Position::MoveBackward(bool keyDown)
 		}
 	}
 
-	float radians = rotation.y * RAD;
+	float radians = XMConvertToRadians(rotation.y);
 
 	//Update the position.
 	position.x -= sinf(radians) * backwardSpeed;
@@ -153,7 +153,7 @@ void Position::MoveLeft(bool keyDown)
 	}
 
 	//rotation.y gives forward-direction. -90 gives left
-	float radians = (rotation.y - 90.0f) * RAD;
+	float radians = XMConvertToRadians(rotation.y - 90.0f);
 
 	//Update the position.
 	position.x += sinf(radians) * leftSpeed;
@@ -181,7 +181,7 @@ void Position::MoveRight(bool keyDown)
 	}
 
 	//rotation.y gives forward-direction. +90 gives right
-	float radians = (rotation.y + 90.0f) * RAD;
+	float radians = XMConvertToRadians(rotation.y + 90.0f);
 
 	//Update the position.
 	position.x += sinf(radians) * rightSpeed;

@@ -9,7 +9,6 @@ private:
 	const float ACCELERATION = 0.001f;
 	const float DECELERATION = 0.0007f;
 	const float SPEED_MULTIPLIER = 0.03f;
-	const float RAD = XM_PI / 180;
 	const float LOOK_SPEED = 0.5f;
 	const float VIEW_BOUNDS_X = 75.0f;
 
