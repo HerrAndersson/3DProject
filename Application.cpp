@@ -79,11 +79,11 @@ Application::~Application()
 		delete light;
 		light = nullptr;
 	}
-	//if (orthoWindow)
-	//{
-	//	delete orthoWindow;
-	//	orthoWindow = nullptr;
-	//}
+	if (orthoWindow)
+	{
+		delete orthoWindow;
+		orthoWindow = nullptr;
+	}
 
 	//MODELS
 	if (camel)

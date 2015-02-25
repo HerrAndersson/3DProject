@@ -12,13 +12,13 @@ OrthoWindow::~OrthoWindow()
 {
 	if (vertexBuffer)
 	{
-		delete vertexBuffer;
+		vertexBuffer->Release();
 		vertexBuffer = nullptr;
 	}
 
 	if (indexBuffer)
 	{
-		delete indexBuffer;
+		indexBuffer->Release();
 		indexBuffer = nullptr;
 	}
 }
