@@ -1,6 +1,5 @@
 #pragma once
 #include <DirectXMath.h>
-using namespace DirectX;
 
 class Position
 {
@@ -12,8 +11,8 @@ private:
 	const float LOOK_SPEED = 0.5f;
 	const float VIEW_BOUNDS_X = 75.0f;
 
-	XMFLOAT3 position;
-	XMFLOAT3 rotation;
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 rotation;
 
 	float frameTime;
 
@@ -24,15 +23,15 @@ private:
 
 public:
 
-	Position(XMFLOAT3 startPos, XMFLOAT3 startRot);
+	Position(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 startRot);
 	~Position();
 
-	void SetPosition(XMFLOAT3 pos);
-	void SetRotation(XMFLOAT3 rot);
+	void SetPosition(DirectX::XMFLOAT3 pos);
+	void SetRotation(DirectX::XMFLOAT3 rot);
 	void SetY(float y);
 
-	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetRotation();
+	DirectX::XMFLOAT3 GetPosition();
+	DirectX::XMFLOAT3 GetRotation();
 
 	void SetFrameTime(float frameTime);
 
@@ -41,7 +40,7 @@ public:
 	void MoveLeft(bool keyDown);
 	void MoveRight(bool keyDown);
 
-	void LookAround(XMFLOAT2 lxly);
+	void LookAround(DirectX::XMFLOAT2 lxly);
 
 };
 

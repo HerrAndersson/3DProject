@@ -4,29 +4,27 @@
 #include <DirectXMath.h>
 #include <windows.h>
 
-using namespace DirectX;
-
 class Camera
 {
 
 private:
-	XMFLOAT3 positionXYZ;
-	XMFLOAT3 rotationXYZ;
-	XMMATRIX viewMatrix;
-	XMMATRIX baseViewMatrix;
+	DirectX::XMFLOAT3 positionXYZ;
+	DirectX::XMFLOAT3 rotationXYZ;
+	DirectX::XMMATRIX viewMatrix;
+	DirectX::XMMATRIX baseViewMatrix;
 
 public:
 	Camera();
 	~Camera();
 
-	void SetPosition(XMFLOAT3 newPos);
-	void SetRotation(XMFLOAT3 newRot);
+	void SetPosition(DirectX::XMFLOAT3 newPos);
+	void SetRotation(DirectX::XMFLOAT3 newRot);
 
-	XMFLOAT3 GetPosition();
-	XMFLOAT3 GetRotation();
+	DirectX::XMFLOAT3 GetPosition();
+	DirectX::XMFLOAT3 GetRotation();
 
-	void GetViewMatrix(XMMATRIX& viewMatrix);
-	void GetBaseViewMatrix(XMMATRIX& baseViewMatrix);
+	void GetViewMatrix(DirectX::XMMATRIX& viewMatrix);
+	void GetBaseViewMatrix(DirectX::XMMATRIX& baseViewMatrix);
 
 	void CreateBaseViewMatrix();
 

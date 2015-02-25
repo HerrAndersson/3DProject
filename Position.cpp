@@ -1,5 +1,7 @@
 #include "Position.h"
 #include <iostream>
+
+using namespace DirectX;
 using namespace std;
 
 
