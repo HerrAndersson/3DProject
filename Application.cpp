@@ -22,6 +22,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 							"assets/textures/terrain/stone.raw",
 							"assets/textures/terrain/sand.raw");
 	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
+	wagon = new Object("assets/models/wagon.obj", "assets/textures/wagon.raw", Direct3D->GetDevice());
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	// Initialize the light object.
@@ -90,6 +91,11 @@ Application::~Application()
 	{
 		delete camel;
 		camel = nullptr;
+	}
+	if (wagon)
+	{
+		delete wagon;
+		wagon = nullptr;
 	}
 	if (particleEmitter)
 	{
@@ -234,8 +240,13 @@ void Application::RenderToTexture()
 	//Render objects
 	modelShader->UseShader(Direct3D->GetDeviceContext());
 	XMMATRIX world = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
+
 	modelShader->SetBuffers(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix, camel->GetTexture());
 	camel->Render(Direct3D->GetDeviceContext());
+
+	world = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
+	modelShader->SetBuffers(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix, camel->GetTexture());
+	wagon->Render(Direct3D->GetDeviceContext());
 
 	////Render particles
 	//particleShader->UseShader(Direct3D->GetDeviceContext());
