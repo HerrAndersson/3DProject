@@ -30,7 +30,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	float4 right = float4(normalize(cross(campos - particlepos, up)).xyz, 0);
 	float4 temp;
 
-	float3 normal = campos - particlepos;
+	float3 normal = cross(up, right);
 	normal = normalize(normal.xyz);
 
 	up = up*scale;

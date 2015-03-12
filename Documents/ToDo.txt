@@ -1,6 +1,6 @@
 ﻿Core techniques
 ================================================================================
-Deferred rendering and lighting								Jonas
+Deferred rendering and lighting								Jonas				    X
 
 
 Geometry

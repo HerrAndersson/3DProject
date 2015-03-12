@@ -22,7 +22,7 @@ float4 main(VS_OUT input) : SV_TARGET
 
 	float3 lightDir = -lightDirection;										  // Invert the light direction for calculations.
 
-	float lightIntensity = saturate(dot(normals.xyz, lightDir)) + 0.2f;		  // Calculate the amount of light on this pixel.
+	float lightIntensity = saturate(dot(normals.xyz, lightDir)) + 0.15f;	  // Calculate the amount of light on this pixel.
 	float4 outputColor = saturate(colors * lightIntensity);				      // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
 	return outputColor;
