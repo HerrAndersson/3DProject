@@ -8,6 +8,7 @@ class Camera
 {
 
 private:
+
 	DirectX::XMFLOAT3 positionXYZ;
 	DirectX::XMFLOAT3 rotationXYZ;
 	DirectX::XMMATRIX viewMatrix;

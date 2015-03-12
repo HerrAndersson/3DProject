@@ -5,18 +5,6 @@ using namespace std;
 
 D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
 {
-	swapChain = nullptr;
-	device = nullptr;
-	deviceContext = nullptr;
-	renderTargetView = nullptr;
-	depthStencilBuffer = nullptr;
-	depthStencilState = nullptr;
-	depthStencilView = nullptr;
-	rasterState = nullptr;
-	depthDisabledStencilState = nullptr;
-	alphaEnableBlendingState = nullptr;
-	alphaDisableBlendingState = nullptr;
-
 
 	HRESULT result;
 
@@ -252,6 +240,8 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	{
 		throw std::runtime_error("Blend state error 2");
 	}
+
+	deferredShader = new Deferred(device, screenWidth, screenHeight);
 }
 
 D3DClass::~D3DClass()
@@ -295,12 +285,6 @@ D3DClass::~D3DClass()
 		depthStencilState = nullptr;
 	}
 
-	if (depthStencilBuffer)
-	{
-		depthStencilBuffer->Release();
-		depthStencilBuffer = nullptr;
-	}
-
 	if (renderTargetView)
 	{
 		renderTargetView->Release();
@@ -323,6 +307,12 @@ D3DClass::~D3DClass()
 	{
 		swapChain->Release();
 		swapChain = nullptr;
+	}
+
+	if (deferredShader)
+	{
+		delete deferredShader;
+		deferredShader = nullptr;
 	}
 }
 
@@ -421,6 +411,17 @@ void D3DClass::TurnOnCulling()
 void D3DClass::TurnOffCulling()
 {
 	deviceContext->RSSetState(rasterNoCullingState);
+}
+
+ID3D11ShaderResourceView* D3DClass::GetDeferredSRV(int viewNumber)
+{
+	return deferredShader->GetShaderResourceView(viewNumber);
+}
+
+void D3DClass::ActivateDeferredShading()
+{
+	deferredShader->SetRenderTargets(deviceContext);
+	deferredShader->ClearRenderTargets(deviceContext, 0.2f, 0.4f, 1.0f, 1.0f);
 }
 
 void* D3DClass::operator new(size_t i)

@@ -90,13 +90,13 @@
     <ClCompile Include="ShaderTerrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderDeferred.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="OrthoWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShaderLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Deferred.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,9 +161,6 @@
     <ClInclude Include="ShaderTerrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderDeferred.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OrthoWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -171,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShaderLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Deferred.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

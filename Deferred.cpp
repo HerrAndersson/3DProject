@@ -1,29 +1,18 @@
-#include "ShaderDeferred.h"
+#include "Deferred.h"
 
 using namespace std;
 using namespace DirectX;
 
-ShaderDeferred::ShaderDeferred(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename, int textureWidth, int textureHeight)
-			  : ShaderBase(device)
+Deferred::Deferred(ID3D11Device* device, int textureWidth, int textureHeight)
 {
-
 	this->textureWidth = textureWidth;
 	this->textureHeight = textureHeight;
-
-	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	};
-
-	CreateMandatoryShaders(device, vertexShaderFilename, pixelShaderFilename, inputDesc, ARRAYSIZE(inputDesc));
 
 	InitializeBuffers(device);
 	InitializeShaderData(device);
 }
 
-ShaderDeferred::~ShaderDeferred()
+Deferred::~Deferred()
 {
 	if (depthStencilView)
 	{
@@ -71,7 +60,7 @@ ShaderDeferred::~ShaderDeferred()
 	}
 }
 
-void ShaderDeferred::InitializeShaderData(ID3D11Device* device)
+void Deferred::InitializeShaderData(ID3D11Device* device)
 {
 	HRESULT result;
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -92,7 +81,7 @@ void ShaderDeferred::InitializeShaderData(ID3D11Device* device)
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	//Texture sampler state.
+	//Create texture sampler state.
 	result = device->CreateSamplerState(&samplerDesc, &sampleStateWrap);
 	if (FAILED(result))
 	{
@@ -115,7 +104,7 @@ void ShaderDeferred::InitializeShaderData(ID3D11Device* device)
 	}
 }
 
-void ShaderDeferred::InitializeBuffers(ID3D11Device* device)
+void Deferred::InitializeBuffers(ID3D11Device* device)
 {
 	HRESULT result;
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -225,14 +214,14 @@ void ShaderDeferred::InitializeBuffers(ID3D11Device* device)
 
 }
 
-void ShaderDeferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
+void Deferred::SetRenderTargets(ID3D11DeviceContext* deviceContext)
 {
 	//Bind the render target view array and depth stencil buffer to the output render pipeline
 	deviceContext->OMSetRenderTargets(BUFFER_COUNT, renderTargetViewArray, depthStencilView);
 
 	deviceContext->RSSetViewports(1, &viewport);
 }
-void ShaderDeferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)
+void Deferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a)
 {
 	float color[4] = { r, g, b, a };
 
@@ -247,12 +236,12 @@ void ShaderDeferred::ClearRenderTargets(ID3D11DeviceContext* deviceContext, floa
 	return;
 }
 
-ID3D11ShaderResourceView* ShaderDeferred::GetShaderResourceView(int viewNumber)
+ID3D11ShaderResourceView* Deferred::GetShaderResourceView(int viewNumber)
 {
 	return shaderResourceViewArray[viewNumber];
 }
 
-//void ShaderDeferred::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture)
+//void Deferred::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture)
 //{
 //	HRESULT result;
 //	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -265,7 +254,7 @@ ID3D11ShaderResourceView* ShaderDeferred::GetShaderResourceView(int viewNumber)
 //	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 //	if (FAILED(result))
 //	{
-//		throw runtime_error("Could not Map matrix buffer in ShaderDeferred.cpp");
+//		throw runtime_error("Could not Map matrix buffer in Deferred.cpp");
 //	}
 //
 //	MatrixBuffer* matrixData = (MatrixBuffer*)mappedResource.pData;
@@ -282,7 +271,7 @@ ID3D11ShaderResourceView* ShaderDeferred::GetShaderResourceView(int viewNumber)
 //	deviceContext->PSSetShaderResources(0, 1, &texture);
 //}
 //
-//void ShaderDeferred::UseShader(ID3D11DeviceContext* deviceContext)
+//void Deferred::UseShader(ID3D11DeviceContext* deviceContext)
 //{
 //	deviceContext->VSSetShader(vertexShader, nullptr, 0);
 //	deviceContext->HSSetShader(hullShader, nullptr, 0);
@@ -293,12 +282,12 @@ ID3D11ShaderResourceView* ShaderDeferred::GetShaderResourceView(int viewNumber)
 //	deviceContext->PSSetSamplers(0, 1, &sampleStateWrap);
 //}
 
-void* ShaderDeferred::operator new(size_t i)
+void* Deferred::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);
 }
 
-void ShaderDeferred::operator delete(void* p)
+void Deferred::operator delete(void* p)
 {
 	_mm_free(p);
 }

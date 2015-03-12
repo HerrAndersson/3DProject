@@ -17,7 +17,6 @@
 #include "Light.h"
 
 //Deferred shading
-#include "ShaderDeferred.h"
 #include "ShaderLight.h"
 #include "OrthoWindow.h"
 
@@ -46,14 +45,13 @@ private:
 	ShaderDefault*		modelShader;
 	ShaderParticles*	particleShader;
 	ShaderTerrain*		terrainShader;
-	ShaderDeferred*     deferredShader;
 	ShaderLight*        lightShader;
 
 	//OTHER
 	Light* light;
 
 	void HandleMovement(float frameTime);
-	void CreateShaders(int screenHeight, int screenWidth);
+	void CreateShaders();
 	void RenderToTexture();
 	bool RenderGraphics();
 

@@ -4,6 +4,7 @@
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <stdexcept>
+#include "Deferred.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -18,13 +19,13 @@ private:
 	ID3D11DeviceContext*		deviceContext;
 	ID3D11RenderTargetView*		renderTargetView;
 	D3D11_VIEWPORT				viewport;
+	Deferred*                   deferredShader;
 
-	//Used for 2D rendering, ex. text or deferred shading.
+	ID3D11DepthStencilView*     depthStencilView;
 	ID3D11Texture2D*			depthStencilBuffer;
-	ID3D11DepthStencilState*	depthStencilState;
-	ID3D11DepthStencilView*		depthStencilView;
 	ID3D11RasterizerState*		rasterState;
 	ID3D11RasterizerState*      rasterNoCullingState;
+	ID3D11DepthStencilState*	depthStencilState;
 	ID3D11DepthStencilState*    depthDisabledStencilState;
 	ID3D11BlendState*			alphaEnableBlendingState;
 	ID3D11BlendState*			alphaDisableBlendingState;
@@ -47,6 +48,10 @@ public:
 	void GetProjectionMatrix(DirectX::XMMATRIX& projectionMatrix);
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix);
 	void GetOrthoMatrix(DirectX::XMMATRIX& orthoMatrix);
+
+	ID3D11ShaderResourceView* GetDeferredSRV(int viewNumber);
+
+	void ActivateDeferredShading();
 
 	void TurnZBufferON();
 	void TurnZBufferOFF();

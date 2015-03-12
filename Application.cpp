@@ -34,7 +34,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	light = new Light(ambient, diffuse, direction);
 	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
 
-	CreateShaders(screenHeight, screenWidth);
+	CreateShaders();
 }
 
 Application::~Application()
@@ -113,11 +113,6 @@ Application::~Application()
 	{
 		delete particleShader;
 		particleShader = nullptr;
-	}
-	if (deferredShader)
-	{
-		delete deferredShader;
-		deferredShader = nullptr;
 	}
 	if (lightShader)
 	{
@@ -201,6 +196,8 @@ bool Application::RenderGraphics()
 	XMMATRIX worldMatrix, viewMatrix, orthoMatrix;
 	bool result = true;
 
+	Direct3D->TurnOffCulling();
+
 	RenderToTexture();
 
 	Direct3D->BeginScene(0.2f, 0.4f, 1.0f, 1.0f);
@@ -213,7 +210,7 @@ bool Application::RenderGraphics()
 
 	orthoWindow->Render(Direct3D->GetDeviceContext());
 
-	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, deferredShader->GetShaderResourceView(0), deferredShader->GetShaderResourceView(1), light->GetDirection());
+	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), light->GetDirection());
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
 	Direct3D->TurnZBufferON();
@@ -227,8 +224,7 @@ void Application::RenderToTexture()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
-	deferredShader->SetRenderTargets(Direct3D->GetDeviceContext());
-	deferredShader->ClearRenderTargets(Direct3D->GetDeviceContext(), 0.2f, 0.4f, 1.0f, 1.0f);
+	Direct3D->ActivateDeferredShading();
 
 	Direct3D->GetWorldMatrix(worldMatrix);
 	camera->GetViewMatrix(viewMatrix);
@@ -259,11 +255,10 @@ void Application::RenderToTexture()
 	Direct3D->ResetViewport();
 }
 
-void Application::CreateShaders(int screenHeight, int screenWidth)
+void Application::CreateShaders()
 {
 	modelShader = new ShaderDefault(Direct3D->GetDevice(), L"assets/shaders/ShaderUvVS.hlsl", L"assets/shaders/ShaderUvPS.hlsl");
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl");
-	deferredShader = new ShaderDeferred(Direct3D->GetDevice(), L"assets/shaders/DeferredVS.hlsl", L"assets/shaders/DeferredPS.hlsl", screenWidth, screenHeight);
 	lightShader = new ShaderLight(Direct3D->GetDevice(), L"assets/shaders/LightVS.hlsl", L"assets/shaders/LightPS.hlsl");
 }

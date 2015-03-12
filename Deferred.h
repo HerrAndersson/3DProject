@@ -1,7 +1,12 @@
 #pragma once
-#include "ShaderBase.h"
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include <Windows.h>
+#include <d3dcompiler.h>
+#include <string>
+#include <fstream>
 
-class ShaderDeferred : public ShaderBase
+class Deferred
 {
 
 private:
@@ -29,13 +34,13 @@ private:
 	ID3D11SamplerState*			 sampleStateWrap;
 	ID3D11Buffer*				 matrixBuffer;
 
-public:
-
-	ShaderDeferred(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename, int textureWidth, int textureHeight);
-	virtual ~ShaderDeferred();
-
 	void InitializeBuffers(ID3D11Device* device);
 	void InitializeShaderData(ID3D11Device* device);
+
+public:
+
+	Deferred(ID3D11Device* device, int textureWidth, int textureHeight);
+	virtual ~Deferred();
 
 	void SetRenderTargets(ID3D11DeviceContext* deviceContext);
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);
