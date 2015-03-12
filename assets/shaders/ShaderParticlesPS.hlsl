@@ -14,8 +14,21 @@ struct GS_OUT
 	float3 normal : NORMAL;
 };
 
-float4 main(GS_OUT input) : SV_Target
+struct PS_OUT
 {
+	float4 color : SV_Target0;
+	float3 normal : SV_Target1;
+};
+
+
+PS_OUT main(GS_OUT input) : SV_Target
+{
+	PS_OUT output = (PS_OUT)0;
+
 	float3 s = txDiffuse.Sample(sampAni, input.tex).xyz;
-	return float4(s, 1.0f);
+
+	output.color = float4(s, 1.0f);
+	output.normal = input.normal;
+
+	return output;
 }

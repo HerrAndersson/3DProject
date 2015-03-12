@@ -16,8 +16,16 @@ struct VS_OUT
 	float3 Normal : NORMAL;
 };
 
-float4 main(VS_OUT input) : SV_Target
+struct PS_OUT
 {
+	float4 color : SV_Target0;
+	float3 normal : SV_Target1;
+};
+
+PS_OUT main(VS_OUT input) : SV_Target
+{
+	PS_OUT output = (PS_OUT)0;
+
 	float4 blendMapColor = shaderTexture[0].Sample(SampleType, input.Tex);
 	float4 textureColor;
 	int repeat = 32;
@@ -25,17 +33,8 @@ float4 main(VS_OUT input) : SV_Target
 	textureColor += shaderTexture[2].Sample(SampleType, input.Tex*repeat) * blendMapColor.g;
 	textureColor += shaderTexture[3].Sample(SampleType, input.Tex*repeat) * blendMapColor.b;
 
-	float4 color = ambientColor;
-	float3 lightDir = -lightDirection;
-	float lightIntensity = saturate(dot(input.Normal, lightDir));
-	
-	if (lightIntensity > 0.0f)
-	{
-		color += (diffuseColor * lightIntensity);
-	}
-	
-	color = saturate(color);
-	color = color * textureColor;
+	output.color = textureColor;
+	output.normal = input.Normal;
 
-	return color;
+	return output;
 }

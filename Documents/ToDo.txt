@@ -1,22 +1,22 @@
 ﻿Core techniques
 ================================================================================
-Deferred rendering and lighting								Båda
+Deferred rendering and lighting								Jonas
 
 
 Geometry
 ================================================================================
-Height-map terrain rendering, user can walk on the terrain.				Jonas
-Parsing and rendering of an existing model format (OBJ, FBX, Collada, etc.).		Mattias
+Height-map terrain rendering, user can walk on the terrain.				Jonas                               X
+Parsing and rendering of an existing model format (OBJ, FBX, Collada, etc.).		Mattias				    X
 
 
 Texturing and lightning
 ================================================================================
-Blend-mapping										Mattias
+Blend-mapping										Mattias				    X
 
 
 Projection techniques
 ================================================================================
-Shadow volumes										Jonas
+Shadow maps										Jonas
 
 
 Acceleration techniques
@@ -27,5 +27,6 @@ Back-face culling using geometry shader							Jonas
 
 Other techniques
 ================================================================================
-Particle system with billboarded particles						Mattias
+Particle system with billboarded particles						Mattias				    X
 Water-effect										Jonas
+Picking											Jonas

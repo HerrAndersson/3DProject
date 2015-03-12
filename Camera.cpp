@@ -35,11 +35,6 @@ void Camera::GetViewMatrix(XMMATRIX& viewMatrix)
 	viewMatrix = this->viewMatrix;
 }
 
-void Camera::GetBaseViewMatrix(XMMATRIX& baseViewMatrix)
-{
-	baseViewMatrix = this->baseViewMatrix;
-}
-
 void Camera::Update()
 {
 	XMMATRIX rotationMatrix;
@@ -72,8 +67,6 @@ void Camera::CreateBaseViewMatrix()
 	up = XMVector3TransformCoord(up, rotationMatrix);
 
 	lookAt = position + lookAt;
-
-	baseViewMatrix = XMMatrixLookAtLH(position, lookAt, up);
 }
 
 void* Camera::operator new(size_t i)

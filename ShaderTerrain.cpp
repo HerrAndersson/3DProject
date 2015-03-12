@@ -95,7 +95,7 @@ void ShaderTerrain::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
-void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, Light* light, float padding, ID3D11ShaderResourceView** textures)
+void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView** textures)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -123,22 +123,22 @@ void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& wor
 	//Set matrix buffer to the vertex shader
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 
-	D3D11_MAPPED_SUBRESOURCE mr;
-	hr = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr);
-	LightBuffer* lightDataBuffer = (LightBuffer*)mr.pData;
+	//D3D11_MAPPED_SUBRESOURCE mr;
+	//hr = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr);
+	//LightBuffer* lightDataBuffer = (LightBuffer*)mr.pData;
 
-	//Copy the lighting variables into the constant buffer
-	lightDataBuffer->ambientColor = light->GetAmbientColor();
-	lightDataBuffer->diffuseColor = light->GetDiffuseColor();
-	lightDataBuffer->lightDirection = light->GetDirection();
-	lightDataBuffer->padding = padding;
+	////Copy the lighting variables into the constant buffer
+	//lightDataBuffer->ambientColor = light->GetAmbientColor();
+	//lightDataBuffer->diffuseColor = light->GetDiffuseColor();
+	//lightDataBuffer->lightDirection = light->GetDirection();
+	//lightDataBuffer->padding = padding;
 
-	deviceContext->Unmap(lightBuffer, 0);
+	//deviceContext->Unmap(lightBuffer, 0);
 
-	bufferNumber = 0;
+	//bufferNumber = 0;
 
-	//Set the light buffer in the pixel shader
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
+	////Set the light buffer in the pixel shader
+	//deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
 	deviceContext->PSSetShaderResources(0, 4, textures);

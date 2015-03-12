@@ -43,8 +43,9 @@ private:
 	ObjectBase*			particleEmitter;
 
 	//SHADERS
-	ShaderDeferred*		modelShader;
+	ShaderDefault*		modelShader;
 	ShaderParticles*	particleShader;
+	ShaderTerrain*		terrainShader;
 	ShaderDeferred*     deferredShader;
 	ShaderLight*        lightShader;
 

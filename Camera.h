@@ -11,7 +11,6 @@ private:
 	DirectX::XMFLOAT3 positionXYZ;
 	DirectX::XMFLOAT3 rotationXYZ;
 	DirectX::XMMATRIX viewMatrix;
-	DirectX::XMMATRIX baseViewMatrix;
 
 public:
 	Camera();
@@ -24,7 +23,6 @@ public:
 	DirectX::XMFLOAT3 GetRotation();
 
 	void GetViewMatrix(DirectX::XMMATRIX& viewMatrix);
-	void GetBaseViewMatrix(DirectX::XMMATRIX& baseViewMatrix);
 
 	void CreateBaseViewMatrix();
 
