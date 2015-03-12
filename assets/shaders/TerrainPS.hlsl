@@ -11,9 +11,9 @@ cbuffer LightBuffer : register(cb0)
 
 struct VS_OUT
 {
-	float4 Pos : SV_POSITION;
-	float2 Tex : TEXCOORD0;
-	float3 Normal : NORMAL;
+	float4 pos : SV_POSITION;
+	float2 tex : TEXCOORD0;
+	float3 normal : NORMAL;
 };
 
 struct PS_OUT
@@ -26,15 +26,15 @@ PS_OUT main(VS_OUT input) : SV_Target
 {
 	PS_OUT output = (PS_OUT)0;
 
-	float4 blendMapColor = shaderTexture[0].Sample(SampleType, input.Tex);
+	float4 blendMapColor = shaderTexture[0].Sample(SampleType, input.tex);
 	float4 textureColor;
 	int repeat = 32;
-	textureColor =  shaderTexture[1].Sample(SampleType, input.Tex*repeat) * blendMapColor.r;
-	textureColor += shaderTexture[2].Sample(SampleType, input.Tex*repeat) * blendMapColor.g;
-	textureColor += shaderTexture[3].Sample(SampleType, input.Tex*repeat) * blendMapColor.b;
+	textureColor =  shaderTexture[1].Sample(SampleType, input.tex*repeat) * blendMapColor.r;
+	textureColor += shaderTexture[2].Sample(SampleType, input.tex*repeat) * blendMapColor.g;
+	textureColor += shaderTexture[3].Sample(SampleType, input.tex*repeat) * blendMapColor.b;
 
 	output.color = textureColor;
-	output.normal = input.Normal;
+	output.normal = input.normal;
 
 	return output;
 }

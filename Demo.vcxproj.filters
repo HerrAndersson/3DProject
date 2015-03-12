@@ -208,6 +208,9 @@
     <FxCompile Include="assets\shaders\LightVS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="assets\shaders\TerrainGS.hlsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\models\teapot.obj">

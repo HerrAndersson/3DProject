@@ -30,6 +30,9 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	float4 right = float4(normalize(cross(campos - particlepos, up)).xyz, 0);
 	float4 temp;
 
+	float3 normal = campos - particlepos;
+	normal = normalize(normal.xyz);
+
 	up = up*scale;
 	right = right*scale*0.42;
 
@@ -39,6 +42,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 0);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	temp = input[0].position + up + right;
@@ -46,6 +50,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 0);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	temp = input[0].position - up + right;
@@ -53,6 +58,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 1);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	//Second triangle
@@ -61,6 +67,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 0);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	temp = input[0].position - up - right;
@@ -68,6 +75,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 1);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	temp = input[0].position - up + right;
@@ -75,6 +83,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 1);
+	output.normal = normal;
 	OutputStream.Append(output);
 
 	OutputStream.RestartStrip();

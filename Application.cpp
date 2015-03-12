@@ -228,15 +228,13 @@ void Application::RenderToTexture()
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 
 	deferredShader->SetRenderTargets(Direct3D->GetDeviceContext());
-	deferredShader->ClearRenderTargets(Direct3D->GetDeviceContext(), 1.0f, 1.0f, 1.0f, 1.0f);
+	deferredShader->ClearRenderTargets(Direct3D->GetDeviceContext(), 0.2f, 0.4f, 1.0f, 1.0f);
 
 	Direct3D->GetWorldMatrix(worldMatrix);
 	camera->GetViewMatrix(viewMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 
 	//Render terrain
-	//deferredShader->UseShader(Direct3D->GetDeviceContext());
-	//deferredShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, terrain->GetTextures()[1]);
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
 	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, terrain->GetTextures());
 	terrain->Render(Direct3D->GetDeviceContext());

@@ -252,46 +252,46 @@ ID3D11ShaderResourceView* ShaderDeferred::GetShaderResourceView(int viewNumber)
 	return shaderResourceViewArray[viewNumber];
 }
 
-void ShaderDeferred::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture)
-{
-	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
-	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
-	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
-
-	//Lock the constant buffer so it can be written to
-	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		throw runtime_error("Could not Map matrix buffer in ShaderDeferred.cpp");
-	}
-
-	MatrixBuffer* matrixData = (MatrixBuffer*)mappedResource.pData;
-
-	//Copy the matrices into the constant buffer
-	matrixData->world = wm;
-	matrixData->view = vm;
-	matrixData->projection = pm;
-
-	deviceContext->Unmap(matrixBuffer, 0);
-
-	unsigned int bufferNumber = 0;
-	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
-	deviceContext->PSSetShaderResources(0, 1, &texture);
-}
-
-void ShaderDeferred::UseShader(ID3D11DeviceContext* deviceContext)
-{
-	deviceContext->VSSetShader(vertexShader, nullptr, 0);
-	deviceContext->HSSetShader(hullShader, nullptr, 0);
-	deviceContext->DSSetShader(domainShader, nullptr, 0);
-	deviceContext->GSSetShader(geometryShader, nullptr, 0);
-	deviceContext->PSSetShader(pixelShader, nullptr, 0);
-	deviceContext->IASetInputLayout(inputLayout);
-	deviceContext->PSSetSamplers(0, 1, &sampleStateWrap);
-}
+//void ShaderDeferred::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture)
+//{
+//	HRESULT result;
+//	D3D11_MAPPED_SUBRESOURCE mappedResource;
+//
+//	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
+//	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
+//	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
+//
+//	//Lock the constant buffer so it can be written to
+//	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+//	if (FAILED(result))
+//	{
+//		throw runtime_error("Could not Map matrix buffer in ShaderDeferred.cpp");
+//	}
+//
+//	MatrixBuffer* matrixData = (MatrixBuffer*)mappedResource.pData;
+//
+//	//Copy the matrices into the constant buffer
+//	matrixData->world = wm;
+//	matrixData->view = vm;
+//	matrixData->projection = pm;
+//
+//	deviceContext->Unmap(matrixBuffer, 0);
+//
+//	unsigned int bufferNumber = 0;
+//	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
+//	deviceContext->PSSetShaderResources(0, 1, &texture);
+//}
+//
+//void ShaderDeferred::UseShader(ID3D11DeviceContext* deviceContext)
+//{
+//	deviceContext->VSSetShader(vertexShader, nullptr, 0);
+//	deviceContext->HSSetShader(hullShader, nullptr, 0);
+//	deviceContext->DSSetShader(domainShader, nullptr, 0);
+//	deviceContext->GSSetShader(geometryShader, nullptr, 0);
+//	deviceContext->PSSetShader(pixelShader, nullptr, 0);
+//	deviceContext->IASetInputLayout(inputLayout);
+//	deviceContext->PSSetSamplers(0, 1, &sampleStateWrap);
+//}
 
 void* ShaderDeferred::operator new(size_t i)
 {
