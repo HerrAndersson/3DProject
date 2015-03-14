@@ -40,6 +40,7 @@ private:
 	ObjectBase*			camel;
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
+	ObjectBase*			sphere;
 
 	//SHADERS
 	ShaderDefault*		modelShader;

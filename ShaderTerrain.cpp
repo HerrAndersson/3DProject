@@ -4,10 +4,8 @@
 using namespace DirectX;
 using namespace std;
 
-ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
-							LPCWSTR vertexShaderFilename,
-							LPCWSTR pixelShaderFilename
-						):	ShaderBase(device)
+ShaderTerrain::ShaderTerrain(ID3D11Device* device, LPCWSTR vsFilename, LPCWSTR psFilename, LPCWSTR gsFilename)
+			 : ShaderBase(device)
 {
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
@@ -16,7 +14,7 @@ ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
-	CreateMandatoryShaders(device, vertexShaderFilename, pixelShaderFilename, inputDesc, ARRAYSIZE(inputDesc));
+	CreateMandatoryShaders(device, vsFilename, psFilename, inputDesc, ARRAYSIZE(inputDesc));
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	HRESULT hr;
@@ -37,23 +35,42 @@ ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
 		throw runtime_error("Could not create MatrixBuffer");
 	}
 
-	D3D11_BUFFER_DESC lightBufferDesc;
+	//D3D11_BUFFER_DESC lightBufferDesc;
 
-	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
+	//// Setup the description of the light dynamic constant buffer that is in the pixel shader.
+	//// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
+	//lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	//lightBufferDesc.ByteWidth = sizeof(LightBuffer);
+	//lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//lightBufferDesc.MiscFlags = 0;
+	//lightBufferDesc.StructureByteStride = 0;
+
+	//// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
+	//hr = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
+
+	//if (FAILED(hr))
+	//{
+	//	throw runtime_error("Could not create LightBuffer");
+	//}
+
+	D3D11_BUFFER_DESC gsBufferDesc;
+
+	// Setup the description of the dynamic constant buffer that is in the geometry shader.
 	// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
-	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	lightBufferDesc.MiscFlags = 0;
-	lightBufferDesc.StructureByteStride = 0;
+	gsBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	gsBufferDesc.ByteWidth = sizeof(GSBuffer);
+	gsBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	gsBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	gsBufferDesc.MiscFlags = 0;
+	gsBufferDesc.StructureByteStride = 0;
 
-	// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	hr = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
+	//Create the gsBuffer pointer so we can access the geometry shader constant buffer from within this class.
+	hr = device->CreateBuffer(&gsBufferDesc, NULL, &gsBuffer);
 
 	if (FAILED(hr))
 	{
-		throw runtime_error("Could not create LightBuffer");
+		throw runtime_error("Could not create gsBuffer");
 	}
 
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -64,7 +81,7 @@ ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.MaxAnisotropy = 4;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	samplerDesc.BorderColor[0] = 0;
 	samplerDesc.BorderColor[1] = 0;
@@ -79,6 +96,25 @@ ShaderTerrain::ShaderTerrain(	ID3D11Device* device,
 	{
 		throw runtime_error("Could not create SamplerState");
 	}
+
+	//Create geometry shader.
+	ID3DBlob* errorMessage = nullptr;
+	ID3DBlob* pPS = nullptr;
+	hr = D3DCompileFromFile(gsFilename, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, "main", "gs_4_0", NULL, NULL, &pPS, &errorMessage);
+
+	if (FAILED(hr))
+	{
+		if (errorMessage)
+		{
+			throw runtime_error(string(static_cast<const char *>(errorMessage->GetBufferPointer()), errorMessage->GetBufferSize()));
+		}
+		else
+		{
+			throw runtime_error("No such file");
+		}
+	}
+	device->CreateGeometryShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &geometryShader);
+	pPS->Release();
 }
 
 ShaderTerrain::~ShaderTerrain()
@@ -95,7 +131,7 @@ void ShaderTerrain::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetInputLayout(inputLayout);
 }
 
-void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView** textures)
+void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView** textures, XMFLOAT3 camPos)
 {
 	HRESULT hr;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -107,6 +143,7 @@ void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& wor
 	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
 	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
 
+	///////////////////////////////////////////////// Matrix buffer, PS /////////////////////////////////////////////////
 	hr = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	MatrixBuffer* matrixDataBuffer = (MatrixBuffer*)mappedResource.pData;
 
@@ -122,6 +159,22 @@ void ShaderTerrain::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& wor
 
 	//Set matrix buffer to the vertex shader
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
+
+	/////////////////////////////////////////////////// GSBuffer, GS ///////////////////////////////////////////////////
+
+	hr = deviceContext->Map(gsBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	GSBuffer* gsDataBuffer = (GSBuffer*)mappedResource.pData;
+
+	//Copy the data into the constant buffer.
+	gsDataBuffer->camPos = camPos;
+	gsDataBuffer->viewMatrix = viewMatrix;
+
+	deviceContext->Unmap(gsBuffer, 0);
+
+	bufferNumber = 0;
+
+	//Set matrix buffer to the vertex shader
+	deviceContext->GSSetConstantBuffers(bufferNumber, 1, &gsBuffer);
 
 	deviceContext->PSSetSamplers(0, 1, &samplerState);
 	deviceContext->PSSetShaderResources(0, 4, textures);

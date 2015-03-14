@@ -1,13 +1,13 @@
 SamplerState SampleType;
 Texture2D shaderTexture[4];
 
-cbuffer LightBuffer : register(cb0)
-{
-	float4 ambientColor;
-	float4 diffuseColor;
-	float3 lightDirection;
-	float padding;
-};
+//cbuffer LightBuffer : register(cb0)
+//{
+//	float4 ambientColor;
+//	float4 diffuseColor;
+//	float3 lightDirection;
+//	float padding;
+//};
 
 struct VS_OUT
 {

@@ -53,22 +53,6 @@ void Camera::Update()
 	viewMatrix = XMMatrixLookAtLH(position, lookAt, up);
 }
 
-void Camera::CreateBaseViewMatrix()
-{
-	XMMATRIX rotationMatrix;
-
-	XMVECTOR up = { { 0.0f, 1.0f, 0.0f } };
-	XMVECTOR position = { { positionXYZ.x, positionXYZ.y, positionXYZ.z } };
-	XMVECTOR lookAt = { { 0.0f, 0.0f, 1.0f } };
-
-	rotationMatrix = XMMatrixRotationRollPitchYaw(XMConvertToRadians(rotationXYZ.x), XMConvertToRadians(rotationXYZ.y), XMConvertToRadians(rotationXYZ.z));
-
-	lookAt = XMVector3TransformCoord(lookAt, rotationMatrix);
-	up = XMVector3TransformCoord(up, rotationMatrix);
-
-	lookAt = position + lookAt;
-}
-
 void* Camera::operator new(size_t i)
 {
 	return _mm_malloc(i, 16);

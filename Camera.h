@@ -25,8 +25,6 @@ public:
 
 	void GetViewMatrix(DirectX::XMMATRIX& viewMatrix);
 
-	void CreateBaseViewMatrix();
-
 	void Update();
 
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation

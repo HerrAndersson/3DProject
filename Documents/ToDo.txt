@@ -22,7 +22,7 @@ Shadow maps										Jonas
 Acceleration techniques
 ================================================================================
 View frustum culling against a quadtree							Mattias
-Back-face culling using geometry shader							Jonas
+Back-face culling using geometry shader							Jonas				    X
 
 
 Other techniques
