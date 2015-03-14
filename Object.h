@@ -19,7 +19,7 @@ private:
 
 public:
 
-	Object(std::string modelFilename, std::string textureFilename, ID3D11Device* device);
+	Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMFLOAT4X4 worldMatrix);
 	virtual ~Object();
 
 	virtual void Render(ID3D11DeviceContext* deviceContext);

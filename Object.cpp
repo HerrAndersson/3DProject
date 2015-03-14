@@ -4,10 +4,10 @@
 using namespace std;
 using namespace DirectX;
 
-Object::Object(string filename, string textureFilename, ID3D11Device* device) : ObjectBase()
+Object::Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMFLOAT4X4 worldMatrix) : ObjectBase(worldMatrix)
 {
 	bool result = true;
-	ifstream file(filename);
+	ifstream file(modelFilename);
 
 	if (file.good())
 	{
@@ -81,7 +81,7 @@ Object::Object(string filename, string textureFilename, ID3D11Device* device) : 
 	}
 	else
 	{
-		throw runtime_error("Failed to load file: " + filename);
+		throw runtime_error("Failed to load file: " + modelFilename);
 	}
 	file.close();
 
