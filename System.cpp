@@ -56,7 +56,7 @@ bool System::Update()
 {
 	bool result = true;
 
-	SetCursorPos(1920 / 2, 1080 / 2);
+	SetCursorPos(realScreenWidth / 2, realScreenHeight / 2);
 
 	result = application->Update();
 	if (!result)
@@ -124,6 +124,9 @@ void System::InitializeWindows()
 		//Place the window in the middle of the screen.
 		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
 		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+
+		realScreenHeight = GetSystemMetrics(SM_CYSCREEN);
+		realScreenWidth = GetSystemMetrics(SM_CXSCREEN);
 	}
 
 

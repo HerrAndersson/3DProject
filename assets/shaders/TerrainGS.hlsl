@@ -28,9 +28,11 @@ void main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> OutputStream)
 	float3 B = (input[2].pos - input[0].pos);
 	float3 n = normalize(cross(A, B));
 
+	//Calculate the vector from the camera to the triangle
 	float3 camDir = normalize(input[0].pos - camPos).xyz;
 
-	if (dot(camDir, n) < 0.0f)
+	//If the dot is positive it means that the triangle is facing away from the camera
+	if (dot(n, camDir) < 0.05f)
 	{
 		for (int i = 0; i < 3; i++)
 		{

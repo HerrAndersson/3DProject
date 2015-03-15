@@ -44,6 +44,7 @@ public:
 	bool A();
 	bool S();
 	bool D();
+	bool LMB();
 
 	//Returns lX and lY from the mouse state
 	DirectX::XMFLOAT2 HandleMouse();

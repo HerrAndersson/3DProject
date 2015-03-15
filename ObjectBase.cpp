@@ -5,7 +5,7 @@ using namespace DirectX;
 
 ObjectBase::ObjectBase()
 {
-	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity());
+	/*XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity());*/
 }
 
 ObjectBase::~ObjectBase()
@@ -32,5 +32,15 @@ ID3D11ShaderResourceView* ObjectBase::GetTexture() const
 
 void ObjectBase::GetWorldMatrix(XMMATRIX& worldMatrix) const
 {
-	worldMatrix = XMLoadFloat4x4(&this->worldMatrix);
+	worldMatrix = this->worldMatrix;
+}
+
+void* ObjectBase::operator new(size_t i)
+{
+	return _mm_malloc(i, 16);
+}
+
+void ObjectBase::operator delete(void* p)
+{
+	_mm_free(p);
 }

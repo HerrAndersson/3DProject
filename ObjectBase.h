@@ -4,6 +4,8 @@
 #include "VertexTypes.h"
 #include "Texture.h"
 
+using namespace DirectX;
+
 class ObjectBase
 {
 protected:
@@ -11,7 +13,7 @@ protected:
 	ID3D11Buffer* vertexBuffer;
 	Texture* texture;
 	int vertexCount;
-	DirectX::XMFLOAT4X4 worldMatrix;
+	XMMATRIX worldMatrix;
 
 public:
 
@@ -24,5 +26,9 @@ public:
 	ID3D11Buffer* GetVertexBuffer() const;
 	ID3D11ShaderResourceView* GetTexture() const;
 	void GetWorldMatrix(DirectX::XMMATRIX& worldMatrix) const;
+
+	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
+	void* operator new(size_t i);
+	void operator delete(void* p);
 };
 

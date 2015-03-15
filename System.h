@@ -20,6 +20,9 @@ private:
 	bool fullscreen;
 	bool showCursor;
 
+	int realScreenWidth;
+	int realScreenHeight;
+
 	bool Update();
 	void InitializeWindows();
 	void ShutdownWindows();

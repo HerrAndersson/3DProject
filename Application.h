@@ -2,23 +2,27 @@
 #include <windows.h>
 #include <stdexcept>
 #include "D3DClass.h"
-#include "ShaderBase.h"
+
 #include "VertexTypes.h"
 #include "Camera.h"
 #include "Terrain.h"
-#include "ShaderTerrain.h"
+#include "Light.h"
 #include "InputHandler.h"
 #include "Timer.h"
 #include "Position.h"
-#include "ShaderDefault.h"
-#include "Object.h"
-#include "ShaderParticles.h"
-#include "ParticleEmitter.h"
-#include "Light.h"
-
-//Deferred shading
-#include "ShaderLight.h"
 #include "OrthoWindow.h"
+
+#include "Object.h"
+#include "ObjectBase.h"
+#include "ObjectIntersection.h"
+
+#include "ParticleEmitter.h"
+
+#include "ShaderParticles.h"
+#include "ShaderBase.h"
+#include "ShaderDefault.h"
+#include "ShaderTerrain.h"
+#include "ShaderLight.h"
 
 class Application
 {
@@ -26,6 +30,9 @@ class Application
 private:
 
 	const float HEIGHT_FROM_GROUND = 6.0f;
+
+	int screenWidth;
+	int screenHeight;
 
 	//OBJECTS
 	D3DClass*		    Direct3D;
@@ -40,7 +47,7 @@ private:
 	ObjectBase*			camel;
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
-	ObjectBase*			sphere;
+	ObjectBase*			spheres;
 
 	//SHADERS
 	ShaderDefault*		modelShader;
@@ -55,6 +62,7 @@ private:
 	void CreateShaders();
 	void RenderToTexture();
 	bool RenderGraphics();
+	bool TestIntersections(ObjectIntersection* object);
 
 public:
 

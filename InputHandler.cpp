@@ -219,3 +219,16 @@ XMFLOAT2 InputHandler::HandleMouse()
 	}
 	return lxly;
 }
+
+bool InputHandler::LMB()
+{
+	bool down = false;
+
+	// Check if the left mouse button is currently pressed.
+	if (mouseState.rgbButtons[0] & 0x80)
+	{
+		down = true;
+	}
+
+	return down;
+}
