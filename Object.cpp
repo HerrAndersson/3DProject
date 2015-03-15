@@ -4,7 +4,7 @@
 using namespace std;
 using namespace DirectX;
 
-Object::Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMFLOAT4X4 worldMatrix) : ObjectBase(worldMatrix)
+Object::Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMMATRIX& worldMatrix) : ObjectBase(worldMatrix)
 {
 	bool result = true;
 	ifstream file(modelFilename);

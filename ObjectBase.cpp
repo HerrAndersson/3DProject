@@ -8,7 +8,7 @@ ObjectBase::ObjectBase()
 	/*XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity());*/
 }
 
-ObjectBase::ObjectBase(DirectX::XMFLOAT4X4 worldMatrix)
+ObjectBase::ObjectBase(DirectX::XMMATRIX& worldMatrix)
 {
 	this->worldMatrix = worldMatrix;
 }

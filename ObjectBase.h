@@ -17,7 +17,7 @@ protected:
 
 public:
 
-	ObjectBase(DirectX::XMFLOAT4X4 worldMatrix);
+	ObjectBase(DirectX::XMMATRIX& worldMatrix);
 	ObjectBase();
 	virtual ~ObjectBase();
 

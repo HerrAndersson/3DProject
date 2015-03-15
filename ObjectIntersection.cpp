@@ -1,14 +1,14 @@
 #include "ObjectIntersection.h"
 
-ObjectIntersection::ObjectIntersection(string modelFilename, string textureFilename, ID3D11Device* device, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX world)
-				  : Object(modelFilename, textureFilename, device)
+ObjectIntersection::ObjectIntersection(ID3D11Device* device, string modelFilename, string textureFilename, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX& world)
+				  : Object(device, modelFilename, textureFilename, world)
 {
 	this->position = position;
 	this->scaling = scaling;
 	worldMatrix = XMMatrixScaling(scaling.x, scaling.y, scaling.z)*XMMatrixTranslation(position.x, position.y, position.z);
 	updateWorld = false;
 
-	intersectionSphere = new Sphere(position, scaling.x, device);
+	intersectionSphere = new Sphere(position, scaling.x, device, worldMatrix);
 }
 
 
