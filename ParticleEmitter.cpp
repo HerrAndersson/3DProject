@@ -3,7 +3,7 @@
 using namespace std;
 using namespace DirectX;
 
-ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilename)
+ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilename) : ObjectBase()
 {
 	texture = new Texture(textureFilename, device);
 

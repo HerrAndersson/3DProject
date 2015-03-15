@@ -17,6 +17,8 @@
 #include "ObjectIntersection.h"
 
 #include "ParticleEmitter.h"
+#include "Light.h"
+#include "Quadtree.h"
 
 #include "ShaderParticles.h"
 #include "ShaderBase.h"
@@ -48,6 +50,8 @@ private:
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
 	ObjectBase*			spheres;
+
+	Quadtree*			modelQuadtree;
 
 	//SHADERS
 	ShaderDefault*		modelShader;

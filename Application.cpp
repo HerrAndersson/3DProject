@@ -24,11 +24,19 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 							"assets/textures/terrain/grass.raw",
 							"assets/textures/terrain/stone.raw",
 							"assets/textures/terrain/sand.raw");
-	camel = new Object("assets/models/camel.obj", "assets/textures/camel.raw", Direct3D->GetDevice());
-	wagon = new Object("assets/models/wagon.obj", "assets/textures/wagon.raw", Direct3D->GetDevice());
+	XMFLOAT4X4 tempWorldMatrix;
+	XMStoreFloat4x4(&tempWorldMatrix, XMMatrixIdentity());
+
+	camel = new Object(Direct3D->GetDevice(), "assets/models/camel.obj", "assets/textures/camel.raw", tempWorldMatrix);
+	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", "assets/textures/wagon.raw", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	spheres = new ObjectIntersection("assets/models/ball.obj", "assets/textures/missing.raw", Direct3D->GetDevice(), XMFLOAT3(128, 5, 128), XMFLOAT3(2, 2, 2));
+
+	sphere = new Object(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", tempWorldMatrix);
+
+	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
+
 
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
@@ -111,6 +119,11 @@ Application::~Application()
 	{
 		delete [] spheres;
 		spheres = nullptr;
+	}
+	if (modelQuadtree)
+	{
+		delete modelQuadtree;
+		modelQuadtree = nullptr;
 	}
 
 	//SHADERS
@@ -444,6 +457,8 @@ void Application::RenderToTexture()
 	spheres->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	spheres->Render(Direct3D->GetDeviceContext());
+
+	modelQuadtree->Render(Direct3D->GetDeviceContext(), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());
