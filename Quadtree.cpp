@@ -29,10 +29,29 @@ Quadtree::Quadtree(ID3D11Device* device, std::string filename)
 	file.close();
 }
 
-
 Quadtree::~Quadtree()
 {
 	Clean(root);
+}
+
+void Quadtree::Render(ID3D11DeviceContext* deviceContext, const XMFLOAT3& campos, const XMFLOAT3& camdir)
+{
+	Render(deviceContext, campos, camdir, root);
+}
+
+void Quadtree::Render(ID3D11DeviceContext* deviceContext, const XMFLOAT3& campos, const XMFLOAT3& camdir, Node* currentNode)
+{
+	for (vector<Object*>::iterator i = currentNode->objects.begin(); i != currentNode->objects.end(); ++i)
+	{
+		(*i)->Render(deviceContext);
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		if (currentNode->child[i])
+		{
+			Render(deviceContext, campos, camdir, currentNode->child[i]);
+		}
+	}
 }
 
 void Quadtree::Clean(Node* currentNode)

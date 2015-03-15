@@ -28,6 +28,8 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 	sphere = new Object(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", tempWorldMatrix);
 
+	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
+
 	// Initialize the light object.
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
 	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
@@ -109,6 +111,11 @@ Application::~Application()
 	{
 		delete sphere;
 		sphere = nullptr;
+	}
+	if (modelQuadtree)
+	{
+		delete modelQuadtree;
+		modelQuadtree = nullptr;
 	}
 
 	//SHADERS
@@ -259,6 +266,8 @@ void Application::RenderToTexture()
 	world = XMMatrixScaling(2, 2, 2)*XMMatrixTranslation(128, 5, 128);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	sphere->Render(Direct3D->GetDeviceContext());
+
+	modelQuadtree->Render(Direct3D->GetDeviceContext(), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());

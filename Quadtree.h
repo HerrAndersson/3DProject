@@ -27,6 +27,9 @@ public:
 	Quadtree(ID3D11Device* device, std::string filename);
 	~Quadtree();
 
+	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMFLOAT3& campos, const DirectX::XMFLOAT3& camdir);
+	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMFLOAT3& campos, const DirectX::XMFLOAT3& camdir, Node* currentNode);
+
 private:
 	void Clean(Node* currentNode);
 	Node* ReadNode(ID3D11Device* device, std::ifstream& file);

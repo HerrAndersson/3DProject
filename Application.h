@@ -15,6 +15,7 @@
 #include "ShaderParticles.h"
 #include "ParticleEmitter.h"
 #include "Light.h"
+#include "Quadtree.h"
 
 //Deferred shading
 #include "ShaderLight.h"
@@ -41,6 +42,8 @@ private:
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
 	ObjectBase*			sphere;
+
+	Quadtree*			modelQuadtree;
 
 	//SHADERS
 	ShaderDefault*		modelShader;
