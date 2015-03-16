@@ -5,10 +5,10 @@ ObjectIntersection::ObjectIntersection(ID3D11Device* device, string modelFilenam
 {
 	this->position = position;
 	this->scaling = scaling;
-	worldMatrix = XMMatrixScaling(scaling.x, scaling.y, scaling.z)*XMMatrixTranslation(position.x, position.y, position.z);
+	worldMatrix = XMMatrixScaling(scaling.x, scaling.y, scaling.z) * XMMatrixIdentity() * XMMatrixTranslation(position.x, position.y, position.z);
 	updateWorld = false;
 
-	intersectionSphere = new Sphere(position, scaling.x, device, worldMatrix);
+	intersectionSphere = new Sphere(position, scaling.x);
 }
 
 
@@ -60,9 +60,5 @@ Sphere* ObjectIntersection::GetIntersectionSphere()
 	return intersectionSphere;
 }
 
-void ObjectIntersection::RenderSphere(ID3D11DeviceContext* deviceContext)
-{
-	intersectionSphere->Render(deviceContext);
-}
 
 

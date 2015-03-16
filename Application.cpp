@@ -10,7 +10,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 1000, 0.1f);
+	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 10000.0f, 0.1f);
 	timer = new Timer();
 	input = new InputHandler(hInstance, hwnd, screenWidth, screenHeight);
 	position = new Position(XMFLOAT3(170.0f, 15.0f, 50.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
@@ -32,7 +32,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", "assets/textures/wagon.raw", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
-	spheres = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", XMFLOAT3(128, 5, 128), XMFLOAT3(2, 2, 2), tempWorldMatrix);
+	spheres = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", XMFLOAT3(240, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
 
@@ -116,7 +116,7 @@ Application::~Application()
 	}
 	if (spheres)
 	{
-		delete [] spheres;
+		delete spheres;
 		spheres = nullptr;
 	}
 	if (modelQuadtree)
@@ -233,6 +233,7 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	bool intersect = false;
 
 	XMMATRIX p;
+
 	Direct3D->GetProjectionMatrix(p);
 	XMFLOAT4X4 m;
 	XMStoreFloat4x4(&m, p);
@@ -243,7 +244,7 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	float vy = (-2.0f * mp.y / screenHeight + 1.0f) / m._22;
 
 	XMVECTOR rayOrigin{ { 0.0f, 0.0f, 0.0f } };
-	XMVECTOR rayDir{ { vx, vy, 1.0f } };
+	XMVECTOR rayDir{ { 0.0f, 0.0f, 1.0f } };
 
 	XMMATRIX v;
 	camera->GetViewMatrix(v);
@@ -254,11 +255,7 @@ bool Application::TestIntersections(ObjectIntersection* object)
 
 	XMMATRIX w;
 	object->GetWorldMatrix(w);
-	XMMATRIX w2;
-	Direct3D->GetWorldMatrix(w2);
-
-	w = XMMatrixMultiply(w, w2);
-
+	//object->GetIntersectionSphere()->i->GetWorldMatrix(w);
 	w = XMMatrixInverse(&XMMatrixDeterminant(w), w);
 
 	rayOrigin = XMVector3TransformCoord(rayOrigin, w);
@@ -270,6 +267,15 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	XMFLOAT3 rd;
 	XMStoreFloat3(&ro, rayOrigin);
 	XMStoreFloat3(&rd, rayDir);
+
+	XMFLOAT3 cr = camera->GetRotation();
+
+	float distance = -1.0f;
+	DirectX::BoundingSphere s;
+	s.Center = object->GetPosition();
+	s.Radius = 2.0f;
+
+	intersect = s.Intersects(rayOrigin, rayDir, distance);
 
 	intersect = RaySphereIntersect(ro, rd, 2.0f);
 	Ray r(ro, rd);
@@ -290,6 +296,9 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	//// Compute picking ray in view space.
 	//float vx = (+2.0f*mousePos.x / screenWidth - 1.0f) / m._11;
 	//float vy = (-2.0f*mousePos.y / screenHeight + 1.0f) / m._22;
+
+	//vx = 0.0f;
+	//vy = 0.0f;
 
 	//// Ray definition in view space.
 	//XMFLOAT3 campos = camera->GetPosition();
@@ -318,7 +327,10 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	//XMStoreFloat3(&ro, rayOrigin);
 	//XMStoreFloat3(&rd, rayDir);
 
-	////intersect = RaySphereIntersect(ro, rd, 2.0f);
+	//intersect = RaySphereIntersect(ro, rd, 2.0f);
+
+	//Ray r(ro, rd);
+	////intersect = RayVsSphere(r, *object->GetIntersectionSphere());
 
 	//return intersect;
 
@@ -345,6 +357,9 @@ bool Application::TestIntersections(ObjectIntersection* object)
 
 	//pointX = pointX / m2._11;
 	//pointY = pointY / m2._22;
+
+	//pointX = 0.0f;
+	//pointY = 0.0f;
 
 	//// Get the inverse of the view matrix.
 	//XMFLOAT4X4 m;
@@ -382,8 +397,8 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	//// Now perform the ray-sphere intersection test.
 	//intersect = RaySphereIntersect(rayOrigin, rayDir, object->GetIntersectionSphere()->radius);
 
-	////Ray r(rayOrigin, rayDir);
-	////intersect = RayVsSphere(r, *object->GetIntersectionSphere());
+	//Ray r(rayOrigin, rayDir);
+	//intersect = RayVsSphere(r, *object->GetIntersectionSphere());
 	//return intersect;
 
 }
@@ -447,11 +462,11 @@ void Application::RenderToTexture()
 	wagon->Render(Direct3D->GetDeviceContext());
 
 
-	XMFLOAT3 center = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->center;
-	float radius = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->radius;
-	world = XMMatrixScaling(radius, radius, radius)*XMMatrixTranslation(center.x, center.y, center.z);
-	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	((ObjectIntersection*)spheres)->RenderSphere(Direct3D->GetDeviceContext());
+	//XMFLOAT3 center = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->center;
+	//float radius = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->radius;
+	//world = XMMatrixScaling(radius, radius, radius)*XMMatrixTranslation(center.x, center.y, center.z);
+	//modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
+	//((ObjectIntersection*)spheres)->RenderSphere(Direct3D->GetDeviceContext());
 
 	spheres->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);

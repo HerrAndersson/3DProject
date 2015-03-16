@@ -22,18 +22,11 @@ struct Sphere
 {
 	XMFLOAT3 center;
 	float radius;
-	Object* i;
 
-	Sphere(XMFLOAT3 center, float radius, ID3D11Device* device, XMMATRIX& worldMatrix)
+	Sphere(XMFLOAT3 center, float radius)
 	{
 		this->center = center;
 		this->radius = radius;
-		i = new Object(device, "assets/models/ball.obj", "assets/textures/camel.raw", worldMatrix);
-	}
-
-	void Render(ID3D11DeviceContext* deviceContext)
-	{
-		i->Render(deviceContext);
 	}
 };
 

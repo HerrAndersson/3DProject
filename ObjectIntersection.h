@@ -30,7 +30,6 @@ public:
 	void SetScaling(XMFLOAT3 newScaling);
 
 	Sphere* GetIntersectionSphere();
-	void RenderSphere(ID3D11DeviceContext* deviceContext);
 
 	void Update();
 };

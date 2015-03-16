@@ -145,6 +145,16 @@ void InputHandler::ProcessInput()
 	if (mousePos.y < 0)  { mousePos.y = 0; }
 	if (mousePos.x  > screenWidth)  { mousePos.x = (float)screenWidth; }
 	if (mousePos.y  > screenHeight) { mousePos.y = (float)screenHeight; }
+
+
+	//GER GLOBAL POSITION, INTE FÖR SJÄLVA FÖNSTRET. FIXA
+	LPPOINT point = new POINT();
+	GetCursorPos(point);
+	
+	mousePos.x = point->x;
+	mousePos.y = point->y;
+
+	delete point;
 }
 
 XMFLOAT2 InputHandler::GetMouseLocation()
