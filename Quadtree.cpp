@@ -13,6 +13,10 @@ Quadtree::Node::Node()
 
 Quadtree::Node::~Node()
 {
+	for (vector<Object*>::iterator i = objects.begin(); i != objects.end(); ++i)
+	{
+		delete *i;
+	}
 }
 
 Quadtree::Quadtree(ID3D11Device* device, std::string filename)
