@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <cstdlib>
 #include <ctime>
-#include <vld.h> 
 
 using namespace std;
 
