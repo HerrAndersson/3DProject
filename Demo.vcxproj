@@ -99,6 +99,9 @@
     <ClCompile Include="ShaderTerrain.cpp" />
     <ClCompile Include="ShaderDefault.cpp" />
     <ClCompile Include="ShaderParticles.cpp" />
+    <ClCompile Include="ShaderShadow.cpp" />
+    <ClCompile Include="ShadowLight.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -129,6 +132,9 @@
     <ClInclude Include="ShaderTerrain.h" />
     <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderParticles.h" />
+    <ClInclude Include="ShaderShadow.h" />
+    <ClInclude Include="ShadowLight.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Timer.h" />
@@ -161,6 +167,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="assets\shaders\LightVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\ShadowPS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="assets\shaders\ShadowVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>

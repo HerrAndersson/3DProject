@@ -278,13 +278,13 @@ Ray Application::GetRay()
 	XMVECTOR pickRayInViewSpacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR pickRayInViewSpaceDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
-	// Transform 3D Ray from View space to 3D ray in World space
+	//Transform ray from view to world space
 	XMMATRIX invView;
 	XMVECTOR matInvDeter;
 
 	XMMATRIX v;
 	camera->GetViewMatrix(v);
-	invView = XMMatrixInverse(&matInvDeter, v);	//Inverse of View Space matrix is World space matrix
+	invView = XMMatrixInverse(&matInvDeter, v);
 
 	XMVECTOR pickRayInWorldSpacePos = XMVector3TransformCoord(pickRayInViewSpacePos, invView);
 	XMVECTOR pickRayInWorldSpaceDir = XMVector3TransformNormal(pickRayInViewSpaceDir, invView);
@@ -304,64 +304,14 @@ bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 	bool intersect = false;
 
 	Ray r = GetRay();
+	RayVsSphere(r, *object->GetIntersectionSphere(), distance);
 
-	//DirectX::BoundingSphere s;
-	//s.Center = object->GetIntersectionSphere()->center;
-	//s.Radius = object->GetIntersectionSphere()->radius;
-
-	//XMVECTOR v1, v2;
-
-	//v1 = XMLoadFloat3(&r.origin);
-	//v2 = XMLoadFloat3(&r.direction);
-
-	//intersect = s.Intersects(v1, v2, distance);
-
-	intersect = RayVsSphere(r, *object->GetIntersectionSphere(), distance);
-
-	cout << distance << endl;
+	if (distance > 0)
+	{
+		intersect = true;
+	}
 
 	return intersect;
-
-
-	//////////////////////////////////////////////////////////////////////////////////////////////// FUNKAR /////////////////////////////////////////////////////////////////////
-	////Since the mouse is locked to the middle of the window the origin is always (0,0)
-	//XMVECTOR rayOrigin{ { 0.0f, 0.0f, 0.0f } };
-	//XMVECTOR rayDir{ { 0.0f, 0.0f, 1.0f } };
-
-	//XMMATRIX v;
-	//camera->GetViewMatrix(v);
-	//v = XMMatrixInverse(&XMMatrixDeterminant(v), v);
-
-	//rayOrigin = XMVector3TransformCoord(rayOrigin, v);
-	//rayDir = XMVector3TransformNormal(rayDir, v);
-
-	//XMMATRIX w;
-	//object->GetWorldMatrix(w);
-	//w = XMMatrixInverse(&XMMatrixDeterminant(w), w);
-
-	//rayOrigin = XMVector3TransformCoord(rayOrigin, w);
-	//rayDir = XMVector3TransformNormal(rayDir, w);
-
-	//rayDir = XMVector3Normalize(rayDir);
-
-	//XMFLOAT3 ro;
-	//XMFLOAT3 rd;
-	//XMStoreFloat3(&ro, rayOrigin);
-	//XMStoreFloat3(&rd, rayDir);
-
-	//float distance = -1.0f;
-	//DirectX::BoundingSphere s;
-	//s.Center = object->GetPosition();
-	//s.Radius = 2.0f;
-
-	////intersect = s.Intersects(rayOrigin, rayDir, distance);
-
-	//intersect = RaySphereIntersect(ro, rd, 2.0f);
-	//Ray r(ro, rd);
-	////intersect = RayVsSphere(r, *object->GetIntersectionSphere());
-	////intersect = RayVsSphere2(r, *object->GetIntersectionSphere());
-	//return intersect;
-
 }
 
 

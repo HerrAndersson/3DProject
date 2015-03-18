@@ -29,4 +29,4 @@ Other techniques
 ================================================================================
 Particle system with billboarded particles						Mattias				    X
 Water-effect										Jonas
-Picking											Jonas
+Picking											Jonas				    X
