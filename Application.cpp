@@ -219,8 +219,8 @@ void Application::HandleMovement(float frameTime)
 		bool intersect = TestIntersections((ObjectIntersection*)spheres);
 		if (intersect)
 		{
-			cout << "INTERSECT" << endl;
-			system("cls");
+			//cout << "INTERSECT" << endl;
+			//system("cls");
 
 			XMFLOAT3 p = ((ObjectIntersection*)spheres)->GetPosition();
 			((ObjectIntersection*)spheres)->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
@@ -461,6 +461,7 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	wagon->Render(Direct3D->GetDeviceContext());
 
+	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
 	//XMFLOAT3 center = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->center;
 	//float radius = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->radius;
@@ -472,7 +473,7 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	spheres->Render(Direct3D->GetDeviceContext());
 
-	modelQuadtree->Render(Direct3D->GetDeviceContext(), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
+	
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());

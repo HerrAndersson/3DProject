@@ -8,6 +8,9 @@
 #include "Object.h"
 #include "BoundingBox.h"
 
+#include "ShaderDefault.h"
+#include "Intersections.h"
+
 class Quadtree
 {
 private:
@@ -27,11 +30,12 @@ public:
 	Quadtree(ID3D11Device* device, std::string filename);
 	~Quadtree();
 
-	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMFLOAT3& campos, const DirectX::XMFLOAT3& camdir);
-	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMFLOAT3& campos, const DirectX::XMFLOAT3& camdir, Node* currentNode);
+	void Render(ID3D11DeviceContext* deviceContext, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
+	void Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
 
 private:
 	void Clean(Node* currentNode);
 	Node* ReadNode(ID3D11Device* device, std::ifstream& file);
+	int PlanesVsPoints(Plane planes[], DirectX::XMFLOAT3 points[]);
 };
 

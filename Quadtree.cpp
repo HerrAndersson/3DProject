@@ -38,24 +38,162 @@ Quadtree::~Quadtree()
 	Clean(root);
 }
 
-void Quadtree::Render(ID3D11DeviceContext* deviceContext, const XMFLOAT3& campos, const XMFLOAT3& camdir)
+void Quadtree::Render(ID3D11DeviceContext* deviceContext, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
-	Render(deviceContext, campos, camdir, root);
+	Render(deviceContext, root, rootBoundingBox, shader, viewMatrix, projectionMatrix);
 }
 
-void Quadtree::Render(ID3D11DeviceContext* deviceContext, const XMFLOAT3& campos, const XMFLOAT3& camdir, Node* currentNode)
+void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
-	for (vector<Object*>::iterator i = currentNode->objects.begin(); i != currentNode->objects.end(); ++i)
+	Plane planes[6];
+	XMFLOAT4X4 m;
+	XMMATRIX tempMatrix = XMMatrixMultiply(viewMatrix, projectionMatrix);
+	XMStoreFloat4x4(&m, tempMatrix);
+
+	//Left
+	planes[0].normal.x =	-(m._14 + m._11);
+	planes[0].normal.y =	-(m._24 + m._21);
+	planes[0].normal.z =	-(m._34 + m._31);
+	planes[0].d =			-(m._44 + m._41);
+
+	//Right
+	planes[1].normal.x =	-(m._14 - m._11);
+	planes[1].normal.y =	-(m._24 - m._21);
+	planes[1].normal.z =	-(m._34 - m._31);
+	planes[1].d =			-(m._44 - m._41);
+
+	//Top
+	planes[2].normal.x =	-(m._14 - m._12);
+	planes[2].normal.y =	-(m._24 - m._22);
+	planes[2].normal.z =	-(m._34 - m._32);
+	planes[2].d =			-(m._44 - m._42);
+
+	//Bottom
+	planes[3].normal.x =	-(m._14 + m._12);
+	planes[3].normal.y =	-(m._24 + m._22);
+	planes[3].normal.z =	-(m._34 + m._32);
+	planes[3].d =			-(m._44 + m._42);
+
+	//Near
+	planes[4].normal.x =	-(m._14 + m._13);
+	planes[4].normal.y =	-(m._24 + m._23);
+	planes[4].normal.z =	-(m._34 + m._33);
+	planes[4].d =			-(m._44 + m._43);
+
+	//Far
+	planes[5].normal.x =	-(m._14 - m._13);
+	planes[5].normal.y =	-(m._24 - m._23);
+	planes[5].normal.z =	-(m._34 - m._33);
+	planes[5].d =			-(m._44 - m._43);
+
+	//Normalize
+	for (int i = 0; i < 6; i++)
 	{
-		(*i)->Render(deviceContext);
+		XMVECTOR lengthVector = XMVector3Length(XMLoadFloat3(&planes[i].normal));
+		XMFLOAT3 length;
+		XMStoreFloat3(&length, lengthVector);
+		float denom = 1.0f / length.x;
+
+		planes[i].normal.x	*= denom;
+		planes[i].normal.y	*= denom;
+		planes[i].normal.z	*= denom;
+		planes[i].d			*= denom;
 	}
-	for (int i = 0; i < 4; i++)
+
+	//Calculate the 8 points of the bounding box
+	XMFLOAT3 points[8];
+	XMFLOAT2 pos = box.GetPosition();
+	XMFLOAT2 size = box.GetSize();
+	float height = 64.0f;
+	points[0].x = pos.x;
+	points[0].y = 0;
+	points[0].z = pos.y;
+
+	points[1].x = pos.x + size.x;
+	points[1].y = 0;
+	points[1].z = pos.y;
+
+	points[2].x = pos.x;
+	points[2].y = 0;
+	points[2].z = pos.y + size.y;
+
+	points[3].x = pos.x + size.x;
+	points[3].y = 0;
+	points[3].z = pos.y + size.y;
+
+	points[4].x = pos.x;
+	points[4].y = height;
+	points[4].z = pos.y;
+
+	points[5].x = pos.x + size.x;
+	points[5].y = height;
+	points[5].z = pos.y;
+
+	points[6].x = pos.x;
+	points[6].y = height;
+	points[6].z = pos.y + size.y;
+
+	points[7].x = pos.x + size.x;
+	points[7].y = height;
+	points[7].z = pos.y + size.y;
+
+	int frustumIntersection = PlanesVsPoints(planes, points);
+	if (frustumIntersection <= 0) //If box is inside or intersecting the frustum
 	{
-		if (currentNode->child[i])
+		for (vector<Object*>::iterator i = currentNode->objects.begin(); i != currentNode->objects.end(); ++i)
 		{
-			Render(deviceContext, campos, camdir, currentNode->child[i]);
+			XMMATRIX world;
+			(*i)->GetWorldMatrix(world);
+			shader->SetMatrices(deviceContext, world, viewMatrix, projectionMatrix);
+			(*i)->Render(deviceContext);
+
+			
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			if (currentNode->child[i])
+			{
+				Render(deviceContext, currentNode->child[i], box.GetChildBoundingBox(i), shader, viewMatrix, projectionMatrix);
+			}
 		}
 	}
+}
+
+int Quadtree::PlanesVsPoints(Plane planes[], DirectX::XMFLOAT3 points[])
+{
+	int returnValue = 0;
+	int outsideFrustumCount = 0;
+
+	for (int i = 0; i < 6; i++)
+	{
+		int outsidePlaneCount = 0;
+		for (int j = 0; j < 8; j++)
+		{
+			if (PlaneVsPoint(planes[i], points[j]) > 0)
+			{
+				outsidePlaneCount++;
+			}
+		}
+		if (outsidePlaneCount == 8) //All 8 points are behind the plane
+		{
+			//All points outside of frustum
+			returnValue = 1;
+			break;
+		}
+		else if (outsidePlaneCount == 0) //All 8 points are in front the plane
+		{
+			outsideFrustumCount++;
+		}
+	}
+	if (outsideFrustumCount == 6) //All points are within the frustum
+	{
+		returnValue = -1;
+	}
+	else //The frustum is intersecting the bounding box
+	{
+		returnValue = 0;
+	}
+	return returnValue;
 }
 
 void Quadtree::Clean(Node* currentNode)

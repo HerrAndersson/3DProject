@@ -30,6 +30,22 @@ struct Sphere
 	}
 };
 
+struct Plane
+{
+	DirectX::XMFLOAT3 normal;
+	float d;
+	Plane()
+	{
+		this->normal = XMFLOAT3(0, 0, 0);
+		this->d = 0.0f;
+	};
+	Plane(XMFLOAT3 normal, float d)
+	{
+		this->normal = normal;
+		this->d = d;
+	}
+};
+
 struct Triangle
 {
 	XMFLOAT3 p0, p1, p2;
@@ -178,6 +194,11 @@ static bool RayVsTriangle(Ray& ray, Triangle& triangle)
 	}
 
 	return hit;
+}
+
+static float PlaneVsPoint(Plane plane, XMFLOAT3 point)
+{
+	return plane.normal.x*point.x + plane.normal.y * point.y + plane.normal.z * point.z + plane.d;
 }
 
 #endif
