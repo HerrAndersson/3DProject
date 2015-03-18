@@ -113,7 +113,7 @@ static bool RayVsSphere2(Ray& ray, Sphere& sphere)
 }
 
 
-static bool RayVsSphere(Ray& ray, Sphere& sphere)
+static bool RayVsSphere(Ray& ray, Sphere& sphere, float& distance)
 {
 	bool hit = false;
 
@@ -125,7 +125,6 @@ static bool RayVsSphere(Ray& ray, Sphere& sphere)
 	float discriminant = b*b - c;
 
 	//Discriminant has to be > 0 to avoid complex numbers
-	cout << discriminant << endl;
 	if (discriminant > 0.0f)
 	{
 		//Calculate both points of intersection.
@@ -138,6 +137,7 @@ static bool RayVsSphere(Ray& ray, Sphere& sphere)
 		else
 			returnValue = t2;
 
+		distance = returnValue;
 		hit = true;
 	}
 

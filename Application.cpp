@@ -32,17 +32,16 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", "assets/textures/wagon.raw", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
-	//spheres = new ObjectBase*[5];
+	spheres = new ObjectBase*[NUM_SPHERES];
 
-	//XMFLOAT3 scale(3, 3, 3);
+	for (int i = 0; i < NUM_SPHERES; i++)
+	{
+		XMFLOAT3 pos((float)(170 + (i * 20 + 5*i)), 20, 170);
+		XMFLOAT3 scale((float)(8 + i), (float)(8 + i), (float)(8 + i));
+		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", pos, scale, XMMatrixIdentity());
+	}
 
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	XMFLOAT3 pos(200 + (i * 15), 5, 156);
-	//	spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", pos, scale, XMMatrixIdentity());
-	//}
-
-	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(230, 5, 128), XMFLOAT3(10, 10, 10), tempWorldMatrix);
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(15, 5, 128), XMFLOAT3(10, 10, 10), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
 
@@ -124,11 +123,14 @@ Application::~Application()
 		delete particleEmitter;
 		particleEmitter = nullptr;
 	}
-	//if (spheres)
-	//{
-	//	delete [] spheres;
-	//	spheres = nullptr;
-	//}
+	if (spheres)
+	{
+		for (int i = 0; i < NUM_SPHERES; i++)
+		{
+			delete spheres[i];
+		}
+		delete[] spheres;
+	}
 	if (sphere)
 	{
 		delete sphere;
@@ -184,10 +186,10 @@ bool Application::Update()
 		return false;
 	}
 
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	((ObjectIntersection*)spheres[i])->Update();
-	//}
+	for (int i = 0; i < NUM_SPHERES; i++)
+	{
+		((ObjectIntersection*)spheres[i])->Update();
+	}
 	((ObjectIntersection*)sphere)->Update();
 
 	//Check if the user pressed escape and wants to exit the application.
@@ -234,21 +236,31 @@ void Application::HandleMovement(float frameTime)
 	keyDown = input->LMB();
 	if (keyDown)
 	{
-		//for (int i = 0; i < 5; i++)
-		//{
-		//	bool intersect = TestIntersections((ObjectIntersection*)spheres[i]);
-		//	if (intersect)
-		//	{
-		//		cout << "INTERSECT" << endl;
-		//		//system("cls");
+		float closestDist = 9999999.0f;
+		float distance = -1.0f;
+		int closestIndex = -1;
 
-		//		XMFLOAT3 p = ((ObjectIntersection*)spheres[i])->GetPosition();
-		//		((ObjectIntersection*)spheres[i])->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
-		//		intersect = false;
-		//	}
-		//}
+		for (int i = 0; i < NUM_SPHERES; i++)
+		{
+			bool intersect = TestIntersections((ObjectIntersection*)spheres[i], distance);
+			if (intersect)
+			{
+				if (distance < closestDist)
+				{
+					closestDist = distance;
+					closestIndex = i;
+				}
+			}
+		}
 
-		bool intersect = TestIntersections((ObjectIntersection*)sphere);
+		if (closestIndex > -1)
+		{
+			XMFLOAT3 p = ((ObjectIntersection*)spheres[closestIndex])->GetPosition();
+			((ObjectIntersection*)spheres[closestIndex])->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
+		}
+
+
+		bool intersect = TestIntersections((ObjectIntersection*)sphere, distance);
 		if (intersect)
 		{
 			cout << "INTERSECT" << endl;
@@ -287,26 +299,24 @@ Ray Application::GetRay()
 	return r;
 }
 
-bool Application::TestIntersections(ObjectIntersection* object)
+bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 {
 	bool intersect = false;
 
 	Ray r = GetRay();
 
-	float distance = -1.0f;
-	DirectX::BoundingSphere s;
-	s.Center = object->GetIntersectionSphere()->center;
-	s.Radius = object->GetIntersectionSphere()->radius;
+	//DirectX::BoundingSphere s;
+	//s.Center = object->GetIntersectionSphere()->center;
+	//s.Radius = object->GetIntersectionSphere()->radius;
 
-	XMVECTOR v1, v2;
+	//XMVECTOR v1, v2;
 
-	v1 = XMLoadFloat3(&r.origin);
-	v2 = XMLoadFloat3(&r.direction);
+	//v1 = XMLoadFloat3(&r.origin);
+	//v2 = XMLoadFloat3(&r.direction);
 
-	intersect = s.Intersects(v1, v2, distance);
+	//intersect = s.Intersects(v1, v2, distance);
 
-	//Funkar, men ger inte distance
-	//intersect = RayVsSphere(r, *object->GetIntersectionSphere());
+	intersect = RayVsSphere(r, *object->GetIntersectionSphere(), distance);
 
 	cout << distance << endl;
 
@@ -419,12 +429,12 @@ void Application::RenderToTexture()
 	//modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	//((ObjectIntersection*)spheres)->RenderSphere(Direct3D->GetDeviceContext());
 
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	spheres[i]->GetWorldMatrix(world);
-	//	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	//	spheres[i]->Render(Direct3D->GetDeviceContext());
-	//}
+	for (int i = 0; i < NUM_SPHERES; i++)
+	{
+		spheres[i]->GetWorldMatrix(world);
+		modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
+		spheres[i]->Render(Direct3D->GetDeviceContext());
+	}
 
 	sphere->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);

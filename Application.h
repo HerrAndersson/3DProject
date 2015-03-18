@@ -32,6 +32,7 @@ class Application
 private:
 
 	const float HEIGHT_FROM_GROUND = 6.0f;
+	const int NUM_SPHERES = 5;
 
 	int screenWidth;
 	int screenHeight;
@@ -49,7 +50,7 @@ private:
 	ObjectBase*			camel;
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
-	//ObjectBase**		spheres;
+	ObjectBase**		spheres;
 	ObjectBase*			sphere;
 
 	Quadtree*			modelQuadtree;
@@ -67,7 +68,7 @@ private:
 	void CreateShaders();
 	void RenderToTexture();
 	bool RenderGraphics();
-	bool TestIntersections(ObjectIntersection* object);
+	bool TestIntersections(ObjectIntersection* object, float& distance);
 
 	Ray GetRay();
 
