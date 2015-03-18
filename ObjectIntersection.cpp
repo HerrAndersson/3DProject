@@ -28,7 +28,7 @@ void ObjectIntersection::Update()
 		updateWorld = false;
 	}
 	
-	if (position.y > 5)
+	if (position.y > intersectionSphere->radius + 5)
 	{
 		position.y--;
 		updateWorld = true;

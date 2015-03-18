@@ -60,7 +60,7 @@ struct Triangle
 
 static bool RaySphereIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, float radius)
 {
-	bool hit = true;
+	bool hit = false;
 
 	// Calculate the a, b, and c coefficients.
 	float a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
@@ -70,12 +70,21 @@ static bool RaySphereIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, float 
 	// Find the discriminant.
 	float discriminant = (b * b) - (4 * a * c);
 
-	cout << discriminant << endl;
-
 	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
-	if (discriminant < 0.0f)
+	if (discriminant > 0.0f)
 	{
-		hit = false;
+		hit = true;
+		double hitPoint;
+
+		double t0 = b*(-1) - sqrt(discriminant);
+		double t1 = b*(-1) + sqrt(discriminant);
+
+		if (t0 < t1)
+			hitPoint = t0;
+		else
+			hitPoint = t1;
+
+		cout << "HitPoint " << hitPoint << endl;
 	}
 
 	return hit;
@@ -120,7 +129,7 @@ static bool RayVsSphere2(Ray& ray, Sphere& sphere)
 }
 
 
-static bool RayVsSphere(Ray& ray, Sphere& sphere)
+static bool RayVsSphere(Ray& ray, Sphere& sphere, float& distance)
 {
 	bool hit = false;
 
@@ -132,7 +141,6 @@ static bool RayVsSphere(Ray& ray, Sphere& sphere)
 	float discriminant = b*b - c;
 
 	//Discriminant has to be > 0 to avoid complex numbers
-	cout << discriminant << endl;
 	if (discriminant > 0.0f)
 	{
 		//Calculate both points of intersection.
@@ -145,6 +153,7 @@ static bool RayVsSphere(Ray& ray, Sphere& sphere)
 		else
 			returnValue = t2;
 
+		distance = returnValue;
 		hit = true;
 	}
 
