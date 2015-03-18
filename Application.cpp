@@ -372,6 +372,7 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	wagon->Render(Direct3D->GetDeviceContext());
 
+	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
 	//XMFLOAT3 center = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->center;
 	//float radius = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->radius;
@@ -390,7 +391,7 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	sphere->Render(Direct3D->GetDeviceContext());
 
-	modelQuadtree->Render(Direct3D->GetDeviceContext(), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
+	
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());

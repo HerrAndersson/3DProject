@@ -13,4 +13,5 @@ public:
 
 	DirectX::XMFLOAT2 GetPosition();
 	DirectX::XMFLOAT2 GetSize();
+	BoundingBox GetChildBoundingBox(int childQuadrant);
 };
