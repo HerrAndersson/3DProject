@@ -49,7 +49,8 @@ private:
 	ObjectBase*			camel;
 	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
-	ObjectBase*			spheres;
+	//ObjectBase**		spheres;
+	ObjectBase*			sphere;
 
 	Quadtree*			modelQuadtree;
 
@@ -67,6 +68,8 @@ private:
 	void RenderToTexture();
 	bool RenderGraphics();
 	bool TestIntersections(ObjectIntersection* object);
+
+	Ray GetRay();
 
 public:
 

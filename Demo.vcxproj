@@ -227,13 +227,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\models\sphere2.obj">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-      <FileType>Document</FileType>
-    </None>
     <None Include="assets\models\sphere3.obj">
       <FileType>Document</FileType>
     </None>

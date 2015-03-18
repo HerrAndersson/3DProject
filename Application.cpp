@@ -32,7 +32,17 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", "assets/textures/wagon.raw", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
-	spheres = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", XMFLOAT3(240, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
+	//spheres = new ObjectBase*[5];
+
+	//XMFLOAT3 scale(3, 3, 3);
+
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	XMFLOAT3 pos(200 + (i * 15), 5, 156);
+	//	spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/ball.obj", "assets/textures/missing.raw", pos, scale, XMMatrixIdentity());
+	//}
+
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(230, 5, 128), XMFLOAT3(10, 10, 10), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
 
@@ -114,10 +124,14 @@ Application::~Application()
 		delete particleEmitter;
 		particleEmitter = nullptr;
 	}
-	if (spheres)
+	//if (spheres)
+	//{
+	//	delete [] spheres;
+	//	spheres = nullptr;
+	//}
+	if (sphere)
 	{
-		delete spheres;
-		spheres = nullptr;
+		delete sphere;
 	}
 	if (modelQuadtree)
 	{
@@ -170,7 +184,11 @@ bool Application::Update()
 		return false;
 	}
 
-	((ObjectIntersection*)spheres)->Update();
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	((ObjectIntersection*)spheres[i])->Update();
+	//}
+	((ObjectIntersection*)sphere)->Update();
 
 	//Check if the user pressed escape and wants to exit the application.
 	if (input->Escape())
@@ -216,110 +234,104 @@ void Application::HandleMovement(float frameTime)
 	keyDown = input->LMB();
 	if (keyDown)
 	{
-		bool intersect = TestIntersections((ObjectIntersection*)spheres);
+		//for (int i = 0; i < 5; i++)
+		//{
+		//	bool intersect = TestIntersections((ObjectIntersection*)spheres[i]);
+		//	if (intersect)
+		//	{
+		//		cout << "INTERSECT" << endl;
+		//		//system("cls");
+
+		//		XMFLOAT3 p = ((ObjectIntersection*)spheres[i])->GetPosition();
+		//		((ObjectIntersection*)spheres[i])->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
+		//		intersect = false;
+		//	}
+		//}
+
+		bool intersect = TestIntersections((ObjectIntersection*)sphere);
 		if (intersect)
 		{
 			cout << "INTERSECT" << endl;
-			system("cls");
+			//system("cls");
 
-			XMFLOAT3 p = ((ObjectIntersection*)spheres)->GetPosition();
-			((ObjectIntersection*)spheres)->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
+			XMFLOAT3 p = ((ObjectIntersection*)sphere)->GetPosition();
+			((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
+			intersect = false;
 		}
 	}
+}
+
+Ray Application::GetRay()
+{
+	XMVECTOR pickRayInViewSpacePos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	XMVECTOR pickRayInViewSpaceDir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	// Transform 3D Ray from View space to 3D ray in World space
+	XMMATRIX invView;
+	XMVECTOR matInvDeter;
+
+	XMMATRIX v;
+	camera->GetViewMatrix(v);
+	invView = XMMatrixInverse(&matInvDeter, v);	//Inverse of View Space matrix is World space matrix
+
+	XMVECTOR pickRayInWorldSpacePos = XMVector3TransformCoord(pickRayInViewSpacePos, invView);
+	XMVECTOR pickRayInWorldSpaceDir = XMVector3TransformNormal(pickRayInViewSpaceDir, invView);
+
+	XMFLOAT3 ro;
+	XMFLOAT3 rd;
+	XMStoreFloat3(&ro, pickRayInWorldSpacePos);
+	XMStoreFloat3(&rd, pickRayInWorldSpaceDir);
+
+	Ray r(ro, rd);
+
+	return r;
 }
 
 bool Application::TestIntersections(ObjectIntersection* object)
 {
 	bool intersect = false;
 
-	XMMATRIX p;
-
-	Direct3D->GetProjectionMatrix(p);
-	XMFLOAT4X4 m;
-	XMStoreFloat4x4(&m, p);
-
-	XMFLOAT2 mp = input->GetMouseLocation();
-
-	float vx = (+2.0f * mp.x / screenWidth - 1.0f) / m._11;
-	float vy = (-2.0f * mp.y / screenHeight + 1.0f) / m._22;
-
-	XMVECTOR rayOrigin{ { 0.0f, 0.0f, 0.0f } };
-	XMVECTOR rayDir{ { 0.0f, 0.0f, 1.0f } };
-
-	XMMATRIX v;
-	camera->GetViewMatrix(v);
-	v = XMMatrixInverse(&XMMatrixDeterminant(v), v);
-
-	rayOrigin = XMVector3TransformCoord(rayOrigin, v);
-	rayDir = XMVector3TransformNormal(rayDir, v);
-
-	XMMATRIX w;
-	object->GetWorldMatrix(w);
-	//object->GetIntersectionSphere()->i->GetWorldMatrix(w);
-	w = XMMatrixInverse(&XMMatrixDeterminant(w), w);
-
-	rayOrigin = XMVector3TransformCoord(rayOrigin, w);
-	rayDir = XMVector3TransformNormal(rayDir, w);
-
-	rayDir = XMVector3Normalize(rayDir);
-
-	XMFLOAT3 ro;
-	XMFLOAT3 rd;
-	XMStoreFloat3(&ro, rayOrigin);
-	XMStoreFloat3(&rd, rayDir);
-
-	XMFLOAT3 cr = camera->GetRotation();
+	Ray r = GetRay();
 
 	float distance = -1.0f;
 	DirectX::BoundingSphere s;
-	s.Center = object->GetPosition();
-	s.Radius = 2.0f;
+	s.Center = object->GetIntersectionSphere()->center;
+	s.Radius = object->GetIntersectionSphere()->radius;
 
-	intersect = s.Intersects(rayOrigin, rayDir, distance);
+	XMVECTOR v1, v2;
 
-	intersect = RaySphereIntersect(ro, rd, 2.0f);
-	Ray r(ro, rd);
+	v1 = XMLoadFloat3(&r.origin);
+	v2 = XMLoadFloat3(&r.direction);
+
+	intersect = s.Intersects(v1, v2, distance);
+
+	//Funkar, men ger inte distance
 	//intersect = RayVsSphere(r, *object->GetIntersectionSphere());
-	//intersect = RayVsSphere2(r, *object->GetIntersectionSphere());
+
+	cout << distance << endl;
+
 	return intersect;
 
 
-	///////////////////////////////////////////////////////////////// Funkar inuti sphere, men inte utanför //////////////////////////////////////////////////
-	//XMMATRIX p;
-	//Direct3D->GetProjectionMatrix(p);
+	//////////////////////////////////////////////////////////////////////////////////////////////// FUNKAR /////////////////////////////////////////////////////////////////////
+	////Since the mouse is locked to the middle of the window the origin is always (0,0)
+	//XMVECTOR rayOrigin{ { 0.0f, 0.0f, 0.0f } };
+	//XMVECTOR rayDir{ { 0.0f, 0.0f, 1.0f } };
 
-	//XMFLOAT4X4 m;
-	//XMStoreFloat4x4(&m, p);
-
-	//XMFLOAT2 mousePos = input->GetMouseLocation();
-
-	//// Compute picking ray in view space.
-	//float vx = (+2.0f*mousePos.x / screenWidth - 1.0f) / m._11;
-	//float vy = (-2.0f*mousePos.y / screenHeight + 1.0f) / m._22;
-
-	//vx = 0.0f;
-	//vy = 0.0f;
-
-	//// Ray definition in view space.
-	//XMFLOAT3 campos = camera->GetPosition();
-	//XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-	//XMVECTOR rayDir = XMVectorSet(vx, vy, 1.0f, 0.0f);
-
-	//// Tranform ray to local space of Mesh.
 	//XMMATRIX v;
 	//camera->GetViewMatrix(v);
-	//XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(v), v);
+	//v = XMMatrixInverse(&XMMatrixDeterminant(v), v);
+
+	//rayOrigin = XMVector3TransformCoord(rayOrigin, v);
+	//rayDir = XMVector3TransformNormal(rayDir, v);
 
 	//XMMATRIX w;
 	//object->GetWorldMatrix(w);
-	//XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(w), w);
+	//w = XMMatrixInverse(&XMMatrixDeterminant(w), w);
 
-	//XMMATRIX toLocal = XMMatrixMultiply(invView, invWorld);
+	//rayOrigin = XMVector3TransformCoord(rayOrigin, w);
+	//rayDir = XMVector3TransformNormal(rayDir, w);
 
-	//rayOrigin = XMVector3TransformCoord(rayOrigin, toLocal);
-	//rayDir = XMVector3TransformNormal(rayDir, toLocal);
-
-	//// Make the ray direction unit length for the intersection tests.
 	//rayDir = XMVector3Normalize(rayDir);
 
 	//XMFLOAT3 ro;
@@ -327,78 +339,17 @@ bool Application::TestIntersections(ObjectIntersection* object)
 	//XMStoreFloat3(&ro, rayOrigin);
 	//XMStoreFloat3(&rd, rayDir);
 
-	//intersect = RaySphereIntersect(ro, rd, 2.0f);
+	//float distance = -1.0f;
+	//DirectX::BoundingSphere s;
+	//s.Center = object->GetPosition();
+	//s.Radius = 2.0f;
 
+	////intersect = s.Intersects(rayOrigin, rayDir, distance);
+
+	//intersect = RaySphereIntersect(ro, rd, 2.0f);
 	//Ray r(ro, rd);
 	////intersect = RayVsSphere(r, *object->GetIntersectionSphere());
-
-	//return intersect;
-
-
-
-
-
-
-
-	//// Move the mouse cursor coordinates into the -1 to +1 range.
-	//XMFLOAT2 mousePos = input->GetMouseLocation();
-	//float pointX = (((2.0f * (float)mousePos.x) / (float)screenWidth) - 1.0f);
-	//float pointY = -(((2.0f * (float)mousePos.y) / (float)screenHeight) - 1.0f);
-
-	//XMMATRIX projectionMatrix, viewMatrix, inverseViewMatrix, worldMatrix, inverseWorldMatrix;
-	//XMFLOAT3 direction, origin;
-
-	//camera->GetViewMatrix(viewMatrix);
-	//Direct3D->GetProjectionMatrix(projectionMatrix);
-
-	////Adjust the points using the projection matrix to account for the aspect ratio of the viewport.
-	//XMFLOAT4X4 m2;
-	//XMStoreFloat4x4(&m2, projectionMatrix);
-
-	//pointX = pointX / m2._11;
-	//pointY = pointY / m2._22;
-
-	//pointX = 0.0f;
-	//pointY = 0.0f;
-
-	//// Get the inverse of the view matrix.
-	//XMFLOAT4X4 m;
-	//inverseViewMatrix = XMMatrixInverse(&XMMatrixDeterminant(viewMatrix), viewMatrix);
-	//XMStoreFloat4x4(&m, inverseViewMatrix);
-
-	//// Calculate the direction of the picking ray in view space.
-	//direction.x = (pointX * m._11) + (pointY * m._21) + m._31;
-	//direction.y = (pointX * m._12) + (pointY * m._22) + m._32;
-	//direction.z = (pointX * m._13) + (pointY * m._23) + m._33;
-
-	//// Get the origin of the picking ray which is the position of the camera.
-	//origin = camera->GetPosition();
-
-	//// Get the world matrix and translate to the location of the sphere.
-	//Direct3D->GetWorldMatrix(worldMatrix);
-	//XMFLOAT3 pos = object->GetIntersectionSphere()->center;
-
-	////translateMatrix = XMMatrixTranslation(pos.x, pos.y, pos.z);
-	//XMMATRIX wm;
-	//object->GetWorldMatrix(wm);
-	//worldMatrix = XMMatrixMultiply(worldMatrix, wm);
-
-	//// Now get the inverse of the translated world matrix.
-	//inverseWorldMatrix = XMMatrixInverse(&XMMatrixDeterminant(worldMatrix), worldMatrix);
-
-	//XMFLOAT3 rayOrigin, rayDir;
-	//// Now transform the ray origin and the ray direction from view space to world space.
-	//XMStoreFloat3(&rayOrigin, XMVector3TransformCoord(XMLoadFloat3(&origin), inverseWorldMatrix));
-	//XMStoreFloat3(&rayDir, XMVector3TransformNormal(XMLoadFloat3(&direction), inverseWorldMatrix));
-
-	//// Normalize the ray direction.
-	//XMStoreFloat3(&rayDir, XMVector3Normalize(XMLoadFloat3(&rayDir)));
-
-	//// Now perform the ray-sphere intersection test.
-	//intersect = RaySphereIntersect(rayOrigin, rayDir, object->GetIntersectionSphere()->radius);
-
-	//Ray r(rayOrigin, rayDir);
-	//intersect = RayVsSphere(r, *object->GetIntersectionSphere());
+	////intersect = RayVsSphere2(r, *object->GetIntersectionSphere());
 	//return intersect;
 
 }
@@ -468,9 +419,16 @@ void Application::RenderToTexture()
 	//modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	//((ObjectIntersection*)spheres)->RenderSphere(Direct3D->GetDeviceContext());
 
-	spheres->GetWorldMatrix(world);
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	spheres[i]->GetWorldMatrix(world);
+	//	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
+	//	spheres[i]->Render(Direct3D->GetDeviceContext());
+	//}
+
+	sphere->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	spheres->Render(Direct3D->GetDeviceContext());
+	sphere->Render(Direct3D->GetDeviceContext());
 
 	modelQuadtree->Render(Direct3D->GetDeviceContext(), XMFLOAT3(0, 0, 0), XMFLOAT3(0, 0, 0));
 
