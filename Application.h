@@ -19,12 +19,14 @@
 #include "ParticleEmitter.h"
 #include "Light.h"
 #include "Quadtree.h"
+#include "ShadowLight.h"
 
 #include "ShaderParticles.h"
 #include "ShaderBase.h"
 #include "ShaderDefault.h"
 #include "ShaderTerrain.h"
 #include "ShaderLight.h"
+#include "ShaderShadowMap.h"
 
 class Application
 {
@@ -60,9 +62,11 @@ private:
 	ShaderParticles*	particleShader;
 	ShaderTerrain*		terrainShader;
 	ShaderLight*        lightShader;
+	ShaderShadowMap*    shadowMapShader;
 
 	//OTHER
-	Light* light;
+	Light*				light;
+	ShadowLight*        shadowLight;
 
 	void HandleMovement(float frameTime);
 	void CreateShaders();

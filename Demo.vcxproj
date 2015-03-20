@@ -99,7 +99,7 @@
     <ClCompile Include="ShaderTerrain.cpp" />
     <ClCompile Include="ShaderDefault.cpp" />
     <ClCompile Include="ShaderParticles.cpp" />
-    <ClCompile Include="ShaderShadow.cpp" />
+    <ClCompile Include="ShaderShadowMap.cpp" />
     <ClCompile Include="ShadowLight.cpp" />
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="System.cpp" />
@@ -132,7 +132,7 @@
     <ClInclude Include="ShaderTerrain.h" />
     <ClInclude Include="ShaderDefault.h" />
     <ClInclude Include="ShaderParticles.h" />
-    <ClInclude Include="ShaderShadow.h" />
+    <ClInclude Include="ShaderShadowMap.h" />
     <ClInclude Include="ShadowLight.h" />
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="System.h" />
@@ -146,12 +146,15 @@
       <FileType>Document</FileType>
     </None>
     <None Include="assets\textures\camel.raw" />
-    <None Include="assets\textures\grass01.raw" />
-    <None Include="assets\textures\grass02.raw" />
-    <None Include="assets\textures\grass03.raw" />
-    <None Include="assets\textures\terrain\grass04.raw" />
+    <None Include="assets\textures\missing2.raw" />
+    <None Include="assets\textures\terrain\blendmap.raw" />
+    <None Include="assets\textures\terrain\grass.raw" />
     <None Include="assets\textures\dollar.raw" />
     <None Include="assets\textures\missing.raw" />
+    <None Include="assets\textures\terrain\sand.raw" />
+    <None Include="assets\textures\terrain\stone.raw" />
+    <None Include="assets\textures\wagon.raw" />
+    <None Include="assets\textures\wagon_normals.raw" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="assets\shaders\DeferredPS.hlsl">
@@ -170,11 +173,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="assets\shaders\ShadowPS.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="assets\shaders\ShadowVS.hlsl">
+    <FxCompile Include="assets\shaders\ShadowMapVS.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
@@ -222,11 +221,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\textures\heightmap01.bmp" />
-    <Image Include="assets\textures\heightmap02.bmp" />
-    <Image Include="assets\textures\heightmap03.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="assets\models\camel.obj">
       <FileType>Document</FileType>
     </None>
@@ -244,6 +238,9 @@
     <None Include="assets\models\sphere3.obj">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\textures\terrain\heightmap02.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

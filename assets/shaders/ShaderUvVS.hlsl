@@ -17,6 +17,7 @@ struct VS_OUT
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float4 worldPos : POS;
 };
 
 VS_OUT main(VS_IN input)
@@ -24,6 +25,8 @@ VS_OUT main(VS_IN input)
 	VS_OUT output = (VS_OUT)0;
 
 	input.position.w = 1.0f;
+
+	output.worldPos = float4(input.position.xyz, 1.0f);
 
 	output.position = mul(input.position, worldMatrix);
 	output.position = mul(output.position, viewMatrix);

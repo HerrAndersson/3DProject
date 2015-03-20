@@ -1,6 +1,6 @@
 #pragma once
 #include "ShaderBase.h"
-
+using namespace DirectX;
 class ShaderLight : public ShaderBase
 {
 
@@ -8,23 +8,25 @@ private:
 
 	struct MatrixBuffer
 	{
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
+		XMMATRIX world;
+		XMMATRIX view;
+		XMMATRIX projection;
+		XMMATRIX lightWVP;
 	};
 
 	struct LightBuffer
 	{
+		XMMATRIX lightVP;
 		DirectX::XMFLOAT3 lightDirection;
-		float padding;
+		int size;
 	};
 
 	ID3D11SamplerState*		sampleState;
 	ID3D11Buffer*			matrixBuffer;
 	ID3D11Buffer*			lightBuffer;
 
-	void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix);
-	void SetLightBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT3 lightDirection);
+	void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightVP);
+	void SetLightBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT3 lightDirection, int shadowMapSize, XMMATRIX& lightVP);
 
 public:
 
@@ -32,7 +34,7 @@ public:
 	virtual ~ShaderLight();
 
 	void SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* colorTexture,
-		ID3D11ShaderResourceView* normalTexture, DirectX::XMFLOAT3 lightDirection);
+		ID3D11ShaderResourceView* normalTexture, ID3D11ShaderResourceView* shadowTexture, ID3D11ShaderResourceView* worldPosTexture, DirectX::XMFLOAT3 lightDirection, XMMATRIX& lightWVP, int shadowMapSize);
 
 	virtual void Draw(ID3D11DeviceContext* deviceContext, int indexCount);
 

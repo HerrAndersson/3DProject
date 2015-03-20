@@ -16,8 +16,14 @@ private:
 
 public:
 
-	ShadowMap(int width, int height);
+	ShadowMap(ID3D11Device* device, int width, int height, float bias);
 	virtual ~ShadowMap();
+
+	ID3D11ShaderResourceView* GetShadowSRV();
+
+	void ActivateShadowing(ID3D11DeviceContext* deviceContext);
+
+	int GetSize();
 
 	void ToggleShadowMapSize();
 	void SetShadowMapBias(float bias);

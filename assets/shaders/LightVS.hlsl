@@ -1,8 +1,9 @@
-cbuffer MatrixBuffer
+cbuffer MatrixBuffer : register(cb0)
 {
 	matrix worldMatrix;
 	matrix viewMatrix;
 	matrix projectionMatrix;
+	matrix lightWVP;
 };
 
 struct VS_IN

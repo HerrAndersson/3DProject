@@ -108,13 +108,13 @@
     <ClCompile Include="BoundingBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderShadow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShadowLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderShadowMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,13 +206,13 @@
     <ClInclude Include="BoundingBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderShadow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShadowLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderShadowMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -253,10 +253,7 @@
     <FxCompile Include="assets\shaders\TerrainGS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="assets\shaders\ShadowVS.hlsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="assets\shaders\ShadowPS.hlsl">
+    <FxCompile Include="assets\shaders\ShadowMapVS.hlsl">
       <Filter>Resource Files\Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -273,18 +270,6 @@
     <None Include="assets\models\camel.obj">
       <Filter>Resource Files\Models</Filter>
     </None>
-    <None Include="assets\textures\grass01.raw">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </None>
-    <None Include="assets\textures\grass02.raw">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </None>
-    <None Include="assets\textures\grass03.raw">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </None>
-    <None Include="assets\textures\terrain\grass04.raw">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </None>
     <None Include="assets\textures\dollar.raw">
       <Filter>Resource Files\Textures</Filter>
     </None>
@@ -294,15 +279,30 @@
     <None Include="assets\models\sphere3.obj">
       <Filter>Resource Files\Models</Filter>
     </None>
+    <None Include="assets\textures\missing2.raw">
+      <Filter>Resource Files\Textures</Filter>
+    </None>
+    <None Include="assets\textures\wagon.raw">
+      <Filter>Resource Files\Textures</Filter>
+    </None>
+    <None Include="assets\textures\wagon_normals.raw">
+      <Filter>Resource Files\Textures</Filter>
+    </None>
+    <None Include="assets\textures\terrain\blendmap.raw">
+      <Filter>Resource Files\Textures\Terrain</Filter>
+    </None>
+    <None Include="assets\textures\terrain\grass.raw">
+      <Filter>Resource Files\Textures\Terrain</Filter>
+    </None>
+    <None Include="assets\textures\terrain\sand.raw">
+      <Filter>Resource Files\Textures\Terrain</Filter>
+    </None>
+    <None Include="assets\textures\terrain\stone.raw">
+      <Filter>Resource Files\Textures\Terrain</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\textures\heightmap01.bmp">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </Image>
-    <Image Include="assets\textures\heightmap02.bmp">
-      <Filter>Resource Files\Textures\Terrain</Filter>
-    </Image>
-    <Image Include="assets\textures\heightmap03.bmp">
+    <Image Include="assets\textures\terrain\heightmap02.bmp">
       <Filter>Resource Files\Textures\Terrain</Filter>
     </Image>
   </ItemGroup>

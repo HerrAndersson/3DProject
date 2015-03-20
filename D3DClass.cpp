@@ -242,6 +242,7 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	}
 
 	deferredShader = new Deferred(device, screenWidth, screenHeight);
+	shadowMap = new ShadowMap(device, 4096, 4096, 0.0f);
 }
 
 D3DClass::~D3DClass()
@@ -314,6 +315,12 @@ D3DClass::~D3DClass()
 		delete deferredShader;
 		deferredShader = nullptr;
 	}
+
+	if (shadowMap)
+	{
+		delete shadowMap;
+		shadowMap = nullptr;
+	}
 }
 
 void D3DClass::BeginScene(float red, float green, float blue, float alpha)
@@ -383,7 +390,7 @@ void D3DClass::ResetViewport()
 	deviceContext->RSSetViewports(1, &viewport);
 }
 
-void D3DClass::TurnOnAlphaBlending()
+void D3DClass::TurnAlphaBlendingON()
 {
 	float blendFactor[4];
 	blendFactor[0] = 0.0f;
@@ -393,7 +400,7 @@ void D3DClass::TurnOnAlphaBlending()
 
 	deviceContext->OMSetBlendState(alphaEnableBlendingState, blendFactor, 0xffffffff);
 }
-void D3DClass::TurnOffAlphaBlending()
+void D3DClass::TurnAlphaBlendingOFF()
 {
 	float blendFactor[4];
 	blendFactor[0] = 0.0f;
@@ -404,11 +411,11 @@ void D3DClass::TurnOffAlphaBlending()
 	deviceContext->OMSetBlendState(alphaDisableBlendingState, blendFactor, 0xffffffff);
 }
 
-void D3DClass::TurnOnCulling()
+void D3DClass::TurnCullingON()
 {
 	deviceContext->RSSetState(rasterState);
 }
-void D3DClass::TurnOffCulling()
+void D3DClass::TurnCullingOFF()
 {
 	deviceContext->RSSetState(rasterNoCullingState);
 }
@@ -422,6 +429,21 @@ void D3DClass::ActivateDeferredShading()
 {
 	deferredShader->SetRenderTargets(deviceContext);
 	deferredShader->ClearRenderTargets(deviceContext, 0.2f, 0.4f, 1.0f, 1.0f);
+}
+
+void D3DClass::ActivateShadowing()
+{
+	shadowMap->ActivateShadowing(deviceContext);
+}
+
+int D3DClass::GetShadowMapSize()
+{
+	return shadowMap->GetSize();
+}
+
+ID3D11ShaderResourceView* D3DClass::GetShadowMapSRV()
+{
+	return shadowMap->GetShadowSRV();
 }
 
 void* D3DClass::operator new(size_t i)

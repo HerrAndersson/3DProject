@@ -146,8 +146,6 @@ void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, Bou
 			(*i)->GetWorldMatrix(world);
 			shader->SetMatrices(deviceContext, world, viewMatrix, projectionMatrix);
 			(*i)->Render(deviceContext);
-
-			
 		}
 		for (int i = 0; i < 4; i++)
 		{

@@ -11,7 +11,7 @@ class Deferred
 
 private:
 
-	static const int BUFFER_COUNT = 2;
+	static const int BUFFER_COUNT = 3;
 
 	//__declspec(align(16))
 	struct MatrixBuffer

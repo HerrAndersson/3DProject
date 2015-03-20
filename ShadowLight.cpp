@@ -56,9 +56,9 @@ void ShadowLight::CreateViewMatrix()
 {
 	XMVECTOR up = { { 0.0f, 1.0f, 0.0f } };
 	XMVECTOR pos = { { position.x, position.y, position.z } };
-	XMVECTOR lookAt = { { 0.0f, 0.0f, 1.0f } };
+	XMVECTOR look = { { lookAt.x, lookAt.y, lookAt.z } };
 
-	viewMatrix = XMMatrixLookAtLH(pos, lookAt, up);
+	viewMatrix = XMMatrixLookAtLH(pos, look, up);
 }
 
 void ShadowLight::CreateProjectionMatrix(float screenDepth, float screenNear)
@@ -80,19 +80,18 @@ void ShadowLight::GetProjectionMatrix(XMMATRIX& projectionMatrix)
 	projectionMatrix = this->projectionMatrix;
 }
 
+XMFLOAT3 ShadowLight::GetDirection()
+{
+	XMFLOAT3 dir(lookAt.x - position.x, lookAt.y - position.y, lookAt.z - position.z);
 
+	float length = sqrt((dir.x * dir.x) + (dir.y * dir.y) + (dir.z * dir.z));
 
-
-
-
-
-
-
-
-
-
-
-
+	dir.x = dir.x / length;
+	dir.y = dir.y / length;
+	dir.z = dir.z / length;
+	
+	return dir;
+}
 
 void* ShadowLight::operator new(size_t i)
 {

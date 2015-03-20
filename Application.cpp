@@ -10,7 +10,10 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, 10000.0f, 0.1f);
+	float screenDepth = 10000.0f;
+	float screenNear = 0.1f;
+
+	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, screenDepth, screenNear);
 	timer = new Timer();
 	input = new InputHandler(hInstance, hwnd, screenWidth, screenHeight);
 	position = new Position(XMFLOAT3(170.0f, 15.0f, 50.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
@@ -36,12 +39,12 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	for (int i = 0; i < NUM_SPHERES; i++)
 	{
-		XMFLOAT3 pos((float)(170 + (i * 20 + 5*i)), 20, 170);
-		XMFLOAT3 scale((float)(8 + i), (float)(8 + i), (float)(8 + i));
-		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", pos, scale, XMMatrixIdentity());
+		XMFLOAT3 pos((float)(170 + (i * 20 + 5 * i)), 20, 170);
+		XMFLOAT3 scale((float)(4 + i*i), (float)(4 + i*i), (float)(4 + i*i));
+		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing2.raw", pos, scale, XMMatrixIdentity());
 	}
 
-	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(15, 5, 128), XMFLOAT3(10, 10, 10), tempWorldMatrix);
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
 
@@ -52,8 +55,16 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	XMFLOAT3 direction(0.0f, -0.6f, 0.75f);
 	//XMFLOAT3 direction(0.0f, 0.0f, 1.0f);
 
-	light = new Light(ambient, diffuse, direction);
 	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
+
+	XMFLOAT3 position(256.0f, 256.0f, -256.0f);
+	shadowLight = new ShadowLight(ambient, diffuse, position, XMFLOAT3(256.0f, 0.0f, 256.0f));
+	shadowLight->CreateProjectionMatrix(screenDepth, screenNear);
+	shadowLight->CreateViewMatrix();
+
+	light = new Light(ambient, diffuse, shadowLight->GetDirection());
+	XMFLOAT3 dir = shadowLight->GetDirection();
+	light->SetDirection(dir.x, dir.y, dir.z);
 
 	CreateShaders();
 }
@@ -105,6 +116,11 @@ Application::~Application()
 	{
 		delete orthoWindow;
 		orthoWindow = nullptr;
+	}
+	if (shadowLight)
+	{
+		delete shadowLight;
+		shadowLight = nullptr;
 	}
 
 	//MODELS
@@ -162,6 +178,11 @@ Application::~Application()
 		delete terrainShader;
 		terrainShader = nullptr;
 	}
+	if (shadowMapShader)
+	{
+		delete shadowMapShader;
+		shadowMapShader = nullptr;
+	}
 }
 
 bool Application::Update()
@@ -190,7 +211,12 @@ bool Application::Update()
 	{
 		((ObjectIntersection*)spheres[i])->Update();
 	}
+
 	((ObjectIntersection*)sphere)->Update();
+
+	//Uncomment if the shadow light is moving
+	//XMFLOAT3 dir = shadowLight->GetDirection();
+	//light->SetDirection(dir.x, dir.y, dir.z);
 
 	//Check if the user pressed escape and wants to exit the application.
 	if (input->Escape())
@@ -239,10 +265,11 @@ void Application::HandleMovement(float frameTime)
 		float closestDist = 9999999.0f;
 		float distance = -1.0f;
 		int closestIndex = -1;
+		bool intersect = false;
 
 		for (int i = 0; i < NUM_SPHERES; i++)
 		{
-			bool intersect = TestIntersections((ObjectIntersection*)spheres[i], distance);
+			intersect = TestIntersections((ObjectIntersection*)spheres[i], distance);
 			if (intersect)
 			{
 				if (distance < closestDist)
@@ -259,18 +286,20 @@ void Application::HandleMovement(float frameTime)
 			((ObjectIntersection*)spheres[closestIndex])->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
 		}
 
-
-		bool intersect = TestIntersections((ObjectIntersection*)sphere, distance);
+		distance = -1;
+		intersect = TestIntersections((ObjectIntersection*)sphere, distance);
 		if (intersect)
 		{
 			cout << "INTERSECT" << endl;
-			//system("cls");
 
-			XMFLOAT3 p = ((ObjectIntersection*)sphere)->GetPosition();
-			((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y + 10, p.z));
-			intersect = false;
+			XMFLOAT3 p = camera->GetPosition();
+			((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y, p.z));
 		}
 	}
+
+	//Uncomment if the scene is rendered from another view, ex. from the light. 
+	//XMFLOAT3 p = camera->GetPosition();
+	//((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y, p.z));
 }
 
 Ray Application::GetRay()
@@ -332,7 +361,21 @@ bool Application::RenderGraphics()
 
 	orthoWindow->Render(Direct3D->GetDeviceContext());
 
-	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), light->GetDirection());
+	//lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, Direct3D->GetShadowMapSRV(), Direct3D->GetDeferredSRV(1), light->GetDirection());
+	XMMATRIX w, v, p, lightWVP;
+	shadowLight->GetViewMatrix(v);
+	shadowLight->GetProjectionMatrix(p);
+	XMFLOAT3 po = shadowLight->GetPosition();
+	w = XMMatrixTranslation(po.x, po.y, po.z);
+
+	lightWVP = v * p;
+
+	//lightWVP = XMMatrixInverse(&XMMatrixDeterminant(lightWVP), lightWVP);
+
+	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix,
+		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), Direct3D->GetShadowMapSRV(),
+		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightWVP, Direct3D->GetShadowMapSize());
+
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
 	Direct3D->TurnZBufferON();
@@ -345,21 +388,66 @@ bool Application::RenderGraphics()
 void Application::RenderToTexture()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-
-	Direct3D->ActivateDeferredShading();
-
 	Direct3D->GetWorldMatrix(worldMatrix);
 	camera->GetViewMatrix(viewMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 
-	Direct3D->TurnOffCulling();
+	/*Uncomment to render from the view of the light*/
+	//shadowLight->GetViewMatrix(viewMatrix);
+	//shadowLight->GetProjectionMatrix(projectionMatrix);
+
+	////////////////////////////////////////////////////////////////////////// Render to shadow map //////////////////////////////////////////////////////////////////////////
+	Direct3D->ActivateShadowing();
+	Direct3D->TurnAlphaBlendingOFF();
+
+	XMMATRIX lightView, lightProj, lightWorld;
+
+	XMFLOAT3 lightPos = shadowLight->GetPosition();
+	//lightWorld = XMMatrixTranslation(lightPos.x, lightPos.y, lightPos.z);
+	shadowLight->GetViewMatrix(lightView);
+	shadowLight->GetProjectionMatrix(lightProj);
+
+	XMMATRIX vp = lightView * lightProj;
+
+	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
+
+	for (int i = 0; i < NUM_SPHERES; i++)
+	{
+		XMMATRIX world;
+		spheres[i]->GetWorldMatrix(world);
+		XMMATRIX wvp = world * vp;
+		shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+		spheres[i]->Render(Direct3D->GetDeviceContext());
+	}
+
+	XMMATRIX wo = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
+	XMMATRIX wvp = wo * vp;
+	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	camel->Render(Direct3D->GetDeviceContext());
+
+	wo = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
+	wvp = wo * vp;
+	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	wagon->Render(Direct3D->GetDeviceContext());
+
+	sphere->GetWorldMatrix(wo);
+	wvp = wo * vp;
+	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	sphere->Render(Direct3D->GetDeviceContext());
+
+
+	//////////////////////////////////////////////////////////////////// Render scene with deferred shading ////////////////////////////////////////////////////////////////////
+	Direct3D->ActivateDeferredShading();
+
+	//Turns culling OFF to show that the terrain shader has its own backface culling in the geometry shader
+	Direct3D->TurnCullingOFF();
 
 	//Render terrain
 	terrainShader->UseShader(Direct3D->GetDeviceContext());
 	terrainShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, projectionMatrix, terrain->GetTextures(), camera->GetPosition());
 	terrain->Render(Direct3D->GetDeviceContext());
 
-	Direct3D->TurnOnCulling();
+	Direct3D->TurnCullingON();
 
 	//Render objects
 	modelShader->UseShader(Direct3D->GetDeviceContext());
@@ -372,13 +460,11 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	wagon->Render(Direct3D->GetDeviceContext());
 
-	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
+	//modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
-	//XMFLOAT3 center = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->center;
-	//float radius = ((ObjectIntersection*)spheres)->GetIntersectionSphere()->radius;
-	//world = XMMatrixScaling(radius, radius, radius)*XMMatrixTranslation(center.x, center.y, center.z);
-	//modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	//((ObjectIntersection*)spheres)->RenderSphere(Direct3D->GetDeviceContext());
+	sphere->GetWorldMatrix(world);
+	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
+	sphere->Render(Direct3D->GetDeviceContext());
 
 	for (int i = 0; i < NUM_SPHERES; i++)
 	{
@@ -387,15 +473,10 @@ void Application::RenderToTexture()
 		spheres[i]->Render(Direct3D->GetDeviceContext());
 	}
 
-	sphere->GetWorldMatrix(world);
-	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	sphere->Render(Direct3D->GetDeviceContext());
-
-	
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());
-	particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128-30, 1, 64-30), viewMatrix, projectionMatrix, camera->GetPosition());
+	particleShader->SetMatrices(Direct3D->GetDeviceContext(), XMMatrixTranslation(128 - 30, 1, 64 - 30), viewMatrix, projectionMatrix, camera->GetPosition());
 	particleEmitter->Render(Direct3D->GetDeviceContext());
 
 	//Deactivate deferred shading. Activates forward shading again
@@ -409,4 +490,5 @@ void Application::CreateShaders()
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl", L"assets/shaders/TerrainGS.hlsl");
 	lightShader = new ShaderLight(Direct3D->GetDevice(), L"assets/shaders/LightVS.hlsl", L"assets/shaders/LightPS.hlsl");
+	shadowMapShader = new ShaderShadowMap(Direct3D->GetDevice(), L"assets/shaders/ShadowMapVS.hlsl");
 }

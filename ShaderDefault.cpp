@@ -34,6 +34,7 @@ ShaderDefault::ShaderDefault(ID3D11Device* device,
 
 ShaderDefault::~ShaderDefault()
 {
+	matrixBuffer->Release();
 }
 
 void ShaderDefault::UseShader(ID3D11DeviceContext* deviceContext)

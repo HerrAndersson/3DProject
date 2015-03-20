@@ -4,7 +4,7 @@ using namespace std;
 using namespace DirectX;
 
 ShaderLight::ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPCWSTR pixelShaderFilename)
-		   : ShaderBase(device)
+	: ShaderBase(device)
 {
 	HRESULT result;
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -94,18 +94,20 @@ ShaderLight::~ShaderLight()
 	}
 }
 
-void ShaderLight::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* colorTexture,
-							 ID3D11ShaderResourceView* normalTexture, XMFLOAT3 lightDirection)
+void ShaderLight::SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* colorTexture,
+	ID3D11ShaderResourceView* normalTexture, ID3D11ShaderResourceView* shadowTexture, ID3D11ShaderResourceView* worldPosTexture, DirectX::XMFLOAT3 lightDirection, XMMATRIX& lightVP, int shadowMapSize)
+
 {
 
 	//Update matrix and light constant buffers
-	SetMatrixBuffer(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
-	SetLightBuffer(deviceContext, lightDirection);
+	SetMatrixBuffer(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightVP);
+	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);
 
 	//Set shader texture resources in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &colorTexture);
 	deviceContext->PSSetShaderResources(1, 1, &normalTexture);
-
+	deviceContext->PSSetShaderResources(2, 1, &shadowTexture);
+	deviceContext->PSSetShaderResources(3, 1, &worldPosTexture);
 }
 
 void ShaderLight::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
@@ -123,7 +125,7 @@ void ShaderLight::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 
-void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightVP)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -132,6 +134,7 @@ void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& 
 	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
 	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
 	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
+	XMMATRIX lwvp = XMMatrixTranspose(lightVP);
 
 	//Lock the constant buffer so it can be written to
 	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -146,13 +149,14 @@ void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& 
 	matrixData->world = wm;
 	matrixData->view = vm;
 	matrixData->projection = pm;
+	matrixData->lightWVP = lwvp;
 
 	deviceContext->Unmap(matrixBuffer, 0);
 
 	//Set the constant buffer in the vertex shader with updated values
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 }
-void ShaderLight::SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 lightDirection)
+void ShaderLight::SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 lightDirection, int shadowMapSize, XMMATRIX& lightVP)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -167,9 +171,12 @@ void ShaderLight::SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 li
 
 	LightBuffer* lightData = (LightBuffer*)mappedResource.pData;
 
+	XMMATRIX lvp = XMMatrixTranspose(lightVP);
+
 	//Copy the lighting variables into the constant buffer
+	lightData->lightVP = lvp;
 	lightData->lightDirection = lightDirection;
-	lightData->padding = 0.0f;
+	lightData->size = shadowMapSize;
 
 	deviceContext->Unmap(lightBuffer, 0);
 
