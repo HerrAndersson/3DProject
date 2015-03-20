@@ -159,39 +159,37 @@ void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, Bou
 
 int Quadtree::PlanesVsPoints(Plane planes[], DirectX::XMFLOAT3 points[])
 {
-	int returnValue = 0;
-	int outsideFrustumCount = 0;
+	int insideFrustumCount = 0;
 
 	for (int i = 0; i < 6; i++)
 	{
-		int outsidePlaneCount = 0;
+		int insidePlaneCount = 0;
+		int isAllInside = 1;
+
 		for (int j = 0; j < 8; j++)
 		{
 			if (PlaneVsPoint(planes[i], points[j]) > 0)
 			{
-				outsidePlaneCount++;
+				isAllInside = 0;
+				insidePlaneCount++;
 			}
 		}
-		if (outsidePlaneCount == 8) //All 8 points are behind the plane
+
+		if (insidePlaneCount == 8)
 		{
 			//All points outside of frustum
-			returnValue = 1;
-			break;
+			return 1;
 		}
-		else if (outsidePlaneCount == 0) //All 8 points are in front the plane
-		{
-			outsideFrustumCount++;
-		}
+		insideFrustumCount += isAllInside;
 	}
-	if (outsideFrustumCount == 6) //All points are within the frustum
+
+	if (insideFrustumCount == 6)
 	{
-		returnValue = -1;
+		//All points are within the frustum
+		return -1;
 	}
-	else //The frustum is intersecting the bounding box
-	{
-		returnValue = 0;
-	}
-	return returnValue;
+	//The frustum is intersecting the bounding box
+	return 0;
 }
 
 void Quadtree::Clean(Node* currentNode)
