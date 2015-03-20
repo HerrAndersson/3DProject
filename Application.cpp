@@ -460,7 +460,7 @@ void Application::RenderToTexture()
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	wagon->Render(Direct3D->GetDeviceContext());
 
-	//modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
+	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
 	sphere->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
