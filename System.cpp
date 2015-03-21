@@ -56,7 +56,7 @@ bool System::Update()
 {
 	bool result = true;
 
-	SetCursorPos(realScreenWidth / 2, realScreenHeight / 2);
+	//SetCursorPos(realScreenWidth / 2, realScreenHeight / 2);
 
 	result = application->Update();
 	if (!result)

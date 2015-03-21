@@ -10,7 +10,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	float screenDepth = 10000.0f;
+	float screenDepth = 1000.0f;
 	float screenNear = 0.1f;
 
 	Direct3D = new D3DClass(screenWidth, screenHeight, hwnd, false, screenDepth, screenNear);
@@ -333,7 +333,29 @@ bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 	bool intersect = false;
 
 	Ray r = GetRay();
+
+	//XMMATRIX w;
+	//XMVECTOR matInvDeter;
+	//object->GetWorldMatrix(w);
+	//w = XMMatrixInverse(&matInvDeter, w);
+
+	//XMVECTOR ro = XMLoadFloat3(&r.origin);
+	//XMVECTOR rd = XMLoadFloat3(&r.direction);
+
+	//XMVECTOR pickRayInLocalWorldSpacePos = XMVector3TransformCoord(ro, w);
+	//XMVECTOR pickRayInLocalWorldSpaceDir = XMVector3TransformNormal(rd, w);
+
+	//XMFLOAT3 rayo;
+	//XMFLOAT3 rayd;
+	//XMStoreFloat3(&rayo, pickRayInLocalWorldSpacePos);
+	//XMStoreFloat3(&rayd, pickRayInLocalWorldSpaceDir);
+
+	//r.direction = rayd;
+	//r.origin = rayo;
+
 	RayVsSphere(r, *object->GetIntersectionSphere(), distance);
+
+	//intersect = RaySphereIntersect(r.origin, r.direction, object->GetIntersectionSphere()->radius, distance);
 
 	if (distance > 0)
 	{
@@ -360,21 +382,20 @@ bool Application::RenderGraphics()
 	Direct3D->TurnZBufferOFF();
 
 	orthoWindow->Render(Direct3D->GetDeviceContext());
-
-	//lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix, Direct3D->GetShadowMapSRV(), Direct3D->GetDeferredSRV(1), light->GetDirection());
-	XMMATRIX w, v, p, lightWVP;
+	XMMATRIX w, v, p, lightVP;
 	shadowLight->GetViewMatrix(v);
 	shadowLight->GetProjectionMatrix(p);
 	XMFLOAT3 po = shadowLight->GetPosition();
 	w = XMMatrixTranslation(po.x, po.y, po.z);
 
-	lightWVP = v * p;
+	lightVP = v * p;
+	//lightVP = w * v * p;
 
 	//lightWVP = XMMatrixInverse(&XMMatrixDeterminant(lightWVP), lightWVP);
 
 	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix,
 		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), Direct3D->GetShadowMapSRV(),
-		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightWVP, Direct3D->GetShadowMapSize());
+		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightVP, Direct3D->GetShadowMapSize());
 
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
@@ -398,9 +419,9 @@ void Application::RenderToTexture()
 
 	////////////////////////////////////////////////////////////////////////// Render to shadow map //////////////////////////////////////////////////////////////////////////
 	Direct3D->ActivateShadowing();
-	Direct3D->TurnAlphaBlendingOFF();
+	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
 
-	XMMATRIX lightView, lightProj, lightWorld;
+	XMMATRIX lightView, lightProj;
 
 	XMFLOAT3 lightPos = shadowLight->GetPosition();
 	//lightWorld = XMMatrixTranslation(lightPos.x, lightPos.y, lightPos.z);
@@ -408,8 +429,6 @@ void Application::RenderToTexture()
 	shadowLight->GetProjectionMatrix(lightProj);
 
 	XMMATRIX vp = lightView * lightProj;
-
-	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
 
 	for (int i = 0; i < NUM_SPHERES; i++)
 	{
@@ -420,21 +439,20 @@ void Application::RenderToTexture()
 		spheres[i]->Render(Direct3D->GetDeviceContext());
 	}
 
-	XMMATRIX wo = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
-	XMMATRIX wvp = wo * vp;
-	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	camel->Render(Direct3D->GetDeviceContext());
+	//XMMATRIX wo = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
+	//XMMATRIX wvp = wo * vp;
+	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	//camel->Render(Direct3D->GetDeviceContext());
 
-	wo = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
-	wvp = wo * vp;
-	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	wagon->Render(Direct3D->GetDeviceContext());
+	//wo = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
+	//wvp = wo * vp;
+	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	//wagon->Render(Direct3D->GetDeviceContext());
 
-	sphere->GetWorldMatrix(wo);
-	wvp = wo * vp;
-	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	sphere->Render(Direct3D->GetDeviceContext());
-
+	//sphere->GetWorldMatrix(wo);
+	//wvp = wo * vp;
+	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	//sphere->Render(Direct3D->GetDeviceContext());
 
 	//////////////////////////////////////////////////////////////////// Render scene with deferred shading ////////////////////////////////////////////////////////////////////
 	Direct3D->ActivateDeferredShading();
