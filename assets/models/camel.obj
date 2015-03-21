@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib camel.mtl
+mtllib assets/materials/camel.mtl
 g default
 v -0.066325 0.892138 -0.129665
 v -0.036340 0.980784 -0.286115

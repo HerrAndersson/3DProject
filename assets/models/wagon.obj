@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib wagon.mtl
+mtllib assets/materials/wagon.mtl
 g default
 v -3.680372 7.727949 -5.138623
 v -3.702566 6.489520 -7.238306
