@@ -216,9 +216,8 @@ Quadtree::Node* Quadtree::ReadNode(ID3D11Device* device, std::ifstream& file)
 		if (command == "o")
 		{
 			string objectFilename;
-			string textureFilename;
 			XMFLOAT4X4 worldTransform;
-			file >> objectFilename >> textureFilename;
+			file >> objectFilename;
 			file >> worldTransform.m[0][0] >> worldTransform.m[0][1] >> worldTransform.m[0][2] >> worldTransform.m[0][3]
 				>> worldTransform.m[1][0] >> worldTransform.m[1][1] >> worldTransform.m[1][2] >> worldTransform.m[1][3]
 				>> worldTransform.m[2][0] >> worldTransform.m[2][1] >> worldTransform.m[2][2] >> worldTransform.m[2][3]

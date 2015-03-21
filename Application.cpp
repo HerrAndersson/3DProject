@@ -46,7 +46,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
-	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
+	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/map/tree.txt");
 
 
 	// Initialize the light object.
