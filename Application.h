@@ -49,8 +49,6 @@ private:
 	OrthoWindow*		orthoWindow;
 
 	//MODELS
-	ObjectBase*			camel;
-	ObjectBase*			wagon;
 	ObjectBase*			particleEmitter;
 	ObjectBase**		spheres;
 	ObjectBase*			sphere;

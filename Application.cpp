@@ -29,10 +29,6 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 							"assets/textures/terrain/sand.raw");
 
 
-	XMMATRIX tempWorldMatrix = XMMatrixIdentity();
-
-	camel = new Object(Direct3D->GetDevice(), "assets/models/camel.obj", tempWorldMatrix);
-	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	spheres = new ObjectBase*[NUM_SPHERES];
@@ -44,6 +40,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", pos, scale, XMMatrixIdentity());
 	}
 
+	XMMATRIX tempWorldMatrix = XMMatrixIdentity();
 	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/map/tree.txt");
@@ -124,16 +121,6 @@ Application::~Application()
 	}
 
 	//MODELS
-	if (camel)
-	{
-		delete camel;
-		camel = nullptr;
-	}
-	if (wagon)
-	{
-		delete wagon;
-		wagon = nullptr;
-	}
 	if (particleEmitter)
 	{
 		delete particleEmitter;
@@ -469,17 +456,10 @@ void Application::RenderToTexture()
 
 	//Render objects
 	modelShader->UseShader(Direct3D->GetDeviceContext());
-	XMMATRIX world = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
-
-	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	camel->Render(Direct3D->GetDeviceContext());
-
-	world = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
-	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
-	wagon->Render(Direct3D->GetDeviceContext());
-
+	
 	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
+	XMMATRIX world;
 	sphere->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	sphere->Render(Direct3D->GetDeviceContext());
