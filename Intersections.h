@@ -89,6 +89,29 @@ static bool RayVsSphere(Ray& ray, Sphere& sphere, float& distance)
 	return hit;
 }
 
+//static bool RaySphereIntersect(XMFLOAT3 rayOrigin, XMFLOAT3 rayDirection, float radius, float& distance)
+//{
+//	float a, b, c, discriminant;
+//
+//
+//	// Calculate the a, b, and c coefficients.
+//	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
+//	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
+//	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+//
+//	// Find the discriminant.
+//	discriminant = (b * b) - (4 * a * c);
+//
+//	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+//	if (discriminant < 0.0f)
+//	{
+//		return false;
+//	}
+//
+//	return true;
+//}
+
+
 static bool RayVsTriangle(Ray& ray, Triangle& triangle)
 {
 	float ALMOST_INFINITY = 10000000000000000.0f;

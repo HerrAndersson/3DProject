@@ -98,7 +98,6 @@ void ShaderLight::SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATR
 	ID3D11ShaderResourceView* normalTexture, ID3D11ShaderResourceView* shadowTexture, ID3D11ShaderResourceView* worldPosTexture, DirectX::XMFLOAT3 lightDirection, XMMATRIX& lightVP, int shadowMapSize)
 
 {
-
 	//Update matrix and light constant buffers
 	SetMatrixBuffer(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightVP);
 	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);

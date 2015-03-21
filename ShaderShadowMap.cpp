@@ -37,7 +37,6 @@ ShaderShadowMap::ShaderShadowMap(ID3D11Device* device, LPCWSTR vertexShaderFilen
 	// Create the depth stencil state.
 	device->CreateDepthStencilState(&depthDesc, &depthStencilState);
 
-
 	HRESULT hr;
 	ID3DBlob* errorMessage = nullptr;
 
@@ -94,8 +93,13 @@ ShaderShadowMap::~ShaderShadowMap()
 void ShaderShadowMap::UseShader(ID3D11DeviceContext* deviceContext)
 {
 	deviceContext->VSSetShader(vertexShader, nullptr, 0);
-	deviceContext->RSSetState(rasterizerState);
+	deviceContext->HSSetShader(nullptr, nullptr, 0);
+	deviceContext->DSSetShader(nullptr, nullptr, 0);
+	deviceContext->GSSetShader(nullptr, nullptr, 0);
+	deviceContext->PSSetShader(nullptr, nullptr, 0);
+
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+	deviceContext->RSSetState(rasterizerState);
 }
 void ShaderShadowMap::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& lightWVP, XMFLOAT3 lightPos)
 {

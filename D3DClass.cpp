@@ -427,8 +427,8 @@ ID3D11ShaderResourceView* D3DClass::GetDeferredSRV(int viewNumber)
 
 void D3DClass::ActivateDeferredShading()
 {
-	deferredShader->SetRenderTargets(deviceContext);
 	deferredShader->ClearRenderTargets(deviceContext, 0.2f, 0.4f, 1.0f, 1.0f);
+	deferredShader->SetRenderTargets(deviceContext);
 }
 
 void D3DClass::ActivateShadowing()
