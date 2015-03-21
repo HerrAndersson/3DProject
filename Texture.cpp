@@ -61,6 +61,7 @@ Texture::Texture(std::string filename, ID3D11Device* device)
 	}
 	else
 	{
+		throw runtime_error("Failed to load texture: " + filename);
 		texture = nullptr;
 	}
 }

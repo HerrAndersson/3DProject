@@ -1,7 +1,7 @@
 #include "ObjectIntersection.h"
 
-ObjectIntersection::ObjectIntersection(ID3D11Device* device, string modelFilename, string textureFilename, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX& world)
-				  : Object(device, modelFilename, textureFilename, world)
+ObjectIntersection::ObjectIntersection(ID3D11Device* device, string modelFilename, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX& world)
+				  : Object(device, modelFilename, world)
 {
 	this->position = position;
 	this->scaling = scaling;

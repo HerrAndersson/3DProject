@@ -31,8 +31,8 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	XMMATRIX tempWorldMatrix = XMMatrixIdentity();
 
-	camel = new Object(Direct3D->GetDevice(), "assets/models/camel.obj", "assets/textures/camel.raw", tempWorldMatrix);
-	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", "assets/textures/wagon.raw", tempWorldMatrix);
+	camel = new Object(Direct3D->GetDevice(), "assets/models/camel.obj", tempWorldMatrix);
+	wagon = new Object(Direct3D->GetDevice(), "assets/models/wagon.obj", tempWorldMatrix);
 	particleEmitter = new ParticleEmitter(Direct3D->GetDevice(), "assets/textures/dollar.raw");
 
 	spheres = new ObjectBase*[NUM_SPHERES];
@@ -41,10 +41,10 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	{
 		XMFLOAT3 pos((float)(170 + (i * 20 + 5 * i)), 20, 170);
 		XMFLOAT3 scale((float)(4 + i*i), (float)(4 + i*i), (float)(4 + i*i));
-		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing2.raw", pos, scale, XMMatrixIdentity());
+		spheres[i] = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", pos, scale, XMMatrixIdentity());
 	}
 
-	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", "assets/textures/missing.raw", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/models/tree.txt");
 

@@ -20,7 +20,7 @@ private:
 public:
 
 	ObjectIntersection();
-	ObjectIntersection(ID3D11Device* device, string modelFilename, string textureFilename, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX& world);
+	ObjectIntersection(ID3D11Device* device, string modelFilename, XMFLOAT3 position, XMFLOAT3 scaling, XMMATRIX& world);
 	virtual ~ObjectIntersection();
 
 	XMFLOAT3 GetPosition();

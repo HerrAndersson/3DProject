@@ -225,7 +225,7 @@ Quadtree::Node* Quadtree::ReadNode(ID3D11Device* device, std::ifstream& file)
 				>> worldTransform.m[3][0] >> worldTransform.m[3][1] >> worldTransform.m[3][2] >> worldTransform.m[3][3];
 
 			
-			currentNode->objects.push_back(new Object(device, objectFilename, textureFilename, XMLoadFloat4x4(&worldTransform)));
+			currentNode->objects.push_back(new Object(device, objectFilename, XMLoadFloat4x4(&worldTransform)));
 		}
 		else if (command == "c")
 		{
