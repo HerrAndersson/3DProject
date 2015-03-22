@@ -12,7 +12,7 @@ ParticleEmitter::ParticleEmitter(ID3D11Device* device, std::string textureFilena
 	{
 		for (int j = 0; j < 30; j++)
 		{
-			particles.push_back(new Particle(XMFLOAT3(2*i, rand()%100+1, 2*j), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0)));
+			particles.push_back(new Particle(XMFLOAT3(2.0f*i, rand()%100+1.0f, 2.0f*j), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0)));
 		}
 	}
 	
@@ -70,7 +70,7 @@ void ParticleEmitter::Update(ID3D11DeviceContext* deviceContext, float frameTime
 		{
 			XMFLOAT3 oldPosition = currentParticle->GetPosition();
 			delete currentParticle;
-			particles[i] = new Particle(XMFLOAT3(oldPosition.x, rand() % 100 + 100, oldPosition.z), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0));
+			particles[i] = new Particle(XMFLOAT3(oldPosition.x, rand() % 100 + 100.0f, oldPosition.z), XMFLOAT3(0, -50, 0), XMFLOAT3(0, 0, 0));
 		}
 		
 		particleData.push_back(currentParticle->GetPosition());
