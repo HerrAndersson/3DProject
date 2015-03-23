@@ -4,7 +4,7 @@
 using namespace std;
 using namespace DirectX;
 
-Object::Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMMATRIX& worldMatrix) : ObjectBase(worldMatrix)
+Object::Object(ID3D11Device* device, std::string modelFilename, DirectX::XMMATRIX& worldMatrix) : ObjectBase(worldMatrix)
 {
 	bool result = true;
 	ifstream file(modelFilename);
@@ -74,8 +74,40 @@ Object::Object(ID3D11Device* device, std::string modelFilename, std::string text
 			}
 			else if (command == "mtllib")
 			{
-				//TODO: Assumes object has a texture
-				texture = new Texture(textureFilename, device);
+				string materialFilename;
+				file >> materialFilename;
+				ifstream materialFile(materialFilename);
+				if (materialFile.good())
+				{
+					string mtlCommand;
+					
+					while (!materialFile.eof())
+					{
+						materialFile >> mtlCommand;
+						if (mtlCommand == "map_Kd")
+						{
+							string textureFilename;
+							materialFile >> textureFilename;
+							texture = new Texture(textureFilename, device);
+						}
+						else //Unknown command, ignore it
+						{
+							string tempString;
+							getline(materialFile, tempString);
+						}
+						//TODO: Does not load color info
+					}
+					materialFile.close();
+				}
+				else
+				{
+					throw runtime_error("Failed to load material file: " + materialFilename);
+				}
+			}
+			else //Unknown command, ignore it
+			{
+				string tempString;
+				getline(file, tempString);
 			}
 		}
 	}

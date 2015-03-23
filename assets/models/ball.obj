@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib ball.mtl
+mtllib assets/materials/ball.mtl
 g default
 v 0.602857 -2.182676 -0.038819
 v 0.553754 -2.182676 -0.135190

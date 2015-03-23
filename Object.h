@@ -19,7 +19,7 @@ private:
 
 public:
 
-	Object(ID3D11Device* device, std::string modelFilename, std::string textureFilename, DirectX::XMMATRIX& worldMatrix);
+	Object(ID3D11Device* device, std::string modelFilename, DirectX::XMMATRIX& worldMatrix);
 	virtual ~Object();
 
 	virtual void Render(ID3D11DeviceContext* deviceContext);
