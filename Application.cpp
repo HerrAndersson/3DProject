@@ -1,6 +1,7 @@
 #include "Application.h"
 #include <iostream>
 #include <DirectXCollision.h>
+#include <DirectXMath.h>
 
 using namespace DirectX;
 using namespace std;
@@ -259,6 +260,7 @@ void Application::HandleMovement(float frameTime)
 	camera->SetPosition(pos);
 	camera->SetRotation(rot);
 
+
 	keyDown = input->LMB();
 	if (keyDown)
 	{
@@ -334,35 +336,55 @@ bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 
 	Ray r = GetRay();
 
-	//XMMATRIX w;
-	//XMVECTOR matInvDeter;
-	//object->GetWorldMatrix(w);
-	//w = XMMatrixInverse(&matInvDeter, w);
-
-	//XMVECTOR ro = XMLoadFloat3(&r.origin);
-	//XMVECTOR rd = XMLoadFloat3(&r.direction);
-
-	//XMVECTOR pickRayInLocalWorldSpacePos = XMVector3TransformCoord(ro, w);
-	//XMVECTOR pickRayInLocalWorldSpaceDir = XMVector3TransformNormal(rd, w);
-
-	//XMFLOAT3 rayo;
-	//XMFLOAT3 rayd;
-	//XMStoreFloat3(&rayo, pickRayInLocalWorldSpacePos);
-	//XMStoreFloat3(&rayd, pickRayInLocalWorldSpaceDir);
-
-	//r.direction = rayd;
-	//r.origin = rayo;
-
 	RayVsSphere(r, *object->GetIntersectionSphere(), distance);
 
-	//intersect = RaySphereIntersect(r.origin, r.direction, object->GetIntersectionSphere()->radius, distance);
-
+	cout << distance << endl;
 	if (distance > 0)
 	{
 		intersect = true;
 	}
 
 	return intersect;
+
+	//XMVECTOR origin = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	//XMVECTOR dir = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	//XMMATRIX viewMx;
+	//camera->GetViewMatrix(viewMx);
+
+	//XMMATRIX modelMx;
+	//object->GetWorldMatrix(modelMx);
+
+	//XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(viewMx), viewMx);
+	//XMMATRIX invModel = XMMatrixInverse(&XMMatrixDeterminant(modelMx), modelMx);
+	//XMMATRIX toLocal = invView * invModel;
+
+	//origin = XMVector3TransformCoord(origin, toLocal);
+	//dir = XMVector3TransformNormal(dir, toLocal);
+	//dir = XMVector3Normalize(dir);
+
+
+	//XMMATRIX w, v, p;
+	//Direct3D->GetProjectionMatrix(p);
+	//camera->GetViewMatrix(v);
+	//object->GetWorldMatrix(w);
+
+	//XMVECTOR o = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+	//XMVECTOR d = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+
+	//o = XMVector3Unproject(o, 0, 0, screenWidth, screenHeight, 0, 1, p, v, w);
+	//d = XMVector3Unproject(d, 0, 0, screenWidth, screenHeight, 0, 1, p, v, w);
+
+	//XMFLOAT3 ro;
+	//XMFLOAT3 rd;
+	//XMStoreFloat3(&ro, o);
+	//XMStoreFloat3(&rd, d);
+
+	//DirectX::BoundingSphere b;
+	//b.Center = object->GetIntersectionSphere()->center;
+	//b.Radius = object->GetIntersectionSphere()->radius;
+
+	//intersect = b.Intersects(o, d, distance);
 }
 
 
@@ -390,12 +412,11 @@ bool Application::RenderGraphics()
 
 	lightVP = v * p;
 	//lightVP = w * v * p;
-
-	//lightWVP = XMMatrixInverse(&XMMatrixDeterminant(lightWVP), lightWVP);
+	//lightVP = XMMatrixInverse(&XMMatrixDeterminant(lightVP), lightVP);
 
 	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix,
-		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), Direct3D->GetShadowMapSRV(),
-		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightVP, Direct3D->GetShadowMapSize());
+		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), shadowMapShader->GetShadowSRV(),
+		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightVP, shadowMapShader->GetSize());
 
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
@@ -413,12 +434,11 @@ void Application::RenderToTexture()
 	camera->GetViewMatrix(viewMatrix);
 	Direct3D->GetProjectionMatrix(projectionMatrix);
 
-	/*Uncomment to render from the view of the light*/
+	///*Uncomment to render from the view of the light*/
 	//shadowLight->GetViewMatrix(viewMatrix);
 	//shadowLight->GetProjectionMatrix(projectionMatrix);
 
 	////////////////////////////////////////////////////////////////////////// Render to shadow map //////////////////////////////////////////////////////////////////////////
-	Direct3D->ActivateShadowing();
 	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
 
 	XMMATRIX lightView, lightProj;
@@ -508,5 +528,5 @@ void Application::CreateShaders()
 	particleShader = new ShaderParticles(Direct3D->GetDevice(), L"assets/shaders/ShaderParticlesVS.hlsl", L"assets/shaders/ShaderParticlesPS.hlsl", L"assets/shaders/ShaderParticlesGS.hlsl");
 	terrainShader = new ShaderTerrain(Direct3D->GetDevice(), L"assets/shaders/TerrainVS.hlsl", L"assets/shaders/TerrainPS.hlsl", L"assets/shaders/TerrainGS.hlsl");
 	lightShader = new ShaderLight(Direct3D->GetDevice(), L"assets/shaders/LightVS.hlsl", L"assets/shaders/LightPS.hlsl");
-	shadowMapShader = new ShaderShadowMap(Direct3D->GetDevice(), L"assets/shaders/ShadowMapVS.hlsl");
+	shadowMapShader = new ShaderShadowMap(Direct3D->GetDevice(), L"assets/shaders/ShadowMapVS.hlsl", 2048, 2048, 0.0001f);
 }

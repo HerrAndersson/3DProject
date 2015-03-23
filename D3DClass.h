@@ -5,7 +5,6 @@
 #include <d3dcompiler.h>
 #include <stdexcept>
 #include "Deferred.h"
-#include "ShadowMap.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -21,8 +20,6 @@ private:
 	ID3D11RenderTargetView*		renderTargetView;
 	D3D11_VIEWPORT				viewport;
 	Deferred*                   deferredShader;
-
-	ShadowMap*                  shadowMap;
 
 	ID3D11DepthStencilView*     depthStencilView;
 	ID3D11Texture2D*			depthStencilBuffer;
@@ -54,11 +51,7 @@ public:
 
 	ID3D11ShaderResourceView* GetDeferredSRV(int viewNumber);
 
-	ID3D11ShaderResourceView* GetShadowMapSRV();
-	int GetShadowMapSize();
-
 	void ActivateDeferredShading();
-	void ActivateShadowing();
 
 	void TurnZBufferON();
 	void TurnZBufferOFF();

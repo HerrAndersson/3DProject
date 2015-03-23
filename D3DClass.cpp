@@ -49,21 +49,21 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	swapChainDesc.Flags = 0;
 
-	// Create the swap chain, device, and device context.
+	//Create the swap chain, device, and device context
 	result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &deviceContext);
 	if (FAILED(result))
 	{
 		throw std::runtime_error("Could not create swap buffer");
 	}
 
-	//Get the pointer to the back buffer.
+	//Get the pointer to the back buffer
 	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
 	if (FAILED(result))
 	{
 		throw std::runtime_error("Could not get swap chain pointer");
 	}
 
-	// Create the render target view with the back buffer pointer.
+	// Create the render target view with the back buffer pointer
 	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
 	if (FAILED(result))
 	{
@@ -242,7 +242,6 @@ D3DClass::D3DClass(int screenWidth, int screenHeight, HWND hwnd, bool fullscreen
 	}
 
 	deferredShader = new Deferred(device, screenWidth, screenHeight);
-	shadowMap = new ShadowMap(device, 4096, 4096, 0.0f);
 }
 
 D3DClass::~D3DClass()
@@ -314,12 +313,6 @@ D3DClass::~D3DClass()
 	{
 		delete deferredShader;
 		deferredShader = nullptr;
-	}
-
-	if (shadowMap)
-	{
-		delete shadowMap;
-		shadowMap = nullptr;
 	}
 }
 
@@ -429,21 +422,6 @@ void D3DClass::ActivateDeferredShading()
 {
 	deferredShader->ClearRenderTargets(deviceContext, 0.2f, 0.4f, 1.0f, 1.0f);
 	deferredShader->SetRenderTargets(deviceContext);
-}
-
-void D3DClass::ActivateShadowing()
-{
-	shadowMap->ActivateShadowing(deviceContext);
-}
-
-int D3DClass::GetShadowMapSize()
-{
-	return shadowMap->GetSize();
-}
-
-ID3D11ShaderResourceView* D3DClass::GetShadowMapSRV()
-{
-	return shadowMap->GetShadowSRV();
 }
 
 void* D3DClass::operator new(size_t i)

@@ -241,7 +241,7 @@ void Terrain::CalculateNormals()
 			index2 = (j * terrainHeight) + (i + 1);
 			index3 = ((j + 1) * terrainHeight) + i;
 
-			// Get three vertices from the face.
+			//Get three vertices from the face.
 			vertex1[0] = heightMap[index1].x;
 			vertex1[1] = heightMap[index1].y;
 			vertex1[2] = heightMap[index1].z;
@@ -271,8 +271,8 @@ void Terrain::CalculateNormals()
 		}
 	}
 
-	// Now go through all the vertices and take an average of each face normal 	
-	// that the vertex touches to get the averaged normal for that vertex.
+	//Go through all the vertices and take an average of each face normal 	
+	//that the vertex touches to get the averaged normal for that vertex.
 	for (int j = 0; j < terrainHeight; j++)
 	{
 		for (int i = 0; i < terrainWidth; i++)
@@ -282,7 +282,7 @@ void Terrain::CalculateNormals()
 			sum[2] = 0.0f;
 			count = 0;
 
-			// Bottom left face.
+			// Bottom left face
 			if (((i - 1) >= 0) && ((j - 1) >= 0))
 			{
 				index = ((j - 1) * (terrainHeight - 1)) + (i - 1);
@@ -293,7 +293,7 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			// Bottom right face.
+			// Bottom right face
 			if ((i < (terrainWidth - 1)) && ((j - 1) >= 0))
 			{
 				index = ((j - 1) * (terrainHeight - 1)) + i;
@@ -304,7 +304,7 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			// Upper left face.
+			// Upper left face
 			if (((i - 1) >= 0) && (j < (terrainHeight - 1)))
 			{
 				index = (j * (terrainHeight - 1)) + (i - 1);
@@ -315,7 +315,7 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			// Upper right face.
+			// Upper right face
 			if ((i < (terrainWidth - 1)) && (j < (terrainHeight - 1)))
 			{
 				index = (j * (terrainHeight - 1)) + i;
@@ -326,15 +326,15 @@ void Terrain::CalculateNormals()
 				count++;
 			}
 
-			// Take the average of the faces touching this vertex.
+			//Average of the faces touching this vertex.
 			sum[0] = (sum[0] / (float)count);
 			sum[1] = (sum[1] / (float)count);
 			sum[2] = (sum[2] / (float)count);
 
-			// Calculate the length of this normal.
+			
 			length = sqrt((sum[0] * sum[0]) + (sum[1] * sum[1]) + (sum[2] * sum[2]));
 
-			// Get an index to the vertex location in the height map array.
+			//index to the vertex location in the height map array
 			index = (j * terrainHeight) + i;
 
 			// Normalize the final shared normal for this vertex and store it in the height map array.
@@ -344,14 +344,12 @@ void Terrain::CalculateNormals()
 		}
 	}
 
-	// Release the temporary normals.
 	delete[] normals;
-	normals = 0;
+	normals = nullptr;
 }
 
 void Terrain::CalculateTextureCoordinates()
 {
-	//Initialize necessary values
 	float incrementValue = (float)TEXTURE_REPEAT / (float)terrainWidth;
 	int incrementCount = terrainWidth / TEXTURE_REPEAT;
 	float tuCoordinate = 0.0f;
@@ -359,7 +357,7 @@ void Terrain::CalculateTextureCoordinates()
 	int tuCount = 0;
 	int tvCount = 0;
 
-	// Loop through heightmap and calculate texture coordinates for each vertex
+	//Loop through heightmap and calculate texture coordinates for each vertex
 	for (int i = 0; i < terrainHeight; i++)
 	{
 		for (int j = 0; j < terrainWidth; j++)
@@ -493,7 +491,7 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
 
-	//Set up the description of the vertex buffer.
+	//Description of the vertex buffer
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.ByteWidth = sizeof(Vertex) * vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -505,13 +503,13 @@ void Terrain::InitializeBuffers(ID3D11Device* device)
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
-	//Create the vertex buffer.
+	//Create the vertex buffer
 	result = device->CreateBuffer(&vertexBufferDesc, &vertexData, &vertexBuffer);
 
 	D3D11_BUFFER_DESC indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA indexData;
 
-	// Set up the description of the index buffer.
+	//Description of the index buffer.
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.ByteWidth = sizeof(unsigned long) * indexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;

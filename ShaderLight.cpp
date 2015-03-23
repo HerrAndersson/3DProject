@@ -148,7 +148,7 @@ void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& 
 	matrixData->world = wm;
 	matrixData->view = vm;
 	matrixData->projection = pm;
-	matrixData->lightWVP = lwvp;
+	matrixData->lightVP = lwvp;
 
 	deviceContext->Unmap(matrixBuffer, 0);
 

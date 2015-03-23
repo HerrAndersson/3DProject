@@ -20,11 +20,6 @@ SamplerState sampPoint
 	AddressV = Clamp;
 };
 
-SamplerState b
-{
-	
-};
-
 cbuffer LightBuffer
 {
 	matrix lightVP;
@@ -41,31 +36,37 @@ struct VS_OUT
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float4 pos = worldPosTexture.Sample(sampPoint, input.tex);
-	float4 col = colorTexture.Sample(sampPoint, input.tex);
+	float4 col = shadowTexture.Sample(sampPoint, input.tex);
 	float4 normal = normalTexture.Sample(sampPoint, input.tex);
 
 	float4 shadowPos = mul(float4(pos.x, pos.y, pos.z, 1.0f), lightVP);
 
-	float2 shadowTexCoords;
-	shadowTexCoords.x = 0.5f + (shadowPos.x / shadowPos.w * 0.5f);
-	shadowTexCoords.y = 0.5f - (shadowPos.y / shadowPos.w * 0.5f);
-	float depth = shadowPos.z / shadowPos.w + 0.00001f;
+	shadowPos.xy /= shadowPos.w;
+	float2 smTex = float2(0.5f* shadowPos.x + 0.5f, -0.5f * shadowPos.y + 0.5f);
 
-	//shadowPos.xy /= shadowPos.w;
-	//float2 smTex = float2(0.5f* shadowPos.x + 0.5f, -0.5f * shadowPos.y + 0.5f);
-	//float depth = shadowPos.z / shadowPos.w;
+	//float2 shadowTexCoords;
+	//shadowTexCoords.x = 0.5f + (shadowPos.x / shadowPos.w * 0.5f);
+	//shadowTexCoords.y = 0.5f - (shadowPos.y / shadowPos.w * 0.5f);
+
+	float depth = shadowPos.z / shadowPos.w;
 
 	//PCF här
-	float depthSample = shadowTexture.Sample(sampPoint, shadowTexCoords).r;
+	float depthSample = shadowTexture.Sample(sampPoint, smTex).r;
 
 	if (depthSample >= depth)
 	{
-		return col * depthSample;
+		col = saturate(col * depthSample);
 	}
 
 	return col;
 
+	//Get local illumination from the "sun" on the whole scene
+	float3 lightDir = -lightDirection;																    // Invert the light direction for calculations.
+	
+	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.15;									// Calculate the amount of light on this pixel.
+	float4 outputColor = saturate(col * lightIntensity);											    // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
+	return outputColor;
 
 
 

@@ -11,7 +11,7 @@ private:
 		XMMATRIX world;
 		XMMATRIX view;
 		XMMATRIX projection;
-		XMMATRIX lightWVP;
+		XMMATRIX lightVP;
 	};
 
 	struct LightBuffer

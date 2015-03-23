@@ -33,8 +33,8 @@ class Application
 
 private:
 
-	const float HEIGHT_FROM_GROUND = 6.0f;
-	const int NUM_SPHERES = 5;
+	const float HEIGHT_FROM_GROUND = 5.0f;
+	const int NUM_SPHERES = 4;
 
 	int screenWidth;
 	int screenHeight;
