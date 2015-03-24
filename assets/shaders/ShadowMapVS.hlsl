@@ -1,6 +1,7 @@
 cbuffer LightBuffer
 {
 	matrix lightWVP;
+	float3 lightPos;
 };
 
 float4 main(float3 posL : POSITION) : SV_POSITION

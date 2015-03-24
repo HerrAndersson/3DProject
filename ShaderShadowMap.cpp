@@ -22,7 +22,7 @@ ShaderShadowMap::ShaderShadowMap(ID3D11Device* device, LPCWSTR vertexShaderFilen
 	depthDesc.DepthEnable = true;
 	depthDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	depthDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-	depthDesc.StencilEnable = true;
+	depthDesc.StencilEnable = false;
 	depthDesc.StencilReadMask = 0xFF;
 	depthDesc.StencilWriteMask = 0xFF;
 	depthDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
@@ -90,8 +90,8 @@ ShaderShadowMap::ShaderShadowMap(ID3D11Device* device, LPCWSTR vertexShaderFilen
 	texDesc.Height = height;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
-	texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-	//texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	//texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -109,8 +109,8 @@ ShaderShadowMap::ShaderShadowMap(ID3D11Device* device, LPCWSTR vertexShaderFilen
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 	ZeroMemory(&dsvDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 	dsvDesc.Flags = 0;
-	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	//dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 	hr = device->CreateDepthStencilView(shadowMap, &dsvDesc, &shadowMapDepthView);
@@ -122,8 +122,8 @@ ShaderShadowMap::ShaderShadowMap(ID3D11Device* device, LPCWSTR vertexShaderFilen
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	//srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	//srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.MostDetailedMip = 0;

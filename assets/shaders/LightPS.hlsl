@@ -35,11 +35,14 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_TARGET
 {
+	//float4 diffuse = float4(0.2f, 0.2f, 0.5f, 1.0f);
+	//float4 ambient = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	float4 pos = worldPosTexture.Sample(sampPoint, input.tex);
 	float4 col = shadowTexture.Sample(sampPoint, input.tex);
 	float4 normal = normalTexture.Sample(sampPoint, input.tex);
 
-	float4 shadowPos = mul(float4(pos.x, pos.y, pos.z, 1.0f), lightVP);
+	float4 p = float4(pos.xyz, 1.0f);
+	float4 shadowPos = mul(pos, lightVP);
 
 	shadowPos.xy /= shadowPos.w;
 	float2 smTex = float2(0.5f* shadowPos.x + 0.5f, -0.5f * shadowPos.y + 0.5f);
@@ -53,17 +56,17 @@ float4 main(VS_OUT input) : SV_TARGET
 	//PCF här
 	float depthSample = shadowTexture.Sample(sampPoint, smTex).r;
 
-	if (depthSample >= depth)
-	{
-		col = saturate(col * depthSample);
-	}
+	//if (depthSample >= depth)
+	//{
+	//	//col = saturate(col * depthSample);
+	//}
 
 	return col;
 
 	//Get local illumination from the "sun" on the whole scene
 	float3 lightDir = -lightDirection;																    // Invert the light direction for calculations.
 	
-	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.15;									// Calculate the amount of light on this pixel.
+	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.25;									// Calculate the amount of light on this pixel.
 	float4 outputColor = saturate(col * lightIntensity);											    // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
 	return outputColor;

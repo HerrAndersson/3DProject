@@ -325,7 +325,6 @@ bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 
 	RayVsSphere(r, *object->GetIntersectionSphere(), distance);
 
-	cout << distance << endl;
 	if (distance > 0)
 	{
 		intersect = true;
@@ -445,21 +444,6 @@ void Application::RenderToTexture()
 		shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
 		spheres[i]->Render(Direct3D->GetDeviceContext());
 	}
-
-	//XMMATRIX wo = XMMatrixScaling(4, 4, 4)*XMMatrixTranslation(128, 1, 64);
-	//XMMATRIX wvp = wo * vp;
-	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	//camel->Render(Direct3D->GetDeviceContext());
-
-	//wo = XMMatrixRotationRollPitchYaw(0, XMConvertToRadians(180), 0) * XMMatrixScaling(0.5, 0.5, 0.5) * XMMatrixTranslation(128, 1, 64);
-	//wvp = wo * vp;
-	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	//wagon->Render(Direct3D->GetDeviceContext());
-
-	//sphere->GetWorldMatrix(wo);
-	//wvp = wo * vp;
-	//shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
-	//sphere->Render(Direct3D->GetDeviceContext());
 
 	//////////////////////////////////////////////////////////////////// Render scene with deferred shading ////////////////////////////////////////////////////////////////////
 	Direct3D->ActivateDeferredShading();
