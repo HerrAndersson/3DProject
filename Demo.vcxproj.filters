@@ -179,9 +179,6 @@
     <ClInclude Include="OrthoWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BufferTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>

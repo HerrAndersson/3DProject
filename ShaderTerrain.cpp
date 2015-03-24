@@ -35,25 +35,6 @@ ShaderTerrain::ShaderTerrain(ID3D11Device* device, LPCWSTR vsFilename, LPCWSTR p
 		throw runtime_error("Could not create MatrixBuffer");
 	}
 
-	//D3D11_BUFFER_DESC lightBufferDesc;
-
-	//// Setup the description of the light dynamic constant buffer that is in the pixel shader.
-	//// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
-	//lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	//lightBufferDesc.ByteWidth = sizeof(LightBuffer);
-	//lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//lightBufferDesc.MiscFlags = 0;
-	//lightBufferDesc.StructureByteStride = 0;
-
-	//// Create the constant buffer pointer so we can access the pixel shader constant buffer from within this class.
-	//hr = device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
-
-	//if (FAILED(hr))
-	//{
-	//	throw runtime_error("Could not create LightBuffer");
-	//}
-
 	D3D11_BUFFER_DESC gsBufferDesc;
 
 	// Setup the description of the dynamic constant buffer that is in the geometry shader.
@@ -76,7 +57,8 @@ ShaderTerrain::ShaderTerrain(ID3D11Device* device, LPCWSTR vsFilename, LPCWSTR p
 	D3D11_SAMPLER_DESC samplerDesc;
 
 	// Create a texture sampler state description.
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;

@@ -9,7 +9,6 @@ Deferred::Deferred(ID3D11Device* device, int textureWidth, int textureHeight)
 	this->textureHeight = textureHeight;
 
 	InitializeBuffers(device);
-	InitializeShaderData(device);
 }
 
 Deferred::~Deferred()
@@ -24,18 +23,6 @@ Deferred::~Deferred()
 	{
 		depthStencilBuffer->Release();
 		depthStencilBuffer = nullptr;
-	}
-
-	if (matrixBuffer)
-	{
-		matrixBuffer->Release();
-		matrixBuffer = nullptr;
-	}
-
-	if (sampleStateWrap)
-	{
-		sampleStateWrap->Release();
-		sampleStateWrap = nullptr;
 	}
 
 	for (int i = 0; i < BUFFER_COUNT; i++)
@@ -57,50 +44,6 @@ Deferred::~Deferred()
 			renderTargetTextureArray[i]->Release();
 			renderTargetTextureArray[i] = nullptr;
 		}
-	}
-}
-
-void Deferred::InitializeShaderData(ID3D11Device* device)
-{
-	HRESULT result;
-	D3D11_SAMPLER_DESC samplerDesc;
-	D3D11_BUFFER_DESC matrixBufferDesc;
-
-	//Wrap texture sampler state description.
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	//Create texture sampler state.
-	result = device->CreateSamplerState(&samplerDesc, &sampleStateWrap);
-	if (FAILED(result))
-	{
-		throw runtime_error("Error creating sampler state");
-	}
-
-	//Description of the matrix constant buffer in the vertex shader
-	matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	matrixBufferDesc.ByteWidth = sizeof(MatrixBuffer);
-	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	matrixBufferDesc.MiscFlags = 0;
-	matrixBufferDesc.StructureByteStride = 0;
-
-	// Create the constant buffer pointer
-	result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
-	if (FAILED(result))
-	{
-		throw runtime_error("Error creating matrix constant-buffer");
 	}
 }
 
@@ -239,47 +182,6 @@ ID3D11ShaderResourceView* Deferred::GetShaderResourceView(int viewNumber)
 {
 	return shaderResourceViewArray[viewNumber];
 }
-
-//void Deferred::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture)
-//{
-//	HRESULT result;
-//	D3D11_MAPPED_SUBRESOURCE mappedResource;
-//
-//	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
-//	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
-//	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
-//
-//	//Lock the constant buffer so it can be written to
-//	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-//	if (FAILED(result))
-//	{
-//		throw runtime_error("Could not Map matrix buffer in Deferred.cpp");
-//	}
-//
-//	MatrixBuffer* matrixData = (MatrixBuffer*)mappedResource.pData;
-//
-//	//Copy the matrices into the constant buffer
-//	matrixData->world = wm;
-//	matrixData->view = vm;
-//	matrixData->projection = pm;
-//
-//	deviceContext->Unmap(matrixBuffer, 0);
-//
-//	unsigned int bufferNumber = 0;
-//	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
-//	deviceContext->PSSetShaderResources(0, 1, &texture);
-//}
-//
-//void Deferred::UseShader(ID3D11DeviceContext* deviceContext)
-//{
-//	deviceContext->VSSetShader(vertexShader, nullptr, 0);
-//	deviceContext->HSSetShader(hullShader, nullptr, 0);
-//	deviceContext->DSSetShader(domainShader, nullptr, 0);
-//	deviceContext->GSSetShader(geometryShader, nullptr, 0);
-//	deviceContext->PSSetShader(pixelShader, nullptr, 0);
-//	deviceContext->IASetInputLayout(inputLayout);
-//	deviceContext->PSSetSamplers(0, 1, &sampleStateWrap);
-//}
 
 void* Deferred::operator new(size_t i)
 {

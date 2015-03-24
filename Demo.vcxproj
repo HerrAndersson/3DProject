@@ -109,7 +109,6 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BoundingBox.h" />
-    <ClInclude Include="BufferTypes.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="D3DClass.h" />

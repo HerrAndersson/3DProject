@@ -8,7 +8,6 @@ ShaderLight::ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPC
 {
 	HRESULT result;
 	D3D11_SAMPLER_DESC samplerDesc;
-	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
 
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
@@ -41,20 +40,6 @@ ShaderLight::ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPC
 		throw runtime_error("Error creating sampler state");
 	}
 
-	////Description of the matrix constant buffer in vertex shader
-	//matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	//matrixBufferDesc.ByteWidth = sizeof(MatrixBuffer);
-	//matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	//matrixBufferDesc.MiscFlags = 0;
-	//matrixBufferDesc.StructureByteStride = 0;
-
-	////Create matrix buffer pointer so the values withing the shader can be changed
-	//result = device->CreateBuffer(&matrixBufferDesc, NULL, &matrixBuffer);
-	//if (FAILED(result))
-	//{
-	//	throw runtime_error("Error creating matrix buffer");
-	//}
 
 	// Description of the light constant buffer in the pixel shader.
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -81,11 +66,6 @@ ShaderLight::~ShaderLight()
 		lightBuffer = nullptr;
 	}
 
-	//if (matrixBuffer)
-	//{
-	//	matrixBuffer->Release();
-	//	matrixBuffer = nullptr;
-	//}
 
 	if (sampleState)
 	{
@@ -99,34 +79,8 @@ void ShaderLight::SetBuffers(ID3D11DeviceContext* deviceContext, ID3D11ShaderRes
 
 {
 
-	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	unsigned int bufferNumber = 0;
-
-	XMMATRIX lvp = XMMatrixTranspose(lightVP);
-
-	//Lock the light constant buffer so it can be written to.
-	result = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		throw runtime_error("Could not Map light buffer in ShaderLight");
-	}
-
-	LightBufferPS* lightData = (LightBufferPS*)mappedResource.pData;
-
-	//Copy the lighting variables into the constant buffer
-	lightData->lightVP = lvp;
-	lightData->lightDirection = lightDirection;
-	lightData->size = shadowMapSize;
-
-	deviceContext->Unmap(lightBuffer, 0);
-
-	//Set light buffer in pixel shader with updated values
-	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
-
-	//Update matrix and light constant buffers
-	//SetMatrixBuffer(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightVP);
-//	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);
+	//Update light constant buffer
+	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);
 
 	//Set shader texture resources in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &colorTexture);
@@ -149,38 +103,7 @@ void ShaderLight::Draw(ID3D11DeviceContext* deviceContext, int indexCount)
 	//since the objects have already drawn themselves to the buffer used in ShaderDeferred
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
-//
-//void ShaderLight::SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightVP)
-//{
-//	HRESULT result;
-//	D3D11_MAPPED_SUBRESOURCE mappedResource;
-//	unsigned int bufferNumber = 0;
-//
-//	XMMATRIX wm = XMMatrixTranspose(worldMatrix);
-//	XMMATRIX vm = XMMatrixTranspose(viewMatrix);
-//	XMMATRIX pm = XMMatrixTranspose(projectionMatrix);
-//	XMMATRIX lwvp = XMMatrixTranspose(lightVP);
-//
-//	//Lock the constant buffer so it can be written to
-//	result = deviceContext->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-//	if (FAILED(result))
-//	{
-//		throw runtime_error("Could not Map matrix buffer in ShaderLight");
-//	}
-//
-//	MatrixBuffer* matrixData = (MatrixBuffer*)mappedResource.pData;
-//
-//	//Copy the matrices into the constant buffer
-//	matrixData->world = wm;
-//	matrixData->view = vm;
-//	matrixData->projection = pm;
-//	matrixData->lightVP = lwvp;
-//
-//	deviceContext->Unmap(matrixBuffer, 0);
-//
-//	//Set the constant buffer in the vertex shader with updated values
-//	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
-//}
+
 void ShaderLight::SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 lightDirection, int shadowMapSize, XMMATRIX& lightVP)
 {
 	HRESULT result;

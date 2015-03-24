@@ -2,7 +2,6 @@
 #include "ShaderBase.h"
 #include <stdexcept>
 #include "Light.h"
-#include "BufferTypes.h"
 
 using namespace DirectX;
 
@@ -19,14 +18,6 @@ private:
 		DirectX::XMMATRIX wvp;
 	};
 
-	struct LightBuffer
-	{
-		DirectX::XMFLOAT4 ambientColor;
-		DirectX::XMFLOAT4 diffuseColor;
-		DirectX::XMFLOAT3 lightDirection;
-		float padding;
-	};
-
 	struct GSBuffer
 	{
 		DirectX::XMMATRIX viewMatrix;
@@ -36,7 +27,7 @@ private:
 
 	ID3D11Buffer* matrixBuffer;
 	ID3D11Buffer* gsBuffer;
-	//ID3D11Buffer* lightBuffer;
+
 	ID3D11SamplerState* samplerState;
 
 public:

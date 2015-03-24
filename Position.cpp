@@ -52,7 +52,7 @@ void Position::SetFrameTime(float frameTime)
 
 void Position::LookAround(XMFLOAT2 lxly)
 {
-	//If no mouse-movement happened the InputHandler will return 1000000.0f for both x and y,
+	//If no mouse-movement occurred the InputHandler will return 1000000.0f for both x and y,
 	//therefore nothing is done when these values show up
 	if (lxly.x < 1000000.0f && lxly.y < 1000000.0f)
 	{

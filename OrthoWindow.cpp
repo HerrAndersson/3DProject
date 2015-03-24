@@ -38,31 +38,30 @@ void OrthoWindow::InitializeBuffers(ID3D11Device* device, int windowWidth, int w
 	float top = 1.0f;
 	float bottom = -1.0f;
 	
-
 	vertexCount = 6;
 	indexCount = vertexCount;
 
 	VertexPosUV* vertices = new VertexPosUV[vertexCount];
 	unsigned long* indices = new unsigned long[indexCount]; 
 
-	// Load the vertex array with data
 	// First triangle
-	vertices[0].pos = XMFLOAT3(left, top, 0.0f);			 // Top left.
+	vertices[0].pos = XMFLOAT3(left, top, 0.0f);			 // Top left
 	vertices[0].uv = XMFLOAT2(0.0f, 0.0f);
 
-	vertices[1].pos = XMFLOAT3(right, bottom, 0.0f);		// Bottom right.
+	vertices[1].pos = XMFLOAT3(right, bottom, 0.0f);		// Bottom right
 	vertices[1].uv = XMFLOAT2(1.0f, 1.0f);
 
-	vertices[2].pos = XMFLOAT3(left, bottom, 0.0f);			// Bottom left.
+	vertices[2].pos = XMFLOAT3(left, bottom, 0.0f);			// Bottom left
 	vertices[2].uv = XMFLOAT2(0.0f, 1.0f);
+
 	// Second triangle
-	vertices[3].pos = XMFLOAT3(left, top, 0.0f);			// Top left.
+	vertices[3].pos = XMFLOAT3(left, top, 0.0f);			// Top left
 	vertices[3].uv = XMFLOAT2(0.0f, 0.0f);
 
-	vertices[4].pos = XMFLOAT3(right, top, 0.0f);			// Top right.
+	vertices[4].pos = XMFLOAT3(right, top, 0.0f);			// Top right
 	vertices[4].uv = XMFLOAT2(1.0f, 0.0f);
 
-	vertices[5].pos = XMFLOAT3(right, bottom, 0.0f);		// Bottom right.
+	vertices[5].pos = XMFLOAT3(right, bottom, 0.0f);		// Bottom right
 	vertices[5].uv = XMFLOAT2(1.0f, 1.0f);
 
 	//Load the index array with data

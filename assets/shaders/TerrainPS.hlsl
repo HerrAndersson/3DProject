@@ -1,14 +1,6 @@
 SamplerState SampleType;
 Texture2D shaderTexture[4];
 
-//cbuffer LightBuffer : register(cb0)
-//{
-//	float4 ambientColor;
-//	float4 diffuseColor;
-//	float3 lightDirection;
-//	float padding;
-//};
-
 struct GS_OUT
 {
 	float4 pos : SV_POSITION;

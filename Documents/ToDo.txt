@@ -16,17 +16,17 @@ Blend-mapping										Mattias				    X
 
 Projection techniques
 ================================================================================
-Shadow maps										Jonas
+Shadow maps										Jonas				    /
 
 
 Acceleration techniques
 ================================================================================
-View frustum culling against a quadtree							Mattias
+View frustum culling against a quadtree							Mattias				    X
 Back-face culling using geometry shader							Jonas				    X
 
 
 Other techniques
 ================================================================================
 Particle system with billboarded particles						Mattias				    X
-Water-effect										Jonas
+Water-effect										Jonas				    -
 Picking											Jonas				    X

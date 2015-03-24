@@ -11,15 +11,8 @@ class Deferred
 
 private:
 
+	//Diffuse, Normal and WorldPosition (used the shadow mapping)
 	static const int BUFFER_COUNT = 3;
-
-	//__declspec(align(16))
-	struct MatrixBuffer
-	{
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
-	};
 
 	int textureWidth;
 	int textureHeight;
@@ -31,11 +24,7 @@ private:
 	ID3D11DepthStencilView*		 depthStencilView;
 	D3D11_VIEWPORT				 viewport;
 
-	ID3D11SamplerState*			 sampleStateWrap;
-	ID3D11Buffer*				 matrixBuffer;
-
 	void InitializeBuffers(ID3D11Device* device);
-	void InitializeShaderData(ID3D11Device* device);
 
 public:
 
@@ -46,9 +35,6 @@ public:
 	void ClearRenderTargets(ID3D11DeviceContext* deviceContext, float r, float g, float b, float a);
 
 	ID3D11ShaderResourceView* GetShaderResourceView(int viewNumber);
-
-	//virtual void UseShader(ID3D11DeviceContext* deviceContext);
-	//void SetBuffers(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* texture);
 
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
 	void* operator new(size_t i);

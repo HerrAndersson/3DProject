@@ -48,10 +48,9 @@ float4 main(VS_OUT input) : SV_TARGET
 
 
 	//Get local illumination from the "sun" on the whole scene
-	float3 lightDir = -lightDirection;																    // Invert the light direction for calculations.
-
-	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.35;									// Calculate the amount of light on this pixel.
-	float4 outputColor = saturate(col * lightIntensity);											    // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
+	float3 lightDir = -lightDirection;										 // Invert the light direction for calculations.
+	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.35;		 // Calculate the amount of light on this pixel.
+	float4 outputColor = saturate(col * lightIntensity);					 // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
 	if (shadowCoeff > depth)
 	{

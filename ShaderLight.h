@@ -6,14 +6,6 @@ class ShaderLight : public ShaderBase
 
 private:
 
-	//struct MatrixBuffer
-	//{
-	//	XMMATRIX world;
-	//	XMMATRIX view;
-	//	XMMATRIX projection;
-	//	XMMATRIX lightVP;
-	//};
-
 	struct LightBufferPS
 	{
 		DirectX::XMMATRIX lightVP;
@@ -22,10 +14,8 @@ private:
 	};
 
 	ID3D11SamplerState*		sampleState;
-	ID3D11Buffer*			matrixBuffer;
 	ID3D11Buffer*			lightBuffer;
 
-	//void SetMatrixBuffer(ID3D11DeviceContext* deviceContext, XMMATRIX& worldMatrix, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, XMMATRIX& lightVP);
 	void SetLightBuffer(ID3D11DeviceContext* deviceContext, DirectX::XMFLOAT3 lightDirection, int shadowMapSize, XMMATRIX& lightVP);
 
 public:

@@ -8,10 +8,11 @@ class OrthoWindow
 {
 private:
 
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
 	int vertexCount;
 	int indexCount;
+
+	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* indexBuffer;
 
 	void InitializeBuffers(ID3D11Device* device, int windowWidth, int windowHeight);
 

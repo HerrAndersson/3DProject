@@ -25,6 +25,7 @@ public:
 	virtual void UseShader(ID3D11DeviceContext* deviceContext);
 
 	void SetMatrices(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX& worldMatrix, DirectX::XMMATRIX& viewMatrix, DirectX::XMMATRIX& projectionMatrix, DirectX::XMFLOAT3 campos);
+
 	//Without overloading these the 16B alignment of an XMMATRIX is not guaranteed, which could possibly cause access violation
 	void* operator new(size_t i);
 	void operator delete(void* p);
