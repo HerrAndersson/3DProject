@@ -55,7 +55,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
 
-	XMFLOAT3 position(256.0f, 256.0f, -256.0f);
+	XMFLOAT3 position(256.0f, 56.0f, -56.0f);
 	shadowLight = new ShadowLight(ambient, diffuse, position, XMFLOAT3(256.0f, 0.0f, 256.0f));
 	shadowLight->CreateProjectionMatrix(screenDepth, screenNear);
 	shadowLight->CreateViewMatrix();
@@ -189,7 +189,6 @@ bool Application::Update()
 
 	particleEmitter->Update(Direct3D->GetDeviceContext(), frameTime);
 
-	result = RenderGraphics();
 	if (!result)
 	{
 		return false;
@@ -201,6 +200,8 @@ bool Application::Update()
 	}
 
 	((ObjectIntersection*)sphere)->Update();
+
+	result = RenderGraphics();
 
 	//Uncomment if the shadow light is moving
 	//XMFLOAT3 dir = shadowLight->GetDirection();
@@ -376,38 +377,27 @@ bool Application::TestIntersections(ObjectIntersection* object, float& distance)
 
 bool Application::RenderGraphics()
 {
-	XMMATRIX worldMatrix, viewMatrix, orthoMatrix;
 	bool result = true;
+
+	XMMATRIX view, projection, lightVP;
+	shadowLight->GetViewMatrix(view);
+	shadowLight->GetProjectionMatrix(projection);
+	lightVP = XMMatrixMultiply(view, projection);
 
 	RenderToTexture();
 
 	Direct3D->BeginScene(0.2f, 0.4f, 1.0f, 1.0f);
-
-	camera->GetViewMatrix(viewMatrix);
-	Direct3D->GetWorldMatrix(worldMatrix);
-	Direct3D->GetOrthoMatrix(orthoMatrix);
-
 	Direct3D->TurnZBufferOFF();
 
 	orthoWindow->Render(Direct3D->GetDeviceContext());
-	XMMATRIX w, v, p, lightVP;
-	shadowLight->GetViewMatrix(v);
-	shadowLight->GetProjectionMatrix(p);
-	XMFLOAT3 po = shadowLight->GetPosition();
-	w = XMMatrixTranslation(po.x, po.y, po.z);
 
-	lightVP = v * p;
-	//lightVP = w * v * p;
-	//lightVP = XMMatrixInverse(&XMMatrixDeterminant(lightVP), lightVP);
-
-	lightShader->SetBuffers(Direct3D->GetDeviceContext(), worldMatrix, viewMatrix, orthoMatrix,
+	lightShader->SetBuffers(Direct3D->GetDeviceContext(),
 		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), shadowMapShader->GetShadowSRV(),
 		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightVP, shadowMapShader->GetSize());
 
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
 	Direct3D->TurnZBufferON();
-
 	Direct3D->EndScene();
 
 	return result;
@@ -428,9 +418,8 @@ void Application::RenderToTexture()
 	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
 
 	XMMATRIX lightView, lightProj;
-
 	XMFLOAT3 lightPos = shadowLight->GetPosition();
-	//lightWorld = XMMatrixTranslation(lightPos.x, lightPos.y, lightPos.z);
+
 	shadowLight->GetViewMatrix(lightView);
 	shadowLight->GetProjectionMatrix(lightProj);
 

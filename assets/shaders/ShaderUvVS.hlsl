@@ -27,7 +27,7 @@ VS_OUT main(VS_IN input)
 	input.position.w = 1.0f;
 
 	//output.worldPos = float4(input.position.xyz, 1.0f);
-	output.worldPos = mul(input.position.xyz, worldMatrix);
+	output.worldPos = mul(float4(input.position.xyz, 1.0f), worldMatrix);
 	//output.worldPos = mul(output.worldPos, worldMatrix);
 
 	output.position = mul(input.position, worldMatrix);
