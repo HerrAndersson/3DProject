@@ -326,7 +326,7 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 	color[3] = alpha;
 
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
-
+	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 

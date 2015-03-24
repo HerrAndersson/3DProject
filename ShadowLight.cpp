@@ -54,9 +54,9 @@ void ShadowLight::SetLookAt(XMFLOAT3 lookAt)
 
 void ShadowLight::CreateViewMatrix()
 {
-	XMVECTOR up = { { 0.0f, 1.0f, 0.0f } };
-	XMVECTOR pos = { { position.x, position.y, position.z } };
-	XMVECTOR look = { { lookAt.x, lookAt.y, lookAt.z } };
+	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, .0f);
+	XMVECTOR pos = XMVectorSet(position.x, position.y, position.z, .0f);
+	XMVECTOR look = XMVectorSet(lookAt.x, lookAt.y, lookAt.z, .0f);
 
 	viewMatrix = XMMatrixLookAtLH(pos, look, up);
 }
