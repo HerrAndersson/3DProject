@@ -42,7 +42,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	}
 
 	XMMATRIX tempWorldMatrix = XMMatrixIdentity();
-	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(15, 5, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(150, 15, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/map/tree.txt");
 
@@ -51,11 +51,10 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	XMFLOAT4 ambient(0.05f, 0.05f, 0.05f, 1.0f);
 	XMFLOAT4 diffuse(1.0f, 1.0f, 1.0f, 1.0f);
 	XMFLOAT3 direction(0.0f, -0.6f, 0.75f);
-	//XMFLOAT3 direction(0.0f, 0.0f, 1.0f);
 
 	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
 
-	XMFLOAT3 position(256.0f, 56.0f, -56.0f);
+	XMFLOAT3 position(256.0f, 156.0f, -56.0f);
 	shadowLight = new ShadowLight(ambient, diffuse, position, XMFLOAT3(256.0f, 0.0f, 256.0f));
 	shadowLight->CreateProjectionMatrix(screenDepth, screenNear);
 	shadowLight->CreateViewMatrix();
@@ -417,7 +416,7 @@ void Application::RenderToTexture()
 	////////////////////////////////////////////////////////////////////////// Render to shadow map //////////////////////////////////////////////////////////////////////////
 	shadowMapShader->UseShader(Direct3D->GetDeviceContext());
 
-	XMMATRIX lightView, lightProj;
+	XMMATRIX lightView, lightProj, world, wvp;
 	XMFLOAT3 lightPos = shadowLight->GetPosition();
 
 	shadowLight->GetViewMatrix(lightView);
@@ -427,12 +426,16 @@ void Application::RenderToTexture()
 
 	for (int i = 0; i < NUM_SPHERES; i++)
 	{
-		XMMATRIX world;
 		spheres[i]->GetWorldMatrix(world);
-		XMMATRIX wvp = world * vp;
+		wvp = world * vp;
 		shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
 		spheres[i]->Render(Direct3D->GetDeviceContext());
 	}
+
+	sphere->GetWorldMatrix(world);
+	wvp = world * vp;
+	shadowMapShader->SetBuffers(Direct3D->GetDeviceContext(), wvp, shadowLight->GetPosition());
+	sphere->Render(Direct3D->GetDeviceContext());
 
 	//////////////////////////////////////////////////////////////////// Render scene with deferred shading ////////////////////////////////////////////////////////////////////
 	Direct3D->ActivateDeferredShading();
@@ -449,10 +452,8 @@ void Application::RenderToTexture()
 
 	//Render objects
 	modelShader->UseShader(Direct3D->GetDeviceContext());
-	
 	modelQuadtree->Render(Direct3D->GetDeviceContext(), modelShader, viewMatrix, projectionMatrix);
 
-	XMMATRIX world;
 	sphere->GetWorldMatrix(world);
 	modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 	sphere->Render(Direct3D->GetDeviceContext());
@@ -463,7 +464,6 @@ void Application::RenderToTexture()
 		modelShader->SetMatrices(Direct3D->GetDeviceContext(), world, viewMatrix, projectionMatrix);
 		spheres[i]->Render(Direct3D->GetDeviceContext());
 	}
-
 
 	//Render particles
 	particleShader->UseShader(Direct3D->GetDeviceContext());

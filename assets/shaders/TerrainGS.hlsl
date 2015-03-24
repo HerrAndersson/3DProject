@@ -9,6 +9,7 @@ struct VS_OUT
 	float4 pos : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float4 worldPos : POS;
 };
 
 struct GS_OUT
@@ -16,6 +17,7 @@ struct GS_OUT
 	float4 pos : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float4 worldPos : POS;
 };
 
 [maxvertexcount(3)]
@@ -39,6 +41,7 @@ void main(triangle VS_OUT input[3], inout TriangleStream<GS_OUT> OutputStream)
 			output.pos = input[i].pos;
 			output.tex = input[i].tex;
 			output.normal = input[i].normal.xyz;
+			output.worldPos = input[i].worldPos;
 
 			OutputStream.Append(output);
 		}

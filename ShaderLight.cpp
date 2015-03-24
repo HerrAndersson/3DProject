@@ -58,7 +58,7 @@ ShaderLight::ShaderLight(ID3D11Device* device, LPCWSTR vertexShaderFilename, LPC
 
 	// Description of the light constant buffer in the pixel shader.
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	lightBufferDesc.ByteWidth = sizeof(LightBuffer);
+	lightBufferDesc.ByteWidth = sizeof(LightBufferPS);
 	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	lightBufferDesc.MiscFlags = 0;
@@ -98,9 +98,35 @@ void ShaderLight::SetBuffers(ID3D11DeviceContext* deviceContext, ID3D11ShaderRes
 	ID3D11ShaderResourceView* normalTexture, ID3D11ShaderResourceView* shadowTexture, ID3D11ShaderResourceView* worldPosTexture, DirectX::XMFLOAT3 lightDirection, XMMATRIX& lightVP, int shadowMapSize)
 
 {
+
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	unsigned int bufferNumber = 0;
+
+	XMMATRIX lvp = XMMatrixTranspose(lightVP);
+
+	//Lock the light constant buffer so it can be written to.
+	result = deviceContext->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		throw runtime_error("Could not Map light buffer in ShaderLight");
+	}
+
+	LightBufferPS* lightData = (LightBufferPS*)mappedResource.pData;
+
+	//Copy the lighting variables into the constant buffer
+	lightData->lightVP = lvp;
+	lightData->lightDirection = lightDirection;
+	lightData->size = shadowMapSize;
+
+	deviceContext->Unmap(lightBuffer, 0);
+
+	//Set light buffer in pixel shader with updated values
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
+
 	//Update matrix and light constant buffers
 	//SetMatrixBuffer(deviceContext, worldMatrix, viewMatrix, projectionMatrix, lightVP);
-	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);
+//	SetLightBuffer(deviceContext, lightDirection, shadowMapSize, lightVP);
 
 	//Set shader texture resources in the pixel shader
 	deviceContext->PSSetShaderResources(0, 1, &colorTexture);
@@ -170,7 +196,7 @@ void ShaderLight::SetLightBuffer(ID3D11DeviceContext* deviceContext, XMFLOAT3 li
 		throw runtime_error("Could not Map light buffer in ShaderLight");
 	}
 
-	LightBuffer* lightData = (LightBuffer*)mappedResource.pData;
+	LightBufferPS* lightData = (LightBufferPS*)mappedResource.pData;
 
 	//Copy the lighting variables into the constant buffer
 	lightData->lightVP = lvp;

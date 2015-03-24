@@ -14,7 +14,7 @@ private:
 	//	XMMATRIX lightVP;
 	//};
 
-	struct LightBuffer
+	struct LightBufferPS
 	{
 		DirectX::XMMATRIX lightVP;
 		DirectX::XMFLOAT3 lightDirection;

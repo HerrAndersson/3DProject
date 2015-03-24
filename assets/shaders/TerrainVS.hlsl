@@ -19,11 +19,14 @@ struct VS_OUT
 	float4 pos : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float4 worldPos : POS;
 };
 
 VS_OUT main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
+
+	output.worldPos = mul(float4(input.pos.xyz, 1.0f), worldMatrix);
 
 	output.pos = float4(input.pos, 1.0f);
 	output.pos = mul(output.pos, wvpMatrix);
