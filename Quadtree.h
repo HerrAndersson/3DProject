@@ -31,7 +31,7 @@ public:
 	~Quadtree();
 
 	void Render(ID3D11DeviceContext* deviceContext, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
-	void Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix);
+	void Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, int& modelsRendered);
 
 private:
 	void Clean(Node* currentNode);

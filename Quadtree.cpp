@@ -40,10 +40,12 @@ Quadtree::~Quadtree()
 
 void Quadtree::Render(ID3D11DeviceContext* deviceContext, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
 {
-	Render(deviceContext, root, rootBoundingBox, shader, viewMatrix, projectionMatrix);
+	int modelsRendered = 0;
+	Render(deviceContext, root, rootBoundingBox, shader, viewMatrix, projectionMatrix, modelsRendered);
+	cout << "Models rendered: " << modelsRendered << endl;
 }
 
-void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix)
+void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, BoundingBox box, ShaderDefault* shader, XMMATRIX& viewMatrix, XMMATRIX& projectionMatrix, int& modelsRendered)
 {
 	Plane planes[6];
 	XMFLOAT4X4 m;
@@ -146,12 +148,13 @@ void Quadtree::Render(ID3D11DeviceContext* deviceContext, Node* currentNode, Bou
 			(*i)->GetWorldMatrix(world);
 			shader->SetMatrices(deviceContext, world, viewMatrix, projectionMatrix);
 			(*i)->Render(deviceContext);
+			modelsRendered++;
 		}
 		for (int i = 0; i < 4; i++)
 		{
 			if (currentNode->child[i])
 			{
-				Render(deviceContext, currentNode->child[i], box.GetChildBoundingBox(i), shader, viewMatrix, projectionMatrix);
+				Render(deviceContext, currentNode->child[i], box.GetChildBoundingBox(i), shader, viewMatrix, projectionMatrix, modelsRendered);
 			}
 		}
 	}

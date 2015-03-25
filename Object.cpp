@@ -95,7 +95,6 @@ Object::Object(ID3D11Device* device, std::string modelFilename, DirectX::XMMATRI
 							string tempString;
 							getline(materialFile, tempString);
 						}
-						//TODO: Does not load color info
 					}
 					materialFile.close();
 				}
