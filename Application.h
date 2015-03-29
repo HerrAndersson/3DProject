@@ -39,6 +39,8 @@ private:
 	int screenWidth;
 	int screenHeight;
 
+	bool moveRightOrLeft; //true = right movement
+
 	//OBJECTS
 	D3DClass*		    Direct3D;
 	Camera*	            camera;

@@ -46,16 +46,15 @@ float4 main(VS_OUT input) : SV_TARGET
 	float2 lerps = frac(texelPos);
 	float shadowCoeff = lerp(lerp(s0, s1, lerps.x), lerp(s2, s3, lerps.x), lerps.y);
 
-
 	//Get local illumination from the "sun" on the whole scene
 	float3 lightDir = -lightDirection;										 // Invert the light direction for calculations.
 	float lightIntensity = saturate(dot(normal.xyz, lightDir)) + 0.35;		 // Calculate the amount of light on this pixel.
 	float4 outputColor = saturate(col * lightIntensity);					 // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
-	if (shadowCoeff > depth)
+	if (shadowCoeff >= depth)
 	{
-		 return outputColor * shadowCoeff;
+		return outputColor * shadowCoeff;
 	}
 	
-	return outputColor / 1.8;
+	return outputColor / 1.3;
 }

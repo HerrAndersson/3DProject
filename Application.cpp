@@ -10,6 +10,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 {
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
+	moveRightOrLeft = true;
 
 	float screenDepth = 1000.0f;
 	float screenNear = 0.1f;
@@ -42,7 +43,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 	}
 
 	XMMATRIX tempWorldMatrix = XMMatrixIdentity();
-	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(150, 15, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
+	sphere = new ObjectIntersection(Direct3D->GetDevice(), "assets/models/sphere3.obj", XMFLOAT3(350, 15, 128), XMFLOAT3(5, 5, 5), tempWorldMatrix);
 
 	modelQuadtree = new Quadtree(Direct3D->GetDevice(), "assets/map/tree.txt");
 
@@ -54,7 +55,7 @@ Application::Application(HINSTANCE hInstance, HWND hwnd, int screenWidth, int sc
 
 	orthoWindow = new OrthoWindow(Direct3D->GetDevice(), screenWidth, screenHeight);
 
-	XMFLOAT3 position(256.0f, 156.0f, -56.0f);
+	XMFLOAT3 position(256.0f, 56.0f, -26.0f);
 	shadowLight = new ShadowLight(ambient, diffuse, position, XMFLOAT3(256.0f, 0.0f, 256.0f));
 	shadowLight->CreateProjectionMatrix(screenDepth, screenNear);
 	shadowLight->CreateViewMatrix();
@@ -176,6 +177,29 @@ bool Application::Update()
 {
 	bool result = true;
 
+	////Updates moving light. Temporary.
+	//XMFLOAT3 pos = shadowLight->GetPosition();
+	//if (moveRightOrLeft)
+	//{
+	//	pos.x += 0.6f;
+	//	if (pos.x > 300)
+	//	{
+	//		moveRightOrLeft = false;
+	//	}
+	//}
+	//else
+	//{
+	//	pos.x -= 0.6f;
+	//	if (pos.x < 0)
+	//	{
+	//		moveRightOrLeft = true;
+	//	}
+	//}
+	//shadowLight->SetPosition(pos);
+	//shadowLight->CreateViewMatrix();
+	//((ObjectIntersection*)sphere)->SetPosition(pos);
+
+
 	timer->Update();
 	float frameTime = timer->GetTime();
 
@@ -201,10 +225,6 @@ bool Application::Update()
 	((ObjectIntersection*)sphere)->Update();
 
 	result = RenderGraphics();
-
-	//Uncomment if the shadow light is moving
-	//XMFLOAT3 dir = shadowLight->GetDirection();
-	//light->SetDirection(dir.x, dir.y, dir.z);
 
 	//Check if the user pressed escape and wants to exit the application.
 	if (input->Escape())
@@ -285,10 +305,6 @@ void Application::HandleMovement(float frameTime)
 			((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y, p.z));
 		}
 	}
-
-	//Uncomment if the scene is rendered from another view, ex. from the light. 
-	//XMFLOAT3 p = camera->GetPosition();
-	//((ObjectIntersection*)sphere)->SetPosition(XMFLOAT3(p.x, p.y, p.z));
 }
 
 Ray Application::GetRay()
@@ -392,7 +408,7 @@ bool Application::RenderGraphics()
 
 	lightShader->SetBuffers(Direct3D->GetDeviceContext(),
 		Direct3D->GetDeferredSRV(0), Direct3D->GetDeferredSRV(1), shadowMapShader->GetShadowSRV(),
-		Direct3D->GetDeferredSRV(2), light->GetDirection(), lightVP, shadowMapShader->GetSize());
+		Direct3D->GetDeferredSRV(2), shadowLight->GetDirection(), lightVP, shadowMapShader->GetSize());
 
 	lightShader->Draw(Direct3D->GetDeviceContext(), orthoWindow->GetIndexCount());
 
