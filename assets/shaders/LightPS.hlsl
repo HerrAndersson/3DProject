@@ -53,7 +53,6 @@ float4 main(VS_OUT input) : SV_TARGET
 
 
 
-
 	float depthSample = (shadowTexture.Sample(SampleTypePoint, smTex).r + 0.0005f < depth) ? 0.0f : 1.0f;
 
 	return outputColor * depthSample;
