@@ -160,10 +160,10 @@ void ShaderShadowMap::UseShader(ID3D11DeviceContext* deviceContext)
 	deviceContext->PSSetShader(nullptr, nullptr, 0);
 
 	deviceContext->RSSetViewports(1, &shadowMapViewport);
-	deviceContext->ClearDepthStencilView(shadowMapDepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	deviceContext->OMSetRenderTargets(0, nullptr, shadowMapDepthView);
 	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 	deviceContext->RSSetState(rasterizerState);
+	deviceContext->ClearDepthStencilView(shadowMapDepthView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 void ShaderShadowMap::SetBuffers(ID3D11DeviceContext* deviceContext, XMMATRIX& lightWVP, XMFLOAT3 lightPos)
 {

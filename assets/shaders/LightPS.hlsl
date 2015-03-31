@@ -21,11 +21,11 @@ struct VS_OUT
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float4 pos = worldPosTexture.Sample(SampleTypePoint, input.tex);
-	float4 col = colorTexture.Sample(SampleTypePoint, input.tex);
+	float4 col = shadowTexture.Sample(SampleTypePoint, input.tex);
 	float4 normal = normalTexture.Sample(SampleTypePoint, input.tex);
 
-	float4 p = float4(pos.xyz, 1.0f);
-	float4 shadowPos = mul(p, lightVP);
+	float4 shadowPos = mul(pos, lightVP);
+
 	shadowPos.xy /= shadowPos.w;
 
 	float2 smTex = float2(0.5f* shadowPos.x + 0.5f, -0.5f * shadowPos.y + 0.5f);
@@ -52,9 +52,15 @@ float4 main(VS_OUT input) : SV_TARGET
 	float4 outputColor = saturate(col * lightIntensity);					 // Determine the final amount of diffuse color based on the color of the pixel combined with the light intensity.
 
 
+	float depthSample = shadowTexture.Sample(SampleTypePoint, smTex).r + 0.00005;
 
-	float depthSample = (shadowTexture.Sample(SampleTypePoint, smTex).r + 0.0005f < depth) ? 0.0f : 1.0f;
+	return float4(depthSample.xxx, 1.0f);
 
-	return outputColor * depthSample;
+	if (depthSample > depth)
+	{
+		return outputColor * depthSample;
+	}
+
+	return outputColor;
 
 }
