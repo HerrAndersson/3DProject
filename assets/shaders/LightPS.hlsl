@@ -21,7 +21,7 @@ struct VS_OUT
 float4 main(VS_OUT input) : SV_TARGET
 {
 	float4 pos = worldPosTexture.Sample(SampleTypePoint, input.tex);
-	float4 col = shadowTexture.Sample(SampleTypePoint, input.tex);
+	float4 col = colorTexture.Sample(SampleTypePoint, input.tex);
 	float4 normal = normalTexture.Sample(SampleTypePoint, input.tex);
 
 	float4 shadowPos = mul(pos, lightVP);
@@ -53,8 +53,6 @@ float4 main(VS_OUT input) : SV_TARGET
 
 
 	float depthSample = shadowTexture.Sample(SampleTypePoint, smTex).r + 0.00005;
-
-	return float4(depthSample.xxx, 1.0f);
 
 	if (depthSample > depth)
 	{
