@@ -12,6 +12,7 @@ struct GS_OUT
 	float4 position : SV_POSITION;
 	float2 tex : TEXCOORD0;
 	float3 normal : NORMAL;
+	float4 worldPos : POS;
 };
 
 struct GS_IN
@@ -43,6 +44,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 0);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	temp = input[0].position + up + right;
@@ -51,6 +53,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 0);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	temp = input[0].position - up + right;
@@ -59,6 +62,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 1);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	//Second triangle
@@ -68,6 +72,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 0);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	temp = input[0].position - up - right;
@@ -76,6 +81,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(0, 1);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	temp = input[0].position - up + right;
@@ -84,6 +90,7 @@ void main(point GS_IN input[1], inout TriangleStream<GS_OUT> OutputStream)
 	output.position = mul(output.position, projectionMatrix);
 	output.tex = float2(1, 1);
 	output.normal = normal;
+	output.worldPos = mul(temp, worldMatrix);
 	OutputStream.Append(output);
 
 	OutputStream.RestartStrip();
